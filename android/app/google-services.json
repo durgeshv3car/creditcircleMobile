@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432411043788",
+    "project_id": "creditcircle-1f9f1",
+    "storage_bucket": "creditcircle-1f9f1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432411043788:android:90cec1a7fe7a753cbddf69",
+        "android_client_info": {
+          "package_name": "com.creditcircle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAg67Ma7OgiGbOgGLH6quxrcj5q9hVQ6WQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
