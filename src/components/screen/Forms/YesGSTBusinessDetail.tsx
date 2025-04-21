@@ -24,9 +24,10 @@ import {
     ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/components/util/api_url";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api/loan-application";
-const GET_DATA_URL = "http://192.168.0.18:5000/api/otp/get-loadId?applicationId=";
+const API_BASE_URL = `${BASE_URL}/api/loan-application`;
+const GET_DATA_URL = `${BASE_URL}/api/otp/get-loadId?applicationId=`;
 
 
 const YesGSTBusinessDetail = ({ navigation }) => {
@@ -37,6 +38,52 @@ const YesGSTBusinessDetail = ({ navigation }) => {
     const [errors, setErrors] = useState({});
 
     const [applicationId, setapplicationId] = useState()
+
+    const [pinCode, setPinCode] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+
+
+
+    useEffect(() => {
+        if (data.officePinCode) {
+            setPinCode(data.officePinCode); // set from API initially
+        }
+    }, [data.officePinCode]);
+
+    useEffect(() => {
+        if (pinCode.length === 6) {
+            fetchCityState();
+        }
+    }, [pinCode]);
+
+    const fetchCityState = async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}/api/pincode/${pinCode}`);
+            if (res.data) {
+                const fetchedCity = res.data.city || "";
+                const fetchedState = res.data.state || "";
+    
+                setCity(fetchedCity);
+                setState(fetchedState);
+    
+                setData((prevData) => ({
+                    ...prevData,
+                    city: fetchedCity,
+                    state: fetchedState,
+                }));
+            }
+        } catch (error) {
+            console.error("❌ Error fetching city/state from pincode:", error);
+            setCity("");
+            setState("");
+        }
+    };
+    
+
+
+    console.log("LLL", city,state, pinCode)
+
 
     useEffect(() => {
         const fetchApplicationId = async () => {
@@ -53,6 +100,7 @@ const YesGSTBusinessDetail = ({ navigation }) => {
         };
     
         fetchApplicationId();
+
     }, []);
     
     useEffect(() => {
@@ -61,6 +109,10 @@ const YesGSTBusinessDetail = ({ navigation }) => {
             fetchBusinessDetails();
         }
     }, [applicationId]);
+
+
+
+
     
     const fetchBusinessDetails = async () => {
         if (!applicationId) return;
@@ -81,13 +133,23 @@ const YesGSTBusinessDetail = ({ navigation }) => {
     };
     
 
-    // ✅ Handle Radio Button Selection
+    // // ✅ Handle Radio Button Selection
+    // const handleSelection = (value) => {
+    //     console.log("🔘 Selected Option:", value);
+    //     setSelectedOption(value);
+        
+    //     setData((prevData) => ({ ...prevData, propertyOwnership: value }));
+    // };
+
     const handleSelection = (value) => {
         console.log("🔘 Selected Option:", value);
         setSelectedOption(value);
-        
-        setData((prevData) => ({ ...prevData, propertyOwnership: value }));
+        setData((prevData) => ({
+            ...prevData,
+            propertyOwnership: value
+        }));
     };
+
 
     const validateInputs = () => {
         let errors = {};
@@ -106,22 +168,40 @@ const YesGSTBusinessDetail = ({ navigation }) => {
     // ✅ Handle Update and Redirect
     const handleUpdate = async () => {
         if (!validateInputs()) return;
-
+    
         try {
             setIsLoading(true);
+    
             const requestBody = {
-                businessType:selectedOption,
+                businessType: selectedOption, // ✅ Fix
                 applicationId,
             };
-console.log("📤 Updating data:", requestBody);
-
+    
             console.log("📤 Updating Data:", requestBody);
-
+    
             const response = await axios.post(`${API_BASE_URL}/updateGstDetails`, requestBody);
-
+    
             if (response.status === 200) {
-                Alert.alert("Success", "Business details updated successfully");
-                navigation.navigate("RevenueIncomeDetails");
+                
+                // ✅ Fetch Employment Information
+                const employmentInfoResponse = await axios.get(
+                    `${API_BASE_URL}?applicationId=${applicationId}`
+                );
+    
+                if (employmentInfoResponse.status === 200) {
+                    const employmentType = employmentInfoResponse.data.employmentInformation;
+    
+                    console.log("🚀 Employment Type:", employmentType);
+    
+                    // ✅ Navigate based on employment type
+                    if (employmentType === "SelfEmployedBusiness") {
+                        navigation.navigate("RevenueIncomeDetailsProfessional");
+                    } else {
+                        navigation.navigate("RevenueIncomeDetails");
+                    }
+                } else {
+                    Alert.alert("Error", "Failed to fetch employment information");
+                }
             }
         } catch (error) {
             console.error("❌ Error updating business details:", error);
@@ -211,11 +291,22 @@ console.log("📤 Updating data:", requestBody);
 
                             <ThemedTextInput label="Nature Of Core Business Activity"  placeHolder={data.natureOfBusiness} disable={false} />
 
-                            <ThemedTextInput label="Pin Code" placeHolder={data.officePinCode} disable={false} />
+                            {/* <ThemedTextInput label="Pin Code" placeHolder={data.officePinCode} disable={false} /> */}
+
+
+                            <ThemedTextInput
+    label="Pin Code"
+    value={pinCode}
+    onChangeText={(text) => setPinCode(text)}
+    disable={false}
+/>
+
+                            
+                            
 
                             <View style={{ flex: 1, flexDirection: 'row', width: '100%', gap: 20 }}>
-                                <ThemedTextInput label="City" placeHolder={data.officeCity} disable={false} />
-                                <ThemedTextInput label="State" placeHolder={data.GSTStatus} disable={false} />
+                                <ThemedTextInput label="City" placeHolder={city} disable={false} />
+                                <ThemedTextInput label="State" placeHolder={state} disable={false} />
                             </View>
 
 

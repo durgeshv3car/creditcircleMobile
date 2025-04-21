@@ -1,3 +1,4 @@
+import appStyle from '@/AppStyles';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Svg, { Path, Circle, G } from 'react-native-svg';
@@ -54,11 +55,11 @@ export const CreditScoreMeter: React.FC<CreditScoreMeterProps> = ({
     };
 
     return (
-        <View style={styles.container}>
+        <View style={appStyle.scrocontainer}>
             <View style={styles.meterContainer}>
 
 
-                <Svg height="200" width="300" viewBox="0 0 300 200">
+                <Svg height="200" width='100%' viewBox="0 0 300 200">
                     <G>
                         {ranges.map((range, index) => {
                             const startAngle = calculateAngle(range.min);
@@ -123,14 +124,12 @@ export const CreditScoreMeter: React.FC<CreditScoreMeterProps> = ({
 };
 
 const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-    },
+    
     meterContainer: {
         position: 'relative',
         alignItems: 'center',
         marginBottom: 50,
-        marginTop: -60,
+        marginTop: -73,
         width: "80%",
         transform: [{ scale: 1.3 }]
     },

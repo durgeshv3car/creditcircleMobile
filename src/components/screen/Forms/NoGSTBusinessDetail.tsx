@@ -1,7 +1,7 @@
 import appStyle from "@/AppStyles";
 import { ThemedTextInput } from "@/components/ThemedInput";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
-import { ThemedHeadingText } from "@/components/ThemedText";
+import { ThemedHeadingText, ThemedText } from "@/components/ThemedText";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,14 +22,17 @@ import {
     ActivityIndicator,
     Platform,
 } from "react-native";
+import { BASE_URL } from "@/components/util/api_url";
+import { ThemedView } from "@/components/ThemedView";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api/loan-application";
-const PINCODE_API_URL = "http://192.168.0.18:5000/api/pincode/";
+const API_BASE_URL = `${BASE_URL}/api/loan-application`;
+const PINCODE_API_URL = `${BASE_URL}/api/pincode/`;
 
 const NoGSTBusinessDetail = ({ navigation }) => {
     const [applicationId, setApplicationId] = useState("");
     const [businessName, setBusinessName] = useState("");
     const [natureOfBusiness, setNatureOfBusiness] = useState("");
+    const [businessType, setBusinessType] = useState("");
     const [yearsInBusiness, setYearsInBusiness] = useState("");
     const [officePinCode, setPinCode] = useState("");
     const [officeCity, setCity] = useState("");
@@ -123,40 +126,53 @@ const NoGSTBusinessDetail = ({ navigation }) => {
         return isValid;
     };
 
-    // ✅ Handle Continue (API Update)
+
     const handleContinue = async () => {
-        Keyboard.dismiss();
-    
-        // console.log("🚀 Application ID:", applicationId);
-    
-        // if (!applicationId) {
-        //     Alert.alert("Error", "Application ID is missing");
-        //     return;
-        // }
-    
         if (!validateInputs()) return;
     
         try {
             setIsLoading(true);
+    
             const requestBody = {
                 applicationId,
                 businessName,
+                businessType,
                 natureOfBusiness,
                 yearsInBusiness,
                 officePinCode,
                 officeCity,
-                officeState
+                officeState,
             };
     
             console.log("📤 Sending Data:", requestBody);
     
+            // ✅ Send business details
             const response = await axios.post(`${API_BASE_URL}/updateGstDetails`, requestBody);
-    
             console.log("✅ API Response:", response.data);
     
             if (response.status === 200) {
                 Alert.alert("Success", "Business details updated successfully");
-                navigation.navigate("RevenueIncomeDetails");
+    
+                // ✅ Fetch Employment Information after successful submission
+                const employmentInfoResponse = await axios.get(
+                    `${API_BASE_URL}?applicationId=${applicationId}`
+                );
+    
+                console.log("✅ Employment Info Response:", employmentInfoResponse.data);
+    
+                if (employmentInfoResponse.status === 200) {
+                    const employmentType = employmentInfoResponse.data.employmentInformation;
+    
+                    if (employmentType === "SelfEmployedBusiness") {
+                        console.log("✅ Navigating to Home");
+                        navigation.navigate("RevenueIncomeDetailsProfessional");
+                    } else {
+                        console.log("✅ Navigating to RevenueIncomeDetails");
+                        navigation.navigate("RevenueIncomeDetails");
+                    }
+                } else {
+                    Alert.alert("Error", "Failed to fetch employment information");
+                }
             }
         } catch (error) {
             console.error("❌ Error updating business details:", error);
@@ -166,14 +182,20 @@ const NoGSTBusinessDetail = ({ navigation }) => {
         }
     };
     
+    
     const theme = Appearance.getColorScheme();
 
     const dynamicStyles = {
         backgroundColor: theme === "dark" ? "#000000" : "#FFFFFF",
     };
 
+    const handleBusinessType = (value) => {
+        console.log("🔘 Selected Option handleBusinessType:", value);
+        setBusinessType(value);
+    };
+
     const handleSelection = (value) => {
-        console.log("🔘 Selected Option:", value);
+        console.log("🔘 Selected Option handleSelection:", value);
         setNatureOfBusiness(value);
     };
     
@@ -181,8 +203,14 @@ const NoGSTBusinessDetail = ({ navigation }) => {
     return (
         <SafeAreaView style={[styles.container, dynamicStyles]}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                <KeyboardAvoidingView style={{ flex: 1 }}>
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
+
+                    <View style={appStyle.HeadingTitle}>
+                                <ThemedHeadingText style={[styles.header]}>Business Details</ThemedHeadingText>
+                                <ThemedView style={{ width: '20%', height: 2, backgroundColor: '#FF4800', marginTop: 4 }}></ThemedView>
+                            </View>
+ 
                         <ThemedTextInput
                             label="Business Name"
                             value={businessName}
@@ -190,12 +218,27 @@ const NoGSTBusinessDetail = ({ navigation }) => {
                             error={errors.businessName}
                         />
 
+<ThemedHeadingText style={{fontWeight:'bold', marginBottom:10}}>Company type</ThemedHeadingText>
+                        <View style={{paddingVertical:0, paddingHorizontal:6, marginBottom: 20, borderWidth:1, borderColor:'#ccc', borderRadius:5}}>
                         <ThemedRadioButtonList
                             options={[
                                 { label: 'Proprietorship/Individual', value: 'Proprietorship/Individual' },
                                 { label: 'Partnership Firm', value: 'Partnership Firm' },
                                 { label: 'Private Limited Company', value: 'Private Limited Company' },
-                                { label: 'LLP', value: 'LLP' },
+                                { label: 'Limited lia bility partnership (LLP)', value: 'LLP' },
+                            ]}
+                            onValueChange={handleBusinessType}
+                            defaultValue={businessType}
+                            error={errors.businessType}
+                        />
+                        </View>
+
+
+<ThemedHeadingText style={{fontWeight:'bold'}}>Nature of business</ThemedHeadingText>
+<ThemedRadioButtonList
+                            options={[
+                                { label: 'Manufacturing', value: 'Manufacturing' },
+                                { label: 'Trader/Wholesaler', value: 'Trader/Wholesaler' }
                             ]}
                             onValueChange={handleSelection}
                             defaultValue={natureOfBusiness}
@@ -203,14 +246,29 @@ const NoGSTBusinessDetail = ({ navigation }) => {
                         />
 
                         <ThemedTextInput
+                            label="Years in Business"
+                            value={yearsInBusiness}
+                            keyboardType="number-pad"
+                            maxLength={4}
+                            onChangeText={setYearsInBusiness}
+                            error={errors.yearsInBusiness}
+                            />
+
+                        <ThemedTextInput
                             label="Pin Code"
+                            keyboardType="number-pad"
+                            maxLength={6}
                             value={officePinCode}
                             onChangeText={handlePinCodeChange}
                             error={errors.officePinCode}
                         />
 
+<View style={{ flexDirection: "row", gap: 20 }}>
                         <ThemedTextInput label="City" value={officeCity} editable={false} error={errors.officeCity} />
                         <ThemedTextInput label="State" value={officeState} editable={false} error={errors.officeState} />
+                        </View>
+
+
                     </ScrollView>
 
                     <View style={appStyle.buttonContainer}>
@@ -227,6 +285,10 @@ const NoGSTBusinessDetail = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: { flex: 1 },
     scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
+    header: {
+        fontSize: 18,
+        fontWeight: "bold"
+    },
     button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
     buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
 });

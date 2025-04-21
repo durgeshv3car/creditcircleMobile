@@ -163,8 +163,25 @@ const IncomeTaxCalculator = () => {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.header}>Income Tax Calculator</Text>
+       <View style={styles.container}>
+      
+       {results && (
+         <Text style={styles.header}>
+                <View style={styles.results}>
+                    <Text>Total Income: ₹{results && results.totalIncome}</Text>
+                    <Text>Exemptions: ₹{results.exemptions}</Text>
+                    <Text>Deductions: ₹{results.deductions}</Text>
+                    <Text>Tax (Old Regime): ₹{results.taxOld}</Text>
+                    <Text>Tax (New Regime): ₹{results.taxNew}</Text>
+                    <Text>Recommended: {results.recommendedRegime}</Text>
+                </View>
+                
+       </Text>
+            )}
+
+
+       <ScrollView style={{marginBottom: 50, marginTop:10}}>
+            
 
             {/* Input Fields */}
             {[
@@ -207,33 +224,26 @@ const IncomeTaxCalculator = () => {
             {/* <Button title="Calculate Tax" style  onPress={handleSubmit} /> */}
 
             
-            <View style={{marginBottom:40}}>
+         
+            
+
+            {/* Results */}
+            
+        </ScrollView>
+        <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal:20, paddingBottom:10 }}>
                 <Pressable style={styles.button} onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Calculate Tax</Text>
                 </Pressable>
             </View>
-            
-
-            {/* Results */}
-            {results && (
-                <View style={styles.results}>
-                    <Text>Total Income: ₹{results.totalIncome}</Text>
-                    <Text>Exemptions: ₹{results.exemptions}</Text>
-                    <Text>Deductions: ₹{results.deductions}</Text>
-                    <Text>Tax (Old Regime): ₹{results.taxOld}</Text>
-                    <Text>Tax (New Regime): ₹{results.taxNew}</Text>
-                    <Text>Recommended: {results.recommendedRegime}</Text>
-                </View>
-            )}
-        </ScrollView>
+       </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor:'#ffffff'},
-    header: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign:'center', paddingVertical:10, borderRadius:10 },
-    switchContainer: { flexDirection: "row", alignItems: "center", marginBottom: 15 },
-    results: { marginTop: 20, padding: 10, marginBottom: 50 },
+    container: { flex: 1, height:"100%", padding: 20, paddingTop:0, backgroundColor: "#fff" },
+    header: { backgroundColor:'#ccc', padding:10, borderRadius:10, marginTop:10, marginBottom:10 },
+    switchContainer: { flexDirection: "row", alignItems: "center", marginBottom: 15, backgroundColor: "#fff" },
+    results: {},
     button: {
         backgroundColor: "#FF4800",
         paddingVertical: 15,

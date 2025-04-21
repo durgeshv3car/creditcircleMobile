@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { BASE_URL } from '../util/api_url';
 
-const API_BASE_URL = 'http://192.168.0.93:5000/api/otp/';
+const API_BASE_URL = `${BASE_URL}/api/otp/`;
 
 const AuthGuard = ({ children }) => {
   const navigation = useNavigation();

@@ -1,3 +1,4 @@
+import appStyle from '@/AppStyles';
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -33,12 +34,19 @@ export default function EMICalculator() {
         setTotalAmount(totalPayment.toFixed(0));
     };
 
+    const formatIndianCurrency = (value) => {
+        const num = parseFloat(value);
+        if (isNaN(num)) return '0';
+        return num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+      };
+      
+      
     useEffect(() => {
         calculateEMI();
     }, [loanAmount, interestRate, loanTenure]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={appStyle.Emicontainer}>
             <Text style={styles.title}>Loan EMI Calculator</Text>
 
             <View style={styles.inputContainer}>
@@ -83,17 +91,17 @@ export default function EMICalculator() {
                 <View style={styles.row}>
                     <View style={styles.column}>
                         <Text style={styles.resultLabel}>Principal Amount</Text>
-                        <Text style={styles.amount}>₹{loanAmount}</Text>
+                        <Text style={styles.amount}>₹{formatIndianCurrency(loanAmount)}</Text>
                     </View>
                     <Text style={styles.operator}>+</Text>
                     <View style={styles.column}>
                         <Text style={styles.resultLabel}>Interest Amount</Text>
-                        <Text style={styles.amount}>₹{totalInterest}</Text>
+                        <Text style={styles.amount}>₹{formatIndianCurrency(totalInterest)}</Text>
                     </View>
                     <Text style={styles.operator}>=</Text>
                     <View style={styles.column}>
-                        <Text style={styles.resultLabel}>Total Amount Payable</Text>
-                        <Text style={styles.amount}>₹{totalAmount}</Text>
+                        <Text style={styles.resultLabel}>Payable Amount</Text>
+                        <Text style={styles.amount}>₹{formatIndianCurrency(totalAmount)}</Text>
                     </View>
                 </View>
 
@@ -101,7 +109,7 @@ export default function EMICalculator() {
                     <View style={styles.emiBox}>
                         <Text style={styles.emiLabel}>EMI</Text>
                     </View>
-                    <Text style={styles.emiAmount}>₹{emi}</Text>
+                    <Text style={styles.emiAmount}>₹{formatIndianCurrency(emi)}</Text>
                     <TouchableOpacity style={styles.checkEligibility}>
                         <Text style={styles.buttonText}>Check Eligibility →</Text>
                     </TouchableOpacity>
@@ -112,13 +120,7 @@ export default function EMICalculator() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        margin: 16,
-        backgroundColor: '#F5F5F5',
-        borderRadius: 10,
-        padding: 6
-    },
+   
     title: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -156,7 +158,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 12,
         fontSize: 16,
-        backgroundColor: '#fff',
         textAlign: 'center'
     },
     resultContainer: {
@@ -172,6 +173,7 @@ const styles = StyleSheet.create({
     },
     column: {
         flex: 1,
+        textAlign: 'center',
     },
     operator: {
         fontSize: 20,

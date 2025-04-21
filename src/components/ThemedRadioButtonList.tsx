@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Appearance } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Appearance, Pressable } from 'react-native';
 
 const ThemedRadioButtonList = ({
   options,
@@ -8,7 +8,8 @@ const ThemedRadioButtonList = ({
   defaultValue = null,
   navigation,
   style = {}, // Optional prop
-  error // ✅ Added error prop for validation errors
+  error,  // ✅ Added error prop for validation errors
+  value,
 }) => {
   const [selectedValue, setSelectedValue] = useState(defaultValue);
 
@@ -43,31 +44,69 @@ const ThemedRadioButtonList = ({
   const backgroundColorList = { backgroundColor: theme === 'dark' ? "#999999" : "#ffffff" };
 
   return (
-    <View>
-      <View style={[styles.container, style, { flexDirection: direction }]}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option.value}
-            style={[styles.option, { paddingVertical: option.description?.length > 0 ? 10 : 10 }, backgroundColorList]}
-            onPress={() => handlePress(option.value)}
-          >
-            <View style={{ paddingVertical: option?.description?.length ? 0 : 12 }}>
-              <Text style={styles.Heading}>{option.label}</Text>
+    // <View>
+    //   <View style={[styles.container, style, { flexDirection: direction }]}>
+    //     {options.map((option) => (
+    //       <TouchableOpacity
+    //         key={option.value}
+    //         style={[styles.option, { paddingVertical: option.description?.length > 0 ? 10 : 10 }, backgroundColorList]}
+    //         onPress={() => handlePress(option.value)}
+    //       >
+    //         <View style={{ paddingVertical: option?.description?.length ? 0 : 12 }}>
+    //           <Text style={styles.Heading}>{option.label}</Text>
+    //           {option.description && option.description.length > 0 ? (
+    //             <Text style={styles.label}>{option.description}</Text>
+    //           ) : null}
+    //         </View>
+
+    //         <View style={[styles.radioButton, borderColor]}>
+    //           {selectedValue === option.value && <View style={[styles.selectedDot, backgroundColor]} />}
+    //         </View>
+    //       </TouchableOpacity>
+    //     ))}
+    //   </View>
+
+    //   {/* ✅ Display error message if present */}
+    //   {error && <Text style={styles.errorText}>{error}</Text>}
+    // </View>
+
+    <View style={[styles.container, style, { flexDirection: direction === 'row' ? 'row' : 'column' }]} >
+          {options.map(option => (
+            <TouchableOpacity
+              key={option.value}
+              // onPress={() => onValueChange(option.value)}
+              onPress={() => handlePress(option.value)}
+              // style={{
+              //   marginRight: direction === 'row' ? 16 : 0,
+              //   marginBottom: direction === 'column' ? 8 : 0,
+              //   flexDirection: 'row',
+              //   alignItems: 'center',
+                
+              // }}
+              style={[styles.option, { paddingVertical: option.description?.length > 0 ? 10 : 10 }, backgroundColorList]}
+            >
+              
+              <View style={{ paddingVertical: option?.description?.length ? 0 : 12 }}>
+               <Text style={styles.Heading}>{option.label}</Text>
               {option.description && option.description.length > 0 ? (
-                <Text style={styles.label}>{option.description}</Text>
-              ) : null}
-            </View>
+                 <Text style={styles.label}>{option.description}</Text>
+               ) : null}
+             </View>
+              
+             <View style={[styles.radioButton, borderColor]}>
+           {(value === option.value || selectedValue === option.value) && (
+            <View style={[styles.selectedDot, backgroundColor]} />
+          )}
+            
+              </View>
+              
+            
 
-            <View style={[styles.radioButton, borderColor]}>
-              {selectedValue === option.value && <View style={[styles.selectedDot, backgroundColor]} />}
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* ✅ Display error message if present */}
-      {error && <Text style={styles.errorText}>{error}</Text>}
-    </View>
+              
+            </TouchableOpacity>
+          ))}
+          {error && <Text style={{ color: 'red', marginTop: 4 }}>{error}</Text>}
+        </View>
   );
 };
 

@@ -16,13 +16,18 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/components/util/api_url";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api";
+const API_BASE_URL = `${BASE_URL}/api`;
 
 const EmploymentInformation = ({ navigation }) => {
   const [applicationId, setapplicationId] = useState("");
   const [employmentType, setEmploymentType] = useState(""); // ✅ Ensure state holds the selected value
   const [isLoading, setIsLoading] = useState(false);
+ 
+  const [loantype, setloantype] = useState("")
+
+
 
   const theme = Appearance.getColorScheme();
   const dynamicStyles = {
@@ -30,29 +35,25 @@ const EmploymentInformation = ({ navigation }) => {
     shadowColor: theme === "dark" ? "#FFFFFF" : "#000000",
   };
 
-  const EmploymentOptions = [
-    { label: "Salaried", description: "Working full-time with a regular income", value: "Salaried" },
-    { label: "Self Employed Business", description: "Running your own business or startup", value: "SelfEmployedBusiness" },
-    { label: "Self Employed Professional", description: "Practicing a profession (e.g. Doctor, CA, Lawyer)", value: "SelfEmployedProfessional" },
-    { label: "Student", description: "Currently studying or working part-time", value: "Student" },
-  ];
+  // const EmploymentOptions = [
+  //   { label: "Salaried", description: "Working full-time with a regular income", value: "Salaried" },
+  //   { label: "Self Employed Business", description: "Running your own business or startup", value: "SelfEmployedBusiness" },
+  //   { label: "Self Employed Professional", description: "Practicing a profession (e.g. Doctor, CA, Lawyer)", value: "SelfEmployedProfessional" },
+  //   { label: "Student", description: "Currently studying or working part-time", value: "Student" },
+  // ];
+
+
+
+
 
   // ✅ Fetch Phone Number before API call
   useEffect(() => {
     const fetchPhoneNumber = async () => {
-      // try {
-      //   const response = await axios.get(`${API_BASE_URL}/otp/get-phone-number`);
-      //   if (response.data.phoneNumber) {
-      //     setPhoneNumber(response.data.phoneNumber);
-      //     console.log("📌 Fetched Phone Number:", response.data.phoneNumber);
-      //   } else {
-      //     Alert.alert("Error", "Phone number not found. Please verify OTP first.");
-      //     navigation.navigate("LoginScreen");
-      //   }
-      // } catch (error) {
-      //   console.error("❌ Error fetching phone number:", error);
-      //   Alert.alert("Error", "Failed to retrieve phone number.");
-      // }
+
+      const loan = await AsyncStorage.getItem('loanType');
+      // const loanss = loan ? JSON.parse(loan) : null;
+      setloantype(loan ?? "PersonalLoan");
+
 
       const jsonValue = await AsyncStorage.getItem('appIdData');
     const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
@@ -62,6 +63,29 @@ const EmploymentInformation = ({ navigation }) => {
     };
     fetchPhoneNumber();
   }, []);
+
+
+
+  
+let options = [];
+
+if (loantype === 'PersonalLoan') {
+  options = [
+    { label: "Salaried", description: "Working full-time with a regular income", value: "Salaried" },
+    { label: "Self Employed Business", description: "Running your own business or startup", value: "SelfEmployedBusiness" },
+    { label: "Self Employed Professional", description: "Practicing a profession (e.g. Doctor, CA, Lawyer)", value: "SelfEmployedProfessional" },
+    { label: "Student", description: "Currently studying or working part-time", value: "Student" },
+  ];
+} else if (loantype === 'BusinessLoan') {
+  options = [
+    { label: "Self Employed Business", description: "Running your own business or startup", value: "SelfEmployedBusiness" },
+    { label: "Self Employed Professional", description: "Practicing a profession (e.g. Doctor, CA, Lawyer)", value: "SelfEmployedProfessional" },
+  ];
+}
+
+console.log(options)
+
+
 
   // ✅ Handle Employment Selection and Send API Request
   const handleSelection = async (selectedValue) => {
@@ -130,7 +154,7 @@ const EmploymentInformation = ({ navigation }) => {
 
             {/* ✅ Employment Selection */}
             <ThemedView>
-              <ThemedRadioButtonList options={EmploymentOptions} onValueChange={handleSelection} direction="column" />
+              <ThemedRadioButtonList options={options} onValueChange={handleSelection} direction="column" />
             </ThemedView>
           </ScrollView>
         </KeyboardAvoidingView>

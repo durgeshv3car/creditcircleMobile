@@ -1,1 +1,7 @@
-export const API_BASE_URL = "http://192.168.35.243:5000/api"
+
+const Local = "http://192.168.0.17:5000"
+const production = "http://creditcircle.us-east-1.elasticbeanstalk.com"
+
+export const BASE_URL = Local
+
+

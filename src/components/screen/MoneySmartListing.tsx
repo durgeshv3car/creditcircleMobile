@@ -1,54 +1,90 @@
-import React from 'react';
-import { View, FlatList, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import axios from 'axios';
+import { BASE_URL } from '../util/api_url';
 
-const MoneySmartListing = ({ navigation }) => {
-    const listData = Array(5).fill({
-        title: '5 Reasons Personal Loan is Best for Your Big or Small Purchases',
-        image: 'https://via.placeholder.com/150', // Replace with actual image URL
-    });
 
-    const navigateToDetail = () => {
-        navigation.navigate('DetailPage');
-    };
+const MoneySmartListing = ({ route, navigation }) => {
+    const { item } = route.params; // item from grid
+    const [listData, setListData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const renderListItem = ({ item }) => (
-        <TouchableOpacity style={styles.listItem} onPress={navigateToDetail}>
+    useEffect(() => {
+        // Example API call for list items related to the selected grid item
+        axios.get(`${BASE_URL}/api/banner/images/money/${item.id}`) // assuming each grid item has an ID
+            .then(response => {
+                setListData(response.data); // e.g. [{ title, image, description }]
+            })
+            .catch(error => {
+                console.error('Error fetching list data:', error);
+            })
+            .finally(() => setLoading(false));
+    }, []);
+
+    const renderItem = ({ item }) => (
+        <TouchableOpacity
+            style={styles.listItem}
+            onPress={() => navigation.navigate('MoneySmartDetail', { item })}
+        >
             <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.text}>{item.title}</Text>
+            <View style={styles.textContainer}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text numberOfLines={2} style={styles.description}>{item.description}</Text>
+            </View>
         </TouchableOpacity>
     );
 
     return (
-        <FlatList
-            data={listData}
-            renderItem={renderListItem}
-            keyExtractor={(_, index) => index.toString()}
-            contentContainerStyle={styles.listContainer}
-        />
+        <View style={styles.container}>
+            <Text style={styles.header}>Related Articles</Text>
+            {loading ? (
+                <ActivityIndicator size="large" color="#000" />
+            ) : (
+                <FlatList
+                    data={listData}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    listContainer: {
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
         padding: 16,
+    },
+    header: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 12,
     },
     listItem: {
         flexDirection: 'row',
-        alignItems: 'center',
         marginBottom: 16,
-        padding: 8,
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#f0f0f0',
         borderRadius: 8,
+        padding: 8,
     },
     image: {
-        width: 50,
-        height: 50,
-        marginRight: 16,
+        width: 80,
+        height: 80,
         borderRadius: 8,
+        marginRight: 12,
     },
-    text: {
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    title: {
         fontSize: 16,
-        flexShrink: 1,
+        fontWeight: 'bold',
+    },
+    description: {
+        fontSize: 14,
+        color: '#555',
     },
 });
 

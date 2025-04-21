@@ -4,6 +4,7 @@ import RadioButtonGroup from "@/components/ThemedRadioButton";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
 import { ThemedHeadingText, ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { BASE_URL } from "@/components/util/api_url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
@@ -22,7 +23,7 @@ import {
     ActivityIndicator,
 } from "react-native";
 
-const API_URL = "http://192.168.0.18:5000/api/loan-application/student-details";  // Adjust your API URL
+const API_URL = `${BASE_URL}/api/loan-application/student-details`;  // Adjust your API URL
 
 const StudentIncomeDetails = ({ navigation }) => {
     const [applicationId, setApplicationId] = useState("");
@@ -31,6 +32,8 @@ const StudentIncomeDetails = ({ navigation }) => {
     const [hasCreditCard, setHasCreditCard] = useState("");
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    console.log("hasCreditCard", hasCreditCard);
 
     useEffect(() => {
         fetchApplicationId();
@@ -131,8 +134,8 @@ const StudentIncomeDetails = ({ navigation }) => {
     ];
 
     const creditCardOptions = [
-        { label: "Yes", value: "Yes" },
-        { label: "No", value: "No" },
+        { label: "Yes", value: "1" },
+        { label: "No", value: "0" },
     ];
 
     return (
@@ -159,11 +162,19 @@ const StudentIncomeDetails = ({ navigation }) => {
                         <ThemedText style={{ fontSize: 12 }}>Owning a credit card may positively impact your loan approval.</ThemedText>
                     </ScrollView>
 
-                    <View style={appStyle.buttonContainer}>
+                    {/* <View style={appStyle.buttonContainer}>
                         <Pressable style={styles.button} onPress={handleSubmit} disabled={isLoading}>
                             {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Continue</Text>}
                         </Pressable>
-                    </View>
+                    </View> */}
+
+{!isKeyboardVisible && (
+  <View style={appStyle.buttonContainer}>
+    <Pressable style={styles.button} onPress={handleSubmit} disabled={isLoading}>
+      {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Continue</Text>}
+    </Pressable>
+  </View>
+)}
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
         </SafeAreaView>

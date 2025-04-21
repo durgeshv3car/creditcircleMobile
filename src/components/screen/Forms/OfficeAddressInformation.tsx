@@ -2,6 +2,7 @@ import appStyle from "@/AppStyles";
 import { ThemedTextInput } from "@/components/ThemedInput";
 import { ThemedHeadingText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { BASE_URL } from "@/components/util/api_url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
@@ -20,8 +21,8 @@ import {
     Text,
 } from "react-native";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api";
-const PINCODE_API_URL = "http://192.168.0.18:5000/api/pincode/";
+const API_BASE_URL = `${BASE_URL}/api`;
+const PINCODE_API_URL = `${BASE_URL}/api/pincode/`;
 
 const OfficeAddressInformation = ({ navigation }) => {
     const [applicationId, setApplicationId] = useState("");
@@ -60,7 +61,6 @@ const OfficeAddressInformation = ({ navigation }) => {
 
         } catch (error) {
             console.error("❌ Error fetching phone number:", error);
-            Alert.alert("Error", "Failed to retrieve phone number.");
         }
     };
 
@@ -76,10 +76,10 @@ const OfficeAddressInformation = ({ navigation }) => {
                 Alert.alert("Error", "Invalid Pin Code. Please check again.");
             }
         } catch (error) {
-            console.error("❌ Error fetching city and state:", error);
+            Alert.alert("Error", "Invalid Pin Code. Please check again.");
             setCity("");
             setState("");
-            Alert.alert("Error", "Failed to fetch city and state. Please try again.");
+          
         }
     };
 
@@ -152,15 +152,14 @@ const handleSubmit = async () => {
         console.log("✅ API Response:", response.data);
 
         if (response.status === 200) {
-            Alert.alert("Success", "Office address updated successfully.");
+            // Alert.alert("Success", "Office address updated successfully.");
             navigation.navigate("SalariedReasontoApplyforLoan");
         } else {
             Alert.alert("Error", response.data.message || "Failed to update office address.");
         }
     } catch (error) {
-        console.error("❌ Error submitting office address:", error);
         console.log("🔍 API Response Data:", error.response?.data); // Log response data
-        Alert.alert("Error", error.response?.data?.message || "Network error. Please try again.");
+        
     } finally {
         setIsLoading(false);
     }
@@ -171,7 +170,9 @@ const handleSubmit = async () => {
     return (
         <SafeAreaView style={[styles.container]}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                <KeyboardAvoidingView style={{ flex: 1 }}
+                //  behavior={Platform.OS === "ios" ? "padding" : "height"}
+                 >
                     <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                         <View style={appStyle.HeadingTitle}>
                             <ThemedHeadingText style={[styles.header]}>Office Address Information</ThemedHeadingText>
@@ -180,7 +181,7 @@ const handleSubmit = async () => {
 
                         <ThemedTextInput label="Office Location" placeHolder="Office no. / building" value={officeLocation} onChangeText={setOfficeLocation} error={errors.officeLocation} />
                         <ThemedTextInput label="Street Address / Area" placeHolder="Road name, area, sector" value={streetAddress} onChangeText={setStreetAddress} error={errors.streetAddress} />
-                        <ThemedTextInput label="Pin Code" placeHolder="Enter your area code" keyboardType="numeric" maxLength={6} value={pinCode} onChangeText={handlePinCodeChange} error={errors.pinCode} />
+                        <ThemedTextInput label="Pin Code" placeHolder="Enter your area code" keyboardType="number-pad" maxLength={6} value={pinCode} onChangeText={handlePinCodeChange} error={errors.pinCode} />
                         <View style={{ flexDirection: "row", gap: 20 }}>
                             <ThemedTextInput label="City" placeHolder="City" value={city} editable={false} error={errors.city} />
                             <ThemedTextInput label="State" placeHolder="State" value={state} editable={false} error={errors.state} />
@@ -196,8 +197,8 @@ const handleSubmit = async () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
+    container: { flex: 1, backgroundColor: "#fff" },
+    scrollContainer: { paddingHorizontal: 20, paddingBottom: 50 },
     header: { fontSize: 18, fontWeight: "bold" },
     buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: "center" },
     button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },

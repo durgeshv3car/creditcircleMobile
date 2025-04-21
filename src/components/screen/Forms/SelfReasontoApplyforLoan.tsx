@@ -3,164 +3,157 @@ import { ThemedTextInput } from "@/components/ThemedInput";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
 import { ThemedHeadingText, ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useNavigation } from "@react-navigation/native";
+import { BASE_URL } from "@/components/util/api_url";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 
 import {
     View,
     Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
     SafeAreaView,
     KeyboardAvoidingView,
     ScrollView,
-    Platform,
     Keyboard,
     TouchableWithoutFeedback,
-    Appearance,
-    Button,
     Pressable,
-    Image,
+    Alert,
+    StyleSheet,
+    ActivityIndicator,
 } from "react-native";
 
-const SelfReasontoApplyforLoan = ({ navigation }) => {
+const API_BASE_URL = `${BASE_URL}/api`;
 
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [dob, setDob] = useState("");
-    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+const SalariedReasontoApplyforLoan = ({ navigation }) => {
+    const [applicationId, setApplicationId] = useState("");
+    const [selectedLoanPurpose, setSelectedLoanPurpose] = useState("");
+    const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        // Add event listeners for keyboard show and hide
-        const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () =>
-            setKeyboardVisible(true)
-        );
-        const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () =>
-            setKeyboardVisible(false)
-        );
-
-        return () => {
-            // Cleanup event listeners
-            keyboardDidShowListener.remove();
-            keyboardDidHideListener.remove();
-        };
+        fetchApplicationId();
     }, []);
 
-
-
-
-
-    const handleSelection = (value) => {
-    };
-    const theme = Appearance.getColorScheme();
-
-
-    const dynamicStyles = {
-        backgroundColor: theme === 'dark' ? '#000000' : '#FFFFFF',
-        shadowColor: theme === 'dark' ? '#FFFFFF' : '#000000',
+    // ✅ Fetch Application ID from AsyncStorage
+    const fetchApplicationId = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem("appIdData");
+            const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
+            setApplicationId(parsedValue);
+        } catch (error) {
+            console.error("❌ Error fetching application ID:", error);
+            Alert.alert("Error", "Failed to retrieve application ID.");
+        }
     };
 
-    const imagecoleor = {
-        tintColor: theme === 'dark' ? "#ffffff" : ""
+    // ✅ Validate Input
+    const validateInput = () => {
+        let valid = true;
+        let errorObj = {};
+
+        if (!selectedLoanPurpose) {
+            errorObj.loanPurpose = "Please select a loan purpose";
+            valid = false;
+        }
+
+        setErrors(errorObj);
+        return valid;
+    };
+
+    // ✅ Handle API Submission
+    const handleSubmit = async () => {
+        if (!validateInput()) return;
+
+        setIsLoading(true);
+        try {
+
+            const jsonValue = await AsyncStorage.getItem("appIdData");
+    
+            if (!jsonValue || jsonValue.trim() === "") {
+                Alert.alert("Error", "Application ID is missing or invalid.");
+                // navigation.navigate("Home");
+                return;
+            }
+
+            const requestData = {
+                applicationId,
+                loanPurpose: selectedLoanPurpose,
+                loanCompletion: true,
+            };
+
+            console.log("📤 Sending Data:", requestData);
+
+            const response = await axios.post(
+                `${API_BASE_URL}/loan-application/loan-purpose`,
+                requestData
+            );
+
+            if (response.status === 200) {
+                navigation.navigate("LoanOffer");
+            } else {
+                Alert.alert("Error", response.data.message || "Failed to save loan purpose.");
+            }
+        } catch (error) {
+            console.error("❌ Error submitting loan purpose:", error);
+            Alert.alert("Error", error.response?.data?.message || "Network error. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const Reason = [
-        { label: 'Working Capital Expense', value: '1' },
-        { label: 'Purchase Stock/Raw Material', value: '2' },
-        { label: 'Buy/Upgrade Machine/Equipments', value: '3' },
-        { label: 'Buy Office/Factory Space', value: '4' },
-        { label: 'Marketing Expense', value: '5' },
-        { label: 'Payback Existing Loans/Credit Card Bills', value: '6' },
-        { label: 'Others', value: '7' }
+        { label: 'Working Capital Expense', value: 'Working Capital Expense' },
+        { label: 'Purchase Material', value: 'Purchase Material' },
+        { label: 'Buy/Upgrade Machine/Equipments', value: 'Buy/Upgrade Machine/Equipments' },
+        { label: 'Buy Office/Factory Space', value: 'Buy Office/Factory Space' },
+        { label: 'Marketing Expense', value: 'Marketing Expense' },
+        { label: 'Payback Existing Loans/Credit Card Bills', value: 'Payback Existing Loans/Credit Card Bills' },
+        { label: 'Others', value: 'Others' }
     ];
 
+
     return (
-        <SafeAreaView style={[styles.container, dynamicStyles]}>
-      
-
-         
-
-                <ScrollView
-  contentContainerStyle={styles.scrollContainer}
-  showsVerticalScrollIndicator={false}
-
->                   
-
+        <SafeAreaView style={[styles.container]}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                    <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                         <View style={appStyle.HeadingTitle}>
-                            <ThemedHeadingText style={[styles.header]}>Loan Purpose: Reason To Apply For Loan</ThemedHeadingText>
-                            <ThemedView style={{ width: '20%', height: 2, backgroundColor: '#FF4800', marginTop: 4 }}></ThemedView>
+                            <ThemedHeadingText style={[styles.header]}>Loan Purpose: Reason to Apply for Loan</ThemedHeadingText>
+                            <ThemedView style={{ width: "20%", height: 2, backgroundColor: "#FF4800", marginTop: 4 }}></ThemedView>
                         </View>
 
-
-
-
                         <ThemedView>
-                            <ThemedRadioButtonList onValueChange={handleSelection} options={Reason} direction="column" navigation={navigation} />
+                            <ThemedRadioButtonList
+                                onValueChange={(value) => setSelectedLoanPurpose(value)}
+                                options={Reason}
+                                direction="column"
+                                navigation={navigation}
+                            />
                         </ThemedView>
 
+                        {errors.loanPurpose && <Text style={styles.errorText}>{errors.loanPurpose}</Text>}
                     </ScrollView>
 
-                    {/* Floating "Continue" button */}
-                    <View
-                        style={appStyle.buttonContainer}
-                    >
-                <Pressable style={appStyle.button} onPress={() => navigation.navigate('')}>
-                    <Text style={appStyle.buttonText}>Check Eligibility</Text>
+                    {/* Submit Button */}
+                    <View style={styles.buttonContainer}>
+                        <Pressable style={styles.button} onPress={handleSubmit} disabled={isLoading}>
+                            {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Check Eligibility</Text>}
                         </Pressable>
                     </View>
-
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
         </SafeAreaView>
     );
 };
 
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    headerContainer: {
-      
-    },
-    scrollContainer: {
-        paddingHorizontal: 20,
-        marginBottom:20
-    },
-    header: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 5,
-    },
-    subHeader: {
-        fontSize: 12,
-    },
-    inputGroup: {
-        marginBottom: 15,
-    },
-    label: {
-        fontSize: 14,
-        marginBottom: 5,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: "#E0E0E0",
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        fontSize: 16,
-    },
-    buttonContainer: {
-        left: 0,
-        right: 0,
-        bottom: 0,
-        alignItems: "center",
-    },
-   
-
-    customInput: {
-        marginBottom: 10
-    }
+    container: { flex: 1, backgroundColor: "#fff" },
+    scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
+    header: { fontSize: 18, fontWeight: "bold", marginBottom: 5 },
+    buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: "center" },
+    button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
+    buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
+    errorText: { color: "red", fontSize: 12, marginTop: 5 },
 });
 
-export default SelfReasontoApplyforLoan;
+export default SalariedReasontoApplyforLoan;

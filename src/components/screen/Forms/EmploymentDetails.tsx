@@ -3,6 +3,7 @@ import { ThemedTextInput } from "@/components/ThemedInput";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
 import { ThemedHeadingText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { BASE_URL } from "@/components/util/api_url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
@@ -21,7 +22,7 @@ import {
     Text,
 } from "react-native";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api";
+const API_BASE_URL = `${BASE_URL}/api`;
 
 const EmploymentDetails = ({ navigation }) => {
     const [applicationId, setApplicationId] = useState("");
@@ -93,14 +94,14 @@ const EmploymentDetails = ({ navigation }) => {
             );
 
             if (response.status === 200) {
-                Alert.alert("Success", "Employment details updated successfully.");
+                // Alert.alert("Success", "Employment details updated successfully.");
                 navigation.navigate("OfficeAddressInformation");
             } else {
                 Alert.alert("Error", response.data.message || "Failed to update employment details.");
             }
         } catch (error) {
             console.error("❌ Error submitting employment details:", error);
-            Alert.alert("Error", error.response?.data?.message || "Network error. Please try again.");
+            // Alert.alert("Error", error.response?.data?.message || "Network error. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -123,7 +124,7 @@ const EmploymentDetails = ({ navigation }) => {
     return (
         <SafeAreaView style={[styles.container, dynamicStyles]}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                <KeyboardAvoidingView style={{ flex: 1 }}>
                     <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                         <View style={appStyle.HeadingTitle}>
                             <ThemedHeadingText style={[styles.header]}>Employment Details</ThemedHeadingText>
@@ -166,7 +167,7 @@ const EmploymentDetails = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1 },
-    scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
+    scrollContainer: { paddingHorizontal: 20, paddingBottom: 50 },
     header: { fontSize: 18, fontWeight: "bold" },
     buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: "center" },
     button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },

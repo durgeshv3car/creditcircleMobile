@@ -7,13 +7,16 @@ import {
     SafeAreaView,
     Pressable,
     Alert,
-    StyleSheet
+    StyleSheet,
+    Appearance
 } from "react-native";
 import { ThemedHeadingText, ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import RadioButtonGroup from "@/components/ThemedRadioButton";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
 import appStyle from "@/AppStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/components/util/api_url";
 
 const PersonalBackground = ({ navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -23,10 +26,15 @@ const PersonalBackground = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [profileExists, setProfileExists] = useState(false);
+    const [loantype, setLoantype] = useState("PersonalLoan");
+
 
     const fetchProfileData = async () => {
+        const loan = await AsyncStorage.getItem('loanType');
+        setLoantype(loan ?? "PersonalLoan");
+
         try {
-            const otpResponse = await axios.get("http://192.168.0.18:5000/api/otp/get-phone-number");
+            const otpResponse = await axios.get(`${BASE_URL}/api/otp/get-phone-number`);
 
             if (!otpResponse.data.phoneNumber) {
                 Alert.alert("Error", "Phone number not found. Verify OTP first.");
@@ -36,16 +44,13 @@ const PersonalBackground = ({ navigation }) => {
             setPhoneNumber(otpResponse.data.phoneNumber);
 
             const profileResponse = await axios.get(
-                `http://192.168.0.18:5000/api/otp/get-profile?phoneNumber=${otpResponse.data.phoneNumber}`
+                `${BASE_URL}/api/otp/get-profile?phoneNumber=${otpResponse.data.phoneNumber}`
             );
-
-            console.log(profileResponse.data.gender)
 
             if (profileResponse.data) {
                 setGender(profileResponse.data.gender || "");
                 setEducation(profileResponse.data.education || "");
                 setMaritalStatus(profileResponse.data.maritalStatus || "");
-
                 setProfileExists(true);
             }
         } catch (error) {
@@ -87,15 +92,15 @@ const PersonalBackground = ({ navigation }) => {
 
             const response = await axios({
                 method: profileExists ? "PUT" : "POST",
-                url: "http://192.168.0.18:5000/api/loan-application/personal-background",
+                url: `${BASE_URL}/api/loan-application/personal-background`,
                 data: requestData
             });
 
             if (response.status === 200) {
-                Alert.alert("Success", profileExists ? "Updated successfully" : "Created successfully");
                 navigation.navigate("LoanRequirements");
             } else {
-                Alert.alert("Error", response.data.message || "Something went wrong");
+                // Alert.alert("Error", response.data.message || "Something went wrong");
+                console.log("Error:", response.data.message || "Something went wrong");
             }
         } catch (error) {
             console.error("Error updating personal background:", error);
@@ -107,43 +112,47 @@ const PersonalBackground = ({ navigation }) => {
 
     const handleLookingForOtherOffers = async () => {
         try {
-            // ✅ Fetch the phone number from OTP storage
-            const otpResponse = await fetch("http://192.168.0.18:5000/api/otp/get-phone-number");
+            const otpResponse = await fetch(`${BASE_URL}/api/otp/get-phone-number`);
             const otpData = await otpResponse.json();
-    
+
             if (!otpResponse.ok || !otpData.phoneNumber) {
-                Alert.alert("Error", "Failed to retrieve phone number.");
                 return;
             }
-    
-            // ✅ Call the API to mark OTP as completed
-            const response = await fetch("http://192.168.0.18:5000/api/markOtpAsCompleted", {
+
+            const response = await fetch(`${BASE_URL}/api/markOtpAsCompleted`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ phoneNumber: otpData.phoneNumber })
             });
-    
+
             const data = await response.json();
-    
+
             if (response.ok) {
-                Alert.alert("Success", "OTP status updated. Redirecting to Home...");
-                navigation.navigate("Home"); // ✅ Redirect to Home after completion
+                navigation.navigate("Home");
             } else {
-                Alert.alert("Error", data.message || "Failed to update OTP status.");
+                // Alert.alert("Error", data.message || "Failed to update OTP status.");
+                console.log("Error:", data.message || "Failed to update OTP status.");
             }
-    
+
         } catch (error) {
             console.error("Error in handleLookingForOtherOffers:", error);
-            Alert.alert("Error", "Network error. Please try again.");
         }
     };
+
+      const theme = Appearance.getColorScheme();
+      const dynamicStyles = {
+        backgroundColor: theme === "dark" ? "#000000" : "#FFFFFF",
+        shadowColor: theme === "dark" ? "#FFFFFF" : "#000000",
+      };
+
     
+
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, dynamicStyles]}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
                     <ThemedHeadingText style={styles.header}>Personal Background</ThemedHeadingText>
-                    <ThemedView style={styles.headerLine}></ThemedView>
+                    <ThemedView style={appStyle.headerLine}></ThemedView>
                     <ThemedText style={styles.subHeader}>Share your personal background</ThemedText>
                 </View>
 
@@ -154,8 +163,9 @@ const PersonalBackground = ({ navigation }) => {
                         { label: 'Female', value: 'Female' },
                         { label: 'Other', value: 'Other' }
                     ]} 
+                    value={gender}
                     onValueChange={setGender} 
-                    defaultValue={gender} 
+                    direction="row"
                     error={errors.gender} 
                 />
 
@@ -167,8 +177,8 @@ const PersonalBackground = ({ navigation }) => {
                             { label: 'Graduate', description: "Completed a bachelor's degree", value: 'Graduate' },
                             { label: 'Post Graduate', description: "Completed a master's degree or higher", value: 'Post Graduate' }
                         ]} 
+                        value={education}
                         onValueChange={setEducation} 
-                        defaultValue={1} 
                         error={errors.education} 
                     />
                 </ThemedView>
@@ -182,19 +192,30 @@ const PersonalBackground = ({ navigation }) => {
                         { label: 'Divorced', value: 'Divorced' },
                         { label: 'Widowed', value: 'Widowed' }
                     ]} 
+                    value={maritalStatus}
                     onValueChange={setMaritalStatus} 
-                    defaultValue={maritalStatus} 
+                    direction="row"
                     error={errors.maritalStatus} 
                 />
 
-                <View style={appStyle.buttonContainer}>
-                    <Pressable style={styles.button} onPress={handleSubmit}>
-                        <Text style={styles.buttonText}>{profileExists ? "Check Eligibility For Personal Loan" : "Check Eligibility For Personal Loan"}</Text>
-                    </Pressable>
-                    
-                    <Pressable style={styles.buttonHome} onPress={handleLookingForOtherOffers}>
-    <Text style={styles.buttonTextHome}>Looking For Other Offers</Text>
-</Pressable>
+                <View>
+                    {loantype === "BusinessLoan" ? 
+                  <View style={appStyle.buttonContainer}>
+                  <Pressable style={styles.button} onPress={handleSubmit}>
+                      <Text style={styles.buttonText}>Next</Text>
+                  </Pressable>
+              </View>
+                        : 
+                        <View style={appStyle.buttonContainer}>
+                        <Pressable style={styles.button} onPress={handleSubmit}>
+                            <Text style={styles.buttonText}>Check Eligibility For Personal Loan</Text>
+                        </Pressable>
+
+                        <Pressable style={styles.buttonHome} onPress={handleLookingForOtherOffers}>
+                            <Text style={styles.buttonTextHome}>Looking For Other Offers</Text>
+                        </Pressable>
+                    </View>
+                    }
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -202,15 +223,60 @@ const PersonalBackground = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
-    header: { fontSize: 18, fontWeight: "bold", marginBottom: 5 },
-    subHeader: { fontSize: 12 },
-    buttonContainer: { alignItems: "center" },
-    button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
-    buttonHome: { paddingVertical: 15, borderRadius: 5, width: "90%" },
-    buttonTextHome: { color: "#AFAFAF", fontSize: 14, textAlign: 'center' },
-    buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: 'center' }
+    title: {
+        fontSize: 12,
+        fontWeight: "bold"
+    },
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
+    scrollContainer: {
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+    },
+    header: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 5,
+    },
+    subHeader: {
+        fontSize: 12,
+    },
+    buttonContainer: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        alignItems: "center",
+    },
+    button: {
+        backgroundColor: "#FF4800",
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        borderRadius: 5,
+        width: "100%"
+    },
+    buttonHome: {
+        paddingVertical: 15,
+        borderRadius: 5,
+        width: "100%"
+    },
+    buttonTextHome: {
+        color: "#AFAFAF",
+        fontSize: 14,
+        textAlign: 'center'
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: 'center'
+    },
+    sectionContainer: {
+        marginTop: 10,
+        marginBottom: 20
+    }
 });
 
 export default PersonalBackground;

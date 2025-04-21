@@ -48,7 +48,7 @@ const EMICalculatorScreen = () => {
             <View style={styles.emiContainer}>
                 <Text style={styles.emiHeader}>Monthly EMI</Text>
 
-                <Text style={styles.emiValue}>₹{calculateEMI()}</Text>
+                <Text style={styles.emiValue}>₹{calculateEMI().toLocaleString('en-IN')}</Text>
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                     <Text style={{ flex: 1 }}>Principal Amount: </Text> <Text style={{ fontWeight: "bold" }}>₹{principalAmount.toLocaleString()}</Text>

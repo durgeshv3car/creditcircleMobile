@@ -1,206 +1,218 @@
-import React, { useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    FlatList,
-    TouchableOpacity,
-    Modal,
-} from "react-native";
-import { Slider } from '@miblanchard/react-native-slider';
+import React, { useState, useMemo } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 
 export default function LoanOffer() {
+  const [loanData] = useState([
+    { id: "1", name: "Piramal", interestRate: 27.5, emi: 17283, chances: "Excellent", preApproved: true },
+    { id: "2", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent", preApproved: false },
+    { id: "3", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Good", preApproved: false },
+    { id: "4", name: "HDFC Bank", interestRate: 16.5, emi: 12500, chances: "Fair", preApproved: false },
+    { id: "5", name: "Axis Bank", interestRate: 13.5, emi: 11000, chances: "Excellent", preApproved: true },
+  ]);
 
-    console.log(Slider);
-    const [loanData, setLoanData] = useState([
-        { id: "1", name: "Piramal", interestRate: 27.5, emi: 17283, chances: "Excellent" },
-        { id: "2", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent" },
-        { id: "3", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent" },
-        { id: "4", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent" },
-        { id: "5", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent" },
-        { id: "6", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent" },
-        { id: "7", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent" },
-    ]);
+  const [filter, setFilter] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
 
-    const [value, setValue] = useState(5);
-    const [filtersVisible, setFiltersVisible] = useState(false);
-    const [sortVisible, setSortVisible] = useState(false);
+  const filteredAndSortedLoans = useMemo(() => {
+    let loans = [...loanData];
 
-    const [loanAmount, setLoanAmount] = useState(5); // in Lacs
-    const [loanTenure, setLoanTenure] = useState(5); // in Years
+    // Apply filter
+    if (filter === "preApproved") {
+      loans = loans.filter((item) => item.preApproved);
+    } else if (filter === "excellentChance") {
+      loans = loans.filter((item) => item.chances === "Excellent");
+    }
 
-    const sortOptions = [
-        { label: "Chances of Approval", value: "chances" },
-        { label: "Interest Rate", value: "interestRate" },
-        { label: "EMI", value: "emi" },
-    ];
+    // Apply sorting
+    if (sortOrder === "interestAsc") {
+      loans.sort((a, b) => a.interestRate - b.interestRate);
+    } else if (sortOrder === "interestDesc") {
+      loans.sort((a, b) => b.interestRate - a.interestRate);
+    } else if (sortOrder === "emiAsc") {
+      loans.sort((a, b) => a.emi - b.emi);
+    } else if (sortOrder === "emiDesc") {
+      loans.sort((a, b) => b.emi - a.emi);
+    }
 
-    const [selectedSort, setSelectedSort] = useState("chances");
+    return loans;
+  }, [loanData, filter, sortOrder]);
 
-    const applySort = (value) => {
-        const sortedData = [...loanData].sort((a, b) => {
-            if (value === "interestRate" || value === "emi") {
-                return a[value] - b[value];
-            }
-            return a.chances.localeCompare(b.chances);
-        });
-        setLoanData(sortedData);
-        setSortVisible(false);
-    };
-
-    const LoanCard = ({ item }) => (
-        <View style={styles.card}>
-            <Text style={styles.title}>{item.name}</Text>
-            <Text>Interest Rate: {item.interestRate}%</Text>
-            <Text>EMI: ₹{item.emi}</Text>
-            <Text>Chances of Approval: {item.chances}</Text>
-            <TouchableOpacity style={styles.selectButton}>
-                <Text style={styles.selectButtonText}>SELECT</Text>
-            </TouchableOpacity>
+  const LoanCard = ({ item }) => (
+    <View style={styles.card}>
+      {item.preApproved && <Text style={styles.preApproved}>Pre-Approved</Text>}
+      <Text style={styles.title}>{item.name}</Text>
+      <View style={styles.infoRow}>
+        <View>
+          <Text style={styles.label}>Interest Rate</Text>
+          <Text style={styles.value}>{item.interestRate}%</Text>
         </View>
-    );
-
-    return (
-        <View style={styles.container}>
-            {/* Header */}
-   
-
-            {/* Loan List */}
-            <FlatList
-                data={loanData}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <LoanCard item={item} />}
-                contentContainerStyle={styles.listContainer}
-            />
-
-            <View style={styles.header}>
-                <TouchableOpacity style={{width:"50%", paddingVertical:16}} onPress={() => setFiltersVisible(true)}>
-                    <Text style={styles.filterText}>Filters</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ width: "50%", paddingVertical: 16 }} onPress={() => setSortVisible(true)}>
-                    <Text style={styles.sortText}>Sort By</Text>
-                </TouchableOpacity>
-            </View>
-            {/* Filters Modal */}
-            <Modal visible={filtersVisible} transparent animationType="slide">
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Filters</Text>
-
-                    <Text>Loan Amount: ₹{loanAmount} Lac</Text>
-                    <Slider
-                        value={[loanAmount]}
-                        minimumValue={0}
-                        maximumValue={50}
-                        step={1}
-                        onValueChange={(value) => setLoanAmount(value[0])}
-                        thumbTintColor="blue"
-                        minimumTrackTintColor="blue"
-                        maximumTrackTintColor="#ddd"
-                    />
-
-                    <Text>Loan Tenure: {loanTenure} Years</Text>
-                    <Slider
-                        value={[loanTenure]}
-                        minimumValue={1}
-                        maximumValue={5}
-                        step={1}
-                        onValueChange={(value) => setLoanTenure(value[0])}
-                        thumbTintColor="#007BFF"
-                        minimumTrackTintColor="#007BFF"
-                        maximumTrackTintColor="#ddd"
-                    />
-
-                    <TouchableOpacity
-                        style={styles.modalButton}
-                        onPress={() => setFiltersVisible(false)}
-                    >
-                        <Text style={styles.modalButtonText}>Done</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-
-            {/* Sort Modal */}
-            <Modal visible={sortVisible} transparent animationType="slide">
-                <View style={styles.modalContainer}>
-                <View style={{backgroundColor:"red",padding:16}}>
-                        <Text style={styles.modalTitle}>Sort By</Text>
-                        {sortOptions.map((option) => (
-                            <TouchableOpacity
-                                key={option.value}
-                                style={styles.sortOption}
-                                onPress={() => {
-                                    setSelectedSort(option.value);
-                                    applySort(option.value);
-                                }}
-                            >
-                                <Text
-                                    style={[
-                                        styles.sortOptionText,
-                                        selectedSort === option.value && styles.selectedSortOption,
-                                    ]}
-                                >
-                                    {option.label}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => setSortVisible(false)}
-                        >
-                            <Text style={styles.modalButtonText}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-               </View>
-            </Modal>
+        <View>
+          <Text style={styles.label}>EMI</Text>
+          <Text style={styles.value}>₹ {item.emi}</Text>
         </View>
-    );
+      </View>
+      <View style={styles.chanceRow}>
+        <Text style={styles.label}>Chances of Approval</Text>
+        <Text style={styles.chanceValue}>{item.chances}</Text>
+      </View>
+      <TouchableOpacity style={styles.selectButton}>
+        <Text style={styles.selectButtonText}>SELECT</Text>
+      </TouchableOpacity>
+      <View style={styles.loanDetails}>
+        <Text style={styles.detailText}>Maximum Loan Amount: Rs. 5,00,000</Text>
+        <Text style={styles.detailText}>Loan Tenure: 60 months</Text>
+      </View>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={filteredAndSortedLoans}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <LoanCard item={item} />}
+        contentContainerStyle={styles.listContainer}
+      />
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => {
+            setFilter((prev) => (prev === "preApproved" ? null : "preApproved"));
+          }}
+        >
+          <Text style={styles.footerButtonText}>
+            {filter === "preApproved" ? "All Offers" : "Pre-Approved Only"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => {
+            setSortOrder((prev) => {
+              if (prev === "interestAsc") return "interestDesc";
+              return "interestAsc";
+            });
+          }}
+        >
+          <Text style={styles.footerButtonText}>
+            {sortOrder === "interestAsc"
+              ? "Interest ↓"
+              : sortOrder === "interestDesc"
+              ? "Interest ↑"
+              : "Sort by Interest"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => {
+            setSortOrder((prev) => {
+              if (prev === "emiAsc") return "emiDesc";
+              return "emiAsc";
+            });
+          }}
+        >
+          <Text style={styles.footerButtonText}>
+            {sortOrder === "emiAsc" ? "EMI ↓" : sortOrder === "emiDesc" ? "EMI ↑" : "Sort by EMI"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1},
-    header: {
-        flexDirection: "row",
-        backgroundColor: "#273283",
-        width:"100%"
-    },
-    headerText: { color: "white", fontSize: 18, fontWeight: "bold" },
-    filterText: { color: "white", fontSize: 16, textAlign:'center', },
-    sortText: { color: "white", fontSize: 16, textAlign: 'center' },
-    listContainer: { padding: 16 },
-    card: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,
-    },
-    title: { fontSize: 16, fontWeight: "bold", marginBottom: 8 },
-    selectButton: {
-        marginTop: 12,
-        backgroundColor: "#FF4800",
-        padding: 12,
-        borderRadius: 8,
-    },
-    selectButtonText: { color: "white", textAlign: "center", fontWeight: "bold" },
-    modalContainer: {
-        flex: 1,
-        justifyContent:'flex-end',
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        
-    },
-    modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 16, color: "white" },
-    modalButton: {
-        backgroundColor: "#007BFF",
-        padding: 12,
-        borderRadius: 8,
-        marginTop: 16,
-    },
-    modalButtonText: { color: "white", textAlign: "center", fontWeight: "bold" },
-    sortOption: { padding: 12, backgroundColor: "white", marginBottom: 8, borderRadius: 8 },
-    sortOptionText: { fontSize: 16, color: "black" },
-    selectedSortOption: { fontWeight: "bold", color: "#007BFF" },
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F7FA",
+  },
+  listContainer: {
+    padding: 12,
+  },
+  card: {
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  preApproved: {
+    backgroundColor: "#35B8E0",
+    color: "white",
+    fontSize: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignSelf: "flex-start",
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  label: {
+    fontSize: 12,
+    color: "#666",
+  },
+  value: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  chanceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  chanceValue: {
+    color: "#0BAA4D",
+    fontWeight: "bold",
+  },
+  selectButton: {
+    backgroundColor: "#FF9A00",
+    padding: 10,
+    borderRadius: 4,
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  selectButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  loanDetails: {
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingTop: 8,
+  },
+  detailText: {
+    fontSize: 12,
+    color: "#555",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+  },
+  footerButton: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  footerButtonText: {
+    color: "#555",
+    fontWeight: "600",
+    fontSize: 12,
+  },
 });

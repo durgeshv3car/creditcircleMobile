@@ -21,6 +21,7 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/components/util/api_url";
 
 const PanLocationInformation = () => {
   const navigation = useNavigation();
@@ -32,7 +33,7 @@ const PanLocationInformation = () => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const [profileExists, setProfileExists] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [errors, setErrors] = useState({});
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () =>
       setKeyboardVisible(true)
@@ -53,7 +54,7 @@ const PanLocationInformation = () => {
 const fetchProfileData = async () => {
   try {
     // ✅ Fetch the phone number from the OTP model
-    const otpResponse = await axios.get("http://192.168.0.18:5000/api/otp/get-phone-number");
+    const otpResponse = await axios.get(`${BASE_URL}/api/otp/get-phone-number`);
 
     if (!otpResponse.data.phoneNumber) {
       Alert.alert("Error", "Phone number not found. Verify OTP first.");
@@ -71,7 +72,7 @@ const fetchProfileData = async () => {
 
     // ✅ Fetch Profile using Phone Number
     const profileResponse = await axios.get(
-      `http://192.168.0.18:5000/api/otp/get-profile?phoneNumber=${parsedValue}`
+      `${BASE_URL}/api/otp/get-profile?phoneNumber=${parsedValue}`
     );
 
 
@@ -106,7 +107,7 @@ useEffect(() => {
   const fetchCityState = async (pin: string) => {
     if (pin.length === 6) {
       try {
-        const response = await axios.get(`http://192.168.0.18:5000/api/pincode/${pin}`);
+        const response = await axios.get(`${BASE_URL}/api/pincode/${pin}`);
         if (response.data) {
           setCity(response.data.city || "");
           setState(response.data.state || "");
@@ -124,52 +125,85 @@ useEffect(() => {
     }
   };
 
-  /** ✅ Validate PAN & PIN code */
-  const validateInputs = () => {
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-    const pinRegex = /^[0-9]{6}$/; // Pin Code validation
+  // /** ✅ Validate PAN & PIN code */
+  // const validateInputs = () => {
+  //   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  //   const pinRegex = /^[0-9]{6}$/; // Pin Code validation
 
-    if (!panRegex.test(pan)) {
-      Alert.alert("Invalid PAN", "Enter a valid 10-character PAN (ABCDE1234F)");
-      return false;
+  //   if (!panRegex.test(pan)) {
+  //     Alert.alert("Invalid PAN", "Enter a valid 10-character PAN (ABCDE1234F)");
+  //     return false;
+  //   }
+  //   if (!pinRegex.test(pinCode)) {
+  //     Alert.alert("Invalid Pin Code", "Enter a valid 6-digit Pin Code");
+  //     return false;
+  //   }
+  //   if (!city.trim()) {
+  //     Alert.alert("Invalid City", "City cannot be empty");
+  //     return false;
+  //   }
+  //   if (!state.trim()) {
+  //     Alert.alert("Invalid State", "State cannot be empty");
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
+
+
+  const validate = () => {
+    let valid = true;
+    let errorObj = {};
+  
+    const pinRegex = /^[0-9]{6}$/;
+  
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    if (!pan.trim() || !panRegex.test(pan)) {
+      errorObj.pan = "Enter a valid 10-character PAN (ABCDE1234F)";
+      valid = false;
     }
-    if (!pinRegex.test(pinCode)) {
-      Alert.alert("Invalid Pin Code", "Enter a valid 6-digit Pin Code");
-      return false;
+  
+    if (!pinCode.trim() || !pinRegex.test(pinCode)) {
+      errorObj.pinCode = "Enter a valid 6-digit Pin Code";
+      valid = false;
     }
+  
     if (!city.trim()) {
-      Alert.alert("Invalid City", "City cannot be empty");
-      return false;
+      errorObj.city = "City cannot be empty";
+      valid = false;
     }
+  
     if (!state.trim()) {
-      Alert.alert("Invalid State", "State cannot be empty");
-      return false;
+      errorObj.state = "State cannot be empty";
+      valid = false;
     }
-    return true;
+  
+    setErrors(errorObj);
+    console.log("🔍 Validation Errors:", errorObj);
+  
+    return valid;
   };
+  
 
   /** ✅ Submit or update PAN & location details */
   const handleContinue = async () => {
-    if (!validateInputs()) return;
+    if (!validate()) return;
 
     try {
       setLoading(true);
       const requestData = { phoneNumber, pan, pinCode, city, state };
 
       const response = await axios.put(
-        `http://192.168.0.18:5000/api/loan-application/pan-location`,
+        `${BASE_URL}/api/loan-application/pan-location`,
         requestData
       );
 
       if (response.status === 200) {
-        Alert.alert("Success", "PAN & location details updated successfully", [{ text: "OK" }]);
         navigation.navigate("AddressInformation");
       } else {
-        Alert.alert("Error", response.data.message || "Something went wrong");
       }
     } catch (error) {
       console.error("Error updating PAN & location:", error);
-      Alert.alert("Error", "Failed to update PAN & location details.");
     } finally {
       setLoading(false);
     }
@@ -183,52 +217,91 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={[styles.container, dynamicStyles]}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            <View style={appStyle.HeadingTitle}>
-              <ThemedHeadingText style={styles.header}>PAN & Location Information</ThemedHeadingText>
-              <ThemedView style={styles.headerLine}></ThemedView>
-              <ThemedText style={styles.subHeader}>Verify your PAN & location details</ThemedText>
-            </View>
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <View style={appStyle.HeadingTitle}>
+          <ThemedHeadingText style={styles.header}>PAN & Location Information</ThemedHeadingText>
+          <ThemedView style={appStyle.headerLine}></ThemedView>
+          <ThemedText style={styles.subHeader}>Verify your PAN & location details</ThemedText>
+        </View>
 
-            <ThemedTextInput
-              label="PAN"
-              placeHolder="Permanent account number"
-              maxLength={10}
-              // style={{ textTransform: "uppercase" }}
-              value={pan}
-              onChangeText={(text) => setPan(text)}
-            />
+        {/* PAN */}
+        {/* <ThemedTextInput
+          label="PAN"
+          placeHolder="Permanent account number"
+          maxLength={10}
+          value={pan}
+          onChangeText={(text) => setPan(text)}
+          error={errors.pan}
+        /> */}
 
 
-      
-            <ThemedTextInput
-              label="Pin Code"
-              maxLength={6}
-              placeHolder="Enter your area code"
-              keyboardType="numeric"
-              value={pinCode}
-              onChangeText={(text) => {
-                setPinCode(text);
-                fetchCityState(text);
-              }}
-            />
+<ThemedTextInput
+  label="PAN"
+  placeHolder="Permanent account number"
+  maxLength={10}
+  value={pan}
+  autoCapitalize="characters"
+  onChangeText={(text) => {
+    const cleaned = text.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    setPan(cleaned);
+  }}
+  error={errors.pan}
+/>
 
-            <View style={styles.row}>
-              <ThemedTextInput label="City" value={city} placeHolder="City" editable={false} />
-              <ThemedTextInput label="State" value={state} placeHolder="State" editable={false} />
-            </View>
-          </ScrollView>
 
-          <View style={[styles.buttonContainer, { marginBottom: isKeyboardVisible ? 10 : 20 }]}>
-            <Pressable style={styles.button} onPress={handleContinue}>
-              <Text style={styles.buttonText}>{profileExists === false ? "Update Profile" : "Continue"}</Text>
-            </Pressable>
-          </View>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+
+        {/* Pin Code */}
+        <ThemedTextInput
+          label="Pin Code"
+          maxLength={6}
+          placeHolder="Enter your area code"
+          keyboardType="number-pad"
+          value={pinCode}
+          onChangeText={(text) => {
+            setPinCode(text);
+            fetchCityState(text);
+          }}
+          error={errors.pinCode}
+        />
+
+        {/* City & State */}
+        <View style={styles.row}>
+          <ThemedTextInput
+            label="City"
+            value={city}
+            placeHolder="City"
+            editable={false}
+            error={errors.city}
+            containerStyle={{ flex: 1 }}
+          />
+          <ThemedTextInput
+            label="State"
+            value={state}
+            placeHolder="State"
+            editable={false}
+            error={errors.state}
+            containerStyle={{ flex: 1 }}
+          />
+        </View>
+      </ScrollView>
+
+      <View style={[styles.buttonContainer, { marginBottom: isKeyboardVisible ? 10 : 20 }]}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            pressed && { opacity: 0.8 }
+          ]}
+          onPress={handleContinue}
+        >
+          <Text style={styles.buttonText}>{profileExists === false ? "Next" : "Continue"}</Text>
+        </Pressable>
+      </View>
+    </KeyboardAvoidingView>
+  </TouchableWithoutFeedback>
+</SafeAreaView>
+
   );
 };
 
@@ -239,7 +312,7 @@ const styles = StyleSheet.create({
   subHeader: { fontSize: 12 },
   headerLine: { width: "20%", height: 2, backgroundColor: "#FF4800", marginTop: 4 },
   row: { flexDirection: "row", width: "100%", gap: 20 },
-  buttonContainer: { position: "absolute", left: 0, right: 0, bottom: 0, alignItems: "center" },
+  buttonContainer: { left: 0, right: 0, alignItems: "center" },
   button: { backgroundColor: "#FF4800", paddingVertical: 15, paddingHorizontal: 40, borderRadius: 5, width: "90%" },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
 });

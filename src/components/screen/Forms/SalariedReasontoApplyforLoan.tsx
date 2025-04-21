@@ -3,6 +3,7 @@ import { ThemedTextInput } from "@/components/ThemedInput";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
 import { ThemedHeadingText, ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { BASE_URL } from "@/components/util/api_url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
@@ -21,7 +22,7 @@ import {
     ActivityIndicator,
 } from "react-native";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api";
+const API_BASE_URL = `${BASE_URL}/api`;
 
 const SalariedReasontoApplyforLoan = ({ navigation }) => {
     const [applicationId, setApplicationId] = useState("");
@@ -59,28 +60,35 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
         return valid;
     };
 
-    // ✅ Handle API Submission
+    // // ✅ Handle API Submission
     const handleSubmit = async () => {
         if (!validateInput()) return;
-
+      
         setIsLoading(true);
         try {
+            const jsonValue = await AsyncStorage.getItem("appIdData");
+    
+            if (!jsonValue || jsonValue.trim() === "") {
+                Alert.alert("Error", "Application ID is missing or invalid.");
+                return;
+            }
+            
             const requestData = {
                 applicationId,
                 loanPurpose: selectedLoanPurpose,
                 loanCompletion: true,
             };
 
-            console.log("📤 Sending Data:", requestData);
-
             const response = await axios.post(
                 `${API_BASE_URL}/loan-application/loan-purpose`,
                 requestData
             );
 
+          
+
             if (response.status === 200) {
-                Alert.alert("Success", "Loan purpose saved successfully.");
-                navigation.navigate("CheckEligibility");
+                navigation.navigate("LoanOffer");
+                
             } else {
                 Alert.alert("Error", response.data.message || "Failed to save loan purpose.");
             }
@@ -91,6 +99,7 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
             setIsLoading(false);
         }
     };
+
 
     // ✅ Loan Purpose Options
     const Reason = [
@@ -139,7 +148,7 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, backgroundColor: "#fff" },
     scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
     header: { fontSize: 18, fontWeight: "bold", marginBottom: 5 },
     buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: "center" },

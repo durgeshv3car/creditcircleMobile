@@ -1,6 +1,7 @@
 import appStyle from "@/AppStyles";
 import { ThemedHeadingText, ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { BASE_URL } from "@/components/util/api_url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
@@ -21,7 +22,7 @@ import {
     ActivityIndicator
 } from "react-native";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api";
+const API_BASE_URL = `${BASE_URL}/api`;
 
 const BankAccount = ({ navigation }) => {
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -109,7 +110,7 @@ const BankAccount = ({ navigation }) => {
 
     const handleSubmit = async () => {
         if (!selectedBank) {
-            Alert.alert("Error", "Please select a bank.");
+            Alert.alert("Select", "Please select a bank.");
             return;
         }
         if (!applicationId) {
@@ -127,14 +128,13 @@ const BankAccount = ({ navigation }) => {
             const response = await axios.post(`${API_BASE_URL}/loan-application/bank`, requestData);
     
             if (response.status === 200) {
-                Alert.alert("Success", "Bank details updated successfully.");
-    
+               
                 // Now navigate based on stored employment status
                 if (employmentStatus === "Salaried") {
                     navigation.navigate("EmploymentDetails");
-                } else if (employmentStatus === "Self Employed Business") {
+                } else if (employmentStatus === "SelfEmployedBusiness") {
                     navigation.navigate("SelfReasontoApplyforLoan");
-                } else if (employmentStatus === "Self Employed Professional") {
+                } else if (employmentStatus === "SelfEmployedProfessional") {
                     navigation.navigate("SelfReasontoApplyforLoan");
                 } else if (employmentStatus === "Student") {
                     navigation.navigate("FamilyDetails");
@@ -146,7 +146,7 @@ const BankAccount = ({ navigation }) => {
             }
         } catch (error) {
             console.error("❌ Error submitting bank details:", error);
-            Alert.alert("Error", error.response?.data?.message || "Network error. Please try again.");
+            
         } finally {
             setIsLoading(false);
         }
@@ -154,7 +154,7 @@ const BankAccount = ({ navigation }) => {
 
     const renderBankItem = ({ item }) => (
         <TouchableOpacity
-            style={[styles.bankItem, selectedBank === item && { borderColor: "#007bff" }]}
+            style={[styles.bankItem, selectedBank === item && { borderColor: "#FF4800" }]}
             onPress={() => {
                 setSelectedBank(item);
                 setModalVisible(false);
@@ -163,7 +163,7 @@ const BankAccount = ({ navigation }) => {
             <View style={styles.radioContainer}>
                 <ThemedText style={styles.bankText}>{item}</ThemedText>
                 <View
-                    style={[styles.radioButton, selectedBank === item && { backgroundColor: "#007bff" }]}
+                    style={[styles.radioButton, selectedBank === item && { backgroundColor: "#FF4800" }]}
                 />
             </View>
         </TouchableOpacity>
@@ -207,13 +207,128 @@ const BankAccount = ({ navigation }) => {
     );
 };
 
+// const styles = StyleSheet.create({
+//     container: { flex: 1 },
+//     scrollContainer: { paddingHorizontal: 20, paddingBottom: 20, flex: 1 },
+//     header: { fontSize: 18, fontWeight: "bold" },
+//     row: { justifyContent: "space-between", flex: 1 },
+//     openModalButton: { padding: 16, borderRadius: 8, textAlign: "center" },
+//     searchBox: { height: 50, backgroundColor: "#F1F1F1", paddingHorizontal: 50, marginBottom: 16, flex: 1 },
+// });
+
+
+
+
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    scrollContainer: { paddingHorizontal: 20, paddingBottom: 20, flex: 1 },
-    header: { fontSize: 18, fontWeight: "bold" },
-    row: { justifyContent: "space-between", flex: 1 },
-    openModalButton: { padding: 16, borderRadius: 8, textAlign: "center" },
-    searchBox: { height: 50, backgroundColor: "#F1F1F1", paddingHorizontal: 50, marginBottom: 16, flex: 1 },
+    container: {
+        flex: 1,
+    },
+    scrollContainer: {
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        flex:1
+    },
+
+    header: {
+        fontSize: 18,
+        fontWeight: "bold",
+    },
+    row: {
+        justifyContent: 'space-between',
+        flex: 1,
+
+    },
+
+    openModalButton: {
+        padding: 16,
+        borderRadius: 8,
+        textAlign: 'center',
+        justifyContent: 'center'
+    },
+    searchBox: {
+        height: 50,
+        backgroundColor: '#F1F1F1',
+        paddingHorizontal: 50,
+        marginBottom: 16,
+        flex: 1,
+        zIndex: 0
+    },
+
+    openModalText: {
+        textAlign: 'center',
+        fontWeight: '500'
+    },
+    bankItem: {
+        flex: 1,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        // borderColor: '#ccc',
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    bankText: {
+        fontSize: 16,
+        marginLeft: 10,
+        flex: 1
+    },
+    viewMoreButton: {
+        alignSelf: 'center',
+        marginTop: 0,
+    },
+    viewMoreText: {
+        color: '#FF4800',
+        fontSize: 16,
+    },
+    modalContainer: {
+        flex: 1,
+        padding: 0,
+
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 16,
+    },
+
+    buttonContainer: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        alignItems: "center",
+        paddingHorizontal: 15
+    },
+    button: {
+        backgroundColor: "#FF4800",
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        borderRadius: 5,
+        width: "100%",
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: 'center',
+    },
+    radioContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 14,
+        justifyContent: 'space-between'
+
+    },
+    radioButton: {
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginRight: 10,
+        
+    },
 });
+
+
 
 export default BankAccount;

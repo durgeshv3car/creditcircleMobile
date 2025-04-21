@@ -1,8 +1,10 @@
+import { ThemedTextInput } from '@/components/ThemedInput';
 import { ThemedHeadingText, ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { loginSuccess } from '@/redux/reducers/authReducer';
+import { BASE_URL } from '@/components/util/api_url';
+import { requestFcmToken } from '@/components/util/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,15 +17,15 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  BackHandler,
 } from 'react-native';
+import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
 
 const withY = Dimensions.get("window").width;
-
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
-import { useDispatch } from 'react-redux';
-
 const CELL_COUNT = 4;
-const API_BASE_URL = 'http://192.168.0.18:5000/api/otp/';
+const API_BASE_URL = `${BASE_URL}/api/otp/`;
+
+console.log(API_BASE_URL)
 
 const LoginScreen = ({ navigation }) => {
   const [otp, setOtp] = useState('');
@@ -33,15 +35,13 @@ const LoginScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [keyboardOn, setKeyboardOn] = useState(false);
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const clearByFocusCell = useClearByFocusCell({ value, setValue });
 
-  const [keyboardOn, setKeyboardOn] = useState(false);
-
-
   const handleGetOtp = async () => {
-    const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString(); // Ensure it's a string
+    const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString();
 
     if (sanitizedNumber.length !== 10 || !/^[6-9]\d{9}$/.test(sanitizedNumber)) {
       Alert.alert('Invalid Input', 'Please enter a valid 10-digit mobile number.');
@@ -54,12 +54,10 @@ const LoginScreen = ({ navigation }) => {
       const response = await fetch(`${API_BASE_URL}/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: sanitizedNumber }) // Ensure string format
+        body: JSON.stringify({ phoneNumber: sanitizedNumber })
       });
 
       const data = await response.json();
-      console.log('Response:', data); // Debug response
-
       setLoading(false);
 
       if (response.ok) {
@@ -73,93 +71,111 @@ const LoginScreen = ({ navigation }) => {
       }
     } catch (error) {
       setLoading(false);
-      console.error('Fetch error:', error);
       Alert.alert('Error', 'Network error. Please try again.');
     }
   };
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => true // Disable hardware back
+    );
+  
+    return () => backHandler.remove();
+  }, []);
 
-// Final Code
   const handleVerifyOTP = async () => {
+
+
     if (value.length !== CELL_COUNT) {
       Alert.alert('Invalid OTP', 'Please enter the full OTP.');
       return;
     }
 
-    const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString(); // Ensure number is a string
+    setValue("")
+    const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString();
 
-    if (!sanitizedNumber || sanitizedNumber.length !== 10) {
-      Alert.alert('Error', 'Invalid phone number.');
-      return;
+    try {
+      const token = await requestFcmToken();
+
+      const response = await fetch(`${API_BASE_URL}/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phoneNumber: sanitizedNumber,
+          otp: value,
+          whatsApp: isWhatsAppEnabled,
+          fcm_token: token
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        Alert.alert('Error', data.message || 'Invalid OTP. Please try again.');
+        return;
+      }
+
+      await AsyncStorage.setItem('userToken', data.token);
+      await AsyncStorage.setItem('userData', JSON.stringify(sanitizedNumber));
+
+
+
+      // Reset navigation stack
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{ name: 'Home' }],
+      // });
+
+      const profileResponse = await fetch(`${API_BASE_URL}/get-profile?phoneNumber=${sanitizedNumber}`);
+      const profileData = await profileResponse.json();
+
+      console.log("Profile Data", profileData)
+
+
+      if (profileData.isCompleted === "1") {
+        navigation.navigate('Home');
+      } else {
+        navigation.navigate('PersonalDetailsOne');
+      }
+
+      
+      // setTimeout(() => {
+      //   if (profileData.isCompleted === "1") {
+      //     navigation.navigate('Home');
+      //   } else {
+      //     navigation.navigate('PersonalDetailsOne');
+      //   }
+      // }, 500);
+      
+
+
+    } catch (error) {
+      Alert.alert('Error', 'Network error. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-
-      try {
-        const jsonValue = JSON.stringify(sanitizedNumber);
-        await AsyncStorage.setItem('userData', jsonValue);
-        console.log(jsonValue)
-       
-        console.log('User data saved successfully.');
-      } catch (error) {
-        console.error('Error saving user data:', error);
-      }
-
-     
-
-
-      try {
-        setLoading(true);
-      
-        const response = await fetch(`${API_BASE_URL}/verify-otp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phoneNumber: sanitizedNumber, otp: value, whatsApp: isWhatsAppEnabled }),
-        });
-      
-        const data = await response.json();
-        setLoading(false);
-
-        await AsyncStorage.setItem('userToken', data.token);
-
-        console.log(data.token);
-        
-        if (response.ok) {
-         
-
-          // await AsyncStorage.setItem('userToken', data.token);
-
-           const isCompleted = await fetch(`${API_BASE_URL}/get-profile?phoneNumber=${sanitizedNumber}`)
-           const data = await isCompleted.json();
-           console.log(data)
-          if (data.isCompleted === "1") {  
-            navigation.navigate('Home'); // Redirect to Home if profile is completed
-            // console.log("Hello Puria")
-          } else {
-            navigation.navigate('PersonalDetailsOne'); // Redirect to profile completion screen
-          }
-        } else {
-          console.error('OTP Verification Failed:', data);
-          Alert.alert('Error', data.message || 'Invalid OTP. Please try again.');
-        }
-      } catch (error) {
-        setLoading(false);
-        Alert.alert('Error', 'Network error. Please try again.');
-      }
-      
   };
 
-
-  const resendOtp = async () => {
+  const resendOtp = () => {
     setTimer(30);
     handleGetOtp();
+    setValue("")
   };
 
+
+  
+
   useEffect(() => {
+ 
+    
     if (modalVisible && timer > 0) {
-      const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+      const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
       return () => clearInterval(interval);
     }
+
   }, [timer, modalVisible]);
+
+
 
   return (
     <ThemedView style={styles.container}>
@@ -169,12 +185,13 @@ const LoginScreen = ({ navigation }) => {
 
         <ThemedView style={styles.inputContainer}>
           <Image source={require("../../../assets/icons/flag.png")} style={{ width: 20, height: 14, marginRight: 16 }} />
-          <ThemedText style={styles.countryCode}>+91</ThemedText>
+          <ThemedText style={styles.countryCode}>+91 -</ThemedText>
           <TextInput
-            style={styles.input}
+            style={[styles.input]}
+            // keyboardType="number-pad"
             keyboardType="number-pad"
             maxLength={10}
-            placeholder="Enter your 10-digit mobile number"
+            placeholder="Your 10-digit number"
             value={mobileNumber}
             onChangeText={(text) => setMobileNumber(text.replace(/\D/g, ''))}
           />
@@ -186,10 +203,27 @@ const LoginScreen = ({ navigation }) => {
 
         <ThemedView style={styles.switchContainer}>
           <Image source={require("../../../assets/icons/whatsapp.png")} style={{ width: 22, height: 21, marginRight: 3 }} />
-          <ThemedText style={styles.switchText}>Get Updates On WhatsApp</ThemedText>
+          <ThemedText style={styles.switchText}>Get updates on Whatsapp</ThemedText>
           <Switch value={isWhatsAppEnabled} onValueChange={setIsWhatsAppEnabled} />
+
+          {/* <Switch
+    trackColor={{ false: "#767577", true: "#81b0ff" }}
+    thumbColor={isWhatsAppEnabled ? "#f5dd4b" : "#f4f3f4"}
+    onValueChange={setIsWhatsAppEnabled}
+    value={isWhatsAppEnabled}
+    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], // Adjust size
+        height: 50 }} // Set track height
+/> */}
+
         </ThemedView>
+
       </ThemedView>
+
+
+
+      <TouchableOpacity onPress={() => navigation.navigate("TermsandConditions")}>
+        <ThemedText style={styles.termsText}>Terms and Conditions</ThemedText>
+      </TouchableOpacity>
 
       <Modal animationType="slide" transparent visible={modalVisible} onRequestClose={() => setModalVisible(true)}>
         <ThemedView style={styles.overlay}>
@@ -266,8 +300,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    paddingVertical: 8,
+    fontSize: 16
   },
   button: {
     backgroundColor: '#FF5722',
@@ -290,11 +323,7 @@ const styles = StyleSheet.create({
   switchText: {
     fontSize: 16,
     marginRight: 10,
-  },
-  termsText: {
-    fontSize: 14,
-    color: '#FF5722',
-    marginTop: 30,
+    marginLeft:10,
   },
   overlay: {
     flex: 1,
@@ -321,7 +350,6 @@ const styles = StyleSheet.create({
     color: '#273283',
     textAlign: 'center',
     backgroundColor: '#F5F5FA',
-    margin: 'auto',
     padding: 10,
     paddingHorizontal: 30,
     borderRadius: 4,
@@ -332,18 +360,13 @@ const styles = StyleSheet.create({
   edit: {
     color: '#FF4800',
   },
-  codeFieldRoot: {
-    marginBottom: 20,
-  },
   cell: {
     width: '22%',
     height: 40,
-    lineHeight: 38,
     fontSize: 24,
     borderBottomWidth: 2,
     borderColor: '#e5e5e5',
-    textAlign: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 16,
   },
@@ -370,7 +393,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   resendText: {
     color: '#999',
@@ -380,7 +402,11 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     fontWeight: 'bold',
     textAlign: 'center',
-    textDecorationStyle: 'solid',
+  },
+  termsText: {
+    fontSize: 14,
+    color: '#FF5722',
+    marginTop: 30,
   },
 });
 

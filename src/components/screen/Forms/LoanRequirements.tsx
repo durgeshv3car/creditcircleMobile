@@ -22,14 +22,41 @@ import {
 } from "react-native";
 import appStyle from "@/AppStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/components/util/api_url";
 
-const API_BASE_URL = "http://192.168.0.18:5000/api";
+const API_BASE_URL = `${BASE_URL}/api`;
+
+
+
+const formatIndianCurrency = (value) => {
+  const x = value.replace(/,/g, "");
+  if (!x) return "";
+  const lastThree = x.slice(-3);
+  const otherNumbers = x.slice(0, -3);
+  if (otherNumbers !== "") {
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
+  } else {
+    return lastThree;
+  }
+}
 
 const LoanRequirements = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loanAmount, setLoanAmount] = useState("");
   const [loanTenure, setLoanTenure] = useState(12);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  const [loanType, setloantype] = useState("");
+  const [NoloanAmount, setNoLoanAmount] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const handleInputChange = (text) => {
+    const rawValue = text.replace(/[^0-9]/g, "");
+    setNoLoanAmount(rawValue)
+    // console.log("Not Coma", rawValue)    
+    setLoanAmount(formatIndianCurrency(rawValue));
+  };
 
   const screenWidth = Dimensions.get("window").width;
   const theme = Appearance.getColorScheme();
@@ -38,12 +65,16 @@ const LoanRequirements = ({ navigation }) => {
     backgroundColor: theme === "dark" ? "#000000" : "#FFFFFF",
     shadowColor: theme === "dark" ? "#FFFFFF" : "#000000",
   };
-
+  
   // ✅ Fetch Phone Number
   useEffect(() => {
+
     const fetchPhoneNumber = async () => {
+      const jsonValue = await AsyncStorage.getItem('loanType');
+      setloantype(jsonValue)
+
       try {
-        const response = await axios.get(`http://192.168.0.18:5000/api/otp/get-phone-number`);
+        const response = await axios.get(`${API_BASE_URL}/otp/get-phone-number`);
         if (response.data.phoneNumber) {
           setPhoneNumber(response.data.phoneNumber);
         } else {
@@ -55,27 +86,38 @@ const LoanRequirements = ({ navigation }) => {
         Alert.alert("Error", "Failed to retrieve phone number.");
       }
     };
+
     fetchPhoneNumber();
+
   }, []);
+
+
 
   // ✅ Validate Inputs Before Submission
   const validateInputs = () => {
+    let valid = true;
+    let errorObj = {};
+  
     if (!phoneNumber) {
-      Alert.alert("Error", "Phone number is required.");
-      return false;
+      errorObj.phoneNumber = "Phone number is required.";
+      valid = false;
     }
-
-    if (!loanAmount || isNaN(loanAmount) || loanAmount <= 0) {
-      Alert.alert("Error", "Please enter a valid loan amount.");
-      return false;
+  
+    if (!NoloanAmount || isNaN(NoloanAmount) || NoloanAmount <= 0) {
+      errorObj.loanAmount = "Please enter a valid loan amount.";
+      valid = false;
+    } else if (parseInt(NoloanAmount) < 5000) {
+      errorObj.loanAmount = "Loan amount must be at least ₹5,000.";
+      valid = false;
     }
-
+  
     if (!loanTenure || isNaN(loanTenure) || loanTenure < 1 || loanTenure > 60) {
-      Alert.alert("Error", "Loan tenure must be between 1 and 60 months.");
-      return false;
+      errorObj.loanTenure = "Loan tenure must be between 1 and 60 months.";
+      valid = false;
     }
-
-    return true;
+  
+    setErrors(errorObj);
+    return valid;
   };
 
   // ✅ Handle Loan Submission
@@ -87,8 +129,9 @@ const LoanRequirements = ({ navigation }) => {
     try {
       const requestData = {
         phoneNumber,
-        desiredLoanAmount: parseFloat(loanAmount),
-        loanTenure: parseInt(loanTenure, 10)
+        desiredLoanAmount: parseFloat(NoloanAmount),
+        loanTenure: parseInt(loanTenure, 10),
+        loanType,
       };
 
       console.log("🚀 Sending Loan Requirements:", requestData);
@@ -109,23 +152,28 @@ const LoanRequirements = ({ navigation }) => {
       
 
       if (response.status === 200) {
-        Alert.alert("Success", "Loan requirements submitted successfully." );
         navigation.navigate("EmploymentInformation");
       } else {
         Alert.alert("Error", response.data.message || "Failed to submit loan requirements.");
       }
     } catch (error) {
       console.error("❌ Error submitting loan requirements:", error.response ? error.response.data : error.message);
-      Alert.alert("Error", error.response?.data?.message || "Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+
+
+  const imagecoleor = {
+    tintColor: theme === 'dark' ? "#ffffff" : ""
+  };
+
+
   return (
     <SafeAreaView style={[styles.container, dynamicStyles]}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
             <View style={appStyle.HeadingTitle}>
               <ThemedHeadingText style={[styles.header]}>Loan Requirements</ThemedHeadingText>
@@ -135,18 +183,19 @@ const LoanRequirements = ({ navigation }) => {
 
             <ThemedHeadingText style={{ fontSize: 12, fontWeight: "bold" }}>Desired Loan Amount</ThemedHeadingText>
             <ThemedTextInput
-              style={styles.input}
+              style={[ { width: screenWidth - 40 , borderWidth: 1, borderRadius: 6, paddingLeft: 10, marginTop: 10, textAlign: 'center', height: 60 }]}
               placeholder="Enter loan amount"
-              keyboardType="numeric"
+              keyboardType="decimal-pad"
               value={loanAmount}
-              onChangeText={(text) => setLoanAmount(text.replace(/[^0-9]/g, ""))}
+              onChangeText={handleInputChange}
+              error={errors.loanAmount}
             />
 
             <View style={styles.containerMain}>
               <View style={styles.sliderValue}>
                 <ThemedHeadingText style={{ fontSize: 12, fontWeight: "bold", flex: 1 }}>Loan Tenure (Months)</ThemedHeadingText>
                 <ThemedTextInput
-                  style={styles.input}
+                  style={[styles.input,]}
                   value={String(loanTenure)}
                   keyboardType="numeric"
                   maxLength={2}
@@ -154,6 +203,14 @@ const LoanRequirements = ({ navigation }) => {
                 />
               </View>
               <Slider value={loanTenure} minimumTrackTintColor="#273283" onValueChange={setLoanTenure} minimumValue={1} maximumValue={60} step={1} />
+              <Image
+                source={require("../../../assets/images/sliderImage.png")}
+                style={[imagecoleor, {
+                  width: screenWidth - 40,
+                  height: screenWidth * 0.1,
+                }]}
+                resizeMode="contain" // Adjust this to "cover" or "stretch" if needed
+              />
             </View>
           </ScrollView>
 
@@ -168,15 +225,82 @@ const LoanRequirements = ({ navigation }) => {
   );
 };
 
+// const styles = StyleSheet.create({
+//   container: { flex: 1 },
+//   scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
+//   header: { fontSize: 18, fontWeight: "bold", marginBottom: 5 },
+//   subHeader: { fontSize: 12 },
+//   input: { borderWidth: 1, borderRadius: 6, paddingLeft: 10, marginTop: 10, textAlign: "center", height: 50 },
+//   buttonContainer: { position: "absolute", left: 0, right: 0, bottom: 0, alignItems: "center" },
+//   button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
+//   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
+// });
+
+
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
-  header: { fontSize: 18, fontWeight: "bold", marginBottom: 5 },
-  subHeader: { fontSize: 12 },
-  input: { borderWidth: 1, borderRadius: 6, paddingLeft: 10, marginTop: 10, textAlign: "center", height: 50 },
-  buttonContainer: { position: "absolute", left: 0, right: 0, bottom: 0, alignItems: "center" },
-  button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
+
+
+  container: {
+    flex: 1,
+  },
+  scrollContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 120,
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  subHeader: {
+    fontSize: 12,
+  },
+
+  containerMain: {
+    marginTop: 6
+  },
+
+  sliderValue: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 5,
+    fontSize: 16,
+    width: 100,
+    textAlign: 'center',
+    fontWeight: "bold",
+    right: 0,
+    position: 'absolute',
+    marginTop: 10
+  },
+  buttonContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+  },
+  button: {
+    backgroundColor: "#FF4800",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 5,
+    width: "90%"
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: 'center'
+  },
+
+
 });
+
+
+
 
 export default LoanRequirements;
