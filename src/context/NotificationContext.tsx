@@ -56,10 +56,27 @@ interface NotificationContextType {
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
 }
 
+
+interface NotificationContextType {
+  notifications: Notification[];
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  markAsRead: (id: string) => void;
+  unreadCount: number;
+}
+
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  
+  const markAsRead = (id: string) => {
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
+    );
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
     const load = async () => {
@@ -74,7 +91,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   }, [notifications]);
 
   return (
-    <NotificationContext.Provider value={{ notifications, setNotifications }}>
+    <NotificationContext.Provider 
+    // value={{ notifications, setNotifications }}
+    value={{ notifications, setNotifications, markAsRead, unreadCount }}
+    >
       {children}
     </NotificationContext.Provider>
   );

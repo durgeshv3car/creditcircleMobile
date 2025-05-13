@@ -28,11 +28,7 @@ const DetailScreen = ({ route, navigation }) => {
         />
       ) : null}
 
-      <Text style={styles.time}>
-        {notification.time ? `Received at ${notification.time}` : ''}
-      </Text>
-
-
+    
         <TouchableOpacity
           onPress={() =>
             navigation.navigate('WebviewScreen', { urlName: notification.redirectUrl })
@@ -40,7 +36,7 @@ const DetailScreen = ({ route, navigation }) => {
           style={styles.bottomButton}
         >
           <View style={styles.buttoncon}>
-          <Text style={styles.buttonText}>asdfasd{notification.buttonType}</Text>
+          <Text style={styles.buttonText}>{notification.buttonType}</Text>
           </View>
         </TouchableOpacity>
 

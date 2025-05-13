@@ -1,7 +1,24 @@
-import React, { useState, useMemo } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useState, useMemo, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, BackHandler } from "react-native";
 
 export default function LoanOffer() {
+    const navigation = useNavigation();
+
+useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate('Home');
+        return true; // prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => backHandler.remove(); // ✅ modern cleanup
+    }, [navigation])
+  );
+
+
   const [loanData] = useState([
     { id: "1", name: "Piramal", interestRate: 27.5, emi: 17283, chances: "Excellent", preApproved: true },
     { id: "2", name: "Tata Capital", interestRate: 14.99, emi: 11892, chances: "Excellent", preApproved: false },
@@ -179,7 +196,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   selectButton: {
-    backgroundColor: "#FF9A00",
+    backgroundColor: "#ff5722",
     padding: 10,
     borderRadius: 4,
     alignItems: "center",

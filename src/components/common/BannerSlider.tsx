@@ -36,7 +36,7 @@ const BannerSlider = () => {
           loop
           dotStyle={styles.dot}
           activeDotStyle={styles.activeDot}
-          style={{ height: 180 }}
+          style={{ height: 166 }}
         >
           {banners.map((banner) => (
             <ThemedView key={banner.id}>
@@ -70,12 +70,13 @@ const styles = StyleSheet.create({
   bannerContainer: {
     marginVertical: 0,
     paddingVertical: 10,
+    paddingBottom:0,
     paddingHorizontal: 16,
   },
   image: {
     width: '100%',
     height: 140,
-    resizeMode: 'stretch',
+    resizeMode: "contain",
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 4,
     marginHorizontal: 3,
+
   },
   activeDot: {
     backgroundColor: '#000',
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 4,
     marginHorizontal: 3,
+
   },
 });
 

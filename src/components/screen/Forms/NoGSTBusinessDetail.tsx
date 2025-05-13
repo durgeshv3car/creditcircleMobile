@@ -97,28 +97,28 @@ const NoGSTBusinessDetail = ({ navigation }) => {
         let errorObj = {};
 
         if (!businessName) {
-            errorObj.businessName = "Business name is required";
+            errorObj.businessName = "Business name Is Required";
             isValid = false;
         }
 
         if (!natureOfBusiness) {
-            errorObj.natureOfBusiness = "Nature of business is required";
+            errorObj.natureOfBusiness = "Nature of business Is Required";
             isValid = false;
         }
         if (!yearsInBusiness) {
-            errorObj.yearsInBusiness = "Years in current business is required";
+            errorObj.yearsInBusiness = "Years in current business Is Required";
             isValid = false;
         }
         if (!officePinCode || officePinCode.length !== 6) {
-            errorObj.officePinCode = "Valid 6-digit Pin Code is required";
+            errorObj.officePinCode = "Valid 6-digit Pin Code Is Required";
             isValid = false;
         }
         if (!officeCity) {
-            errorObj.officeCity = "City is required";
+            errorObj.officeCity = "City Is Required";
             isValid = false;
         }
         if (!officeState) {
-            errorObj.officeState = "State is required";
+            errorObj.officeState = "State Is Required";
             isValid = false;
         }
 

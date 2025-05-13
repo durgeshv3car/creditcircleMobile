@@ -15,6 +15,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { BASE_URL } from '../util/api_url';
+import NotAvailable from '../common/NotAvailable';
 
 const DEALS_API_URL = `${BASE_URL}/api/offer/offer`;
 
@@ -46,7 +47,7 @@ const DealsScreen = ({ navigation }) => {
             }
         } catch (error) {
             console.error('❌ Error fetching offers:', error);
-            Alert.alert('Error', 'Failed to fetch offers. Please try again later.');
+            Alert.alert("Offers Not Available", "Offers are not available at the moment. Please try again later.");
         } finally {
             setLoading(false);
         }
@@ -87,30 +88,55 @@ const DealsScreen = ({ navigation }) => {
     };
 
     const renderOffer = ({ item }) => (
+        console.log('Itemsss:', item),
         <TouchableOpacity
             onPress={() => navigation.navigate('DealDetail', { offer: item })}
             style={styles.offerCard}
         >
-            <View style={styles.headerRow}>
-                {(item.brandLogo?.logo?.web || item.offerImage?.web) ? (
+             {item.offerImage?.mobile ? (
+                <Image source={{ uri: item.offerImage.mobile }} style={styles.fullImage} />
+            ) : null}
+
+            <View >
+                {(item.brandLogo?.logo) ? (
+                    <>
+                    <View style={{flex:1, flexDirection:'row', marginBottom:4}} >
                     <Image
-                        source={{ uri: item.brandLogo?.mobile }}
+                        source={{ uri:item.brandLogo?.logo }}
                         style={styles.brandLogo}
                     />
-                ) : null}
-                <View style={{ flex: 1 }}>
+
+                 <View style={styles.headerRow} >
                     <Text style={styles.offerTitle}>{item.title}</Text>
                     <Text style={styles.categoryText}>
                         <Text style={styles.categoryHighlight}>{item.category}</Text>
                     </Text>
                 </View>
+                    </View>
+                <Text style={styles.offerDescription}>{item.description.slice(0, 100)}</Text>
+                    </>
+                
+                ) : <View style={{width:'auto', marginHorizontal:10}}>
+                    
+                    <View style={{flex:1, flexDirection:'row', justifyContent:'space-between', marginBottom:4}}>
+                    <Text style={styles.brandLogoName}>{item.brandName}</Text>
+                    <Text style={styles.categoryText}>
+                        <Text style={styles.categoryHighlight}>{item.category}</Text>
+                    </Text>
+                    </View>
+
+                    <Text style={[styles.offerTitle, {fontSize:18, marginBottom:4}]}>{item.title}</Text>
+
+                    <Text style={[styles.offerDescription, {marginBottom:6}]}>{item.description.slice(0, 100)}</Text>
+
+                    </View>}
+               
+
+
             </View>
-
-            {item.offerImage?.web ? (
-                <Image source={{ uri: item.offerImage.mobile }} style={styles.fullImage} />
-            ) : null}
-
-            <Text style={styles.offerDescription}>{item.description}</Text>
+ 
+           
+            
         </TouchableOpacity>
     );
 
@@ -203,7 +229,7 @@ const styles = StyleSheet.create({
     offerCard: {
         backgroundColor: '#fdfdff',
         borderRadius: 10,
-        padding: 12,
+        padding: 4,
         marginBottom: 15,
         borderWidth: 1,
         borderColor: '#e0e0e0',
@@ -214,19 +240,25 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     headerRow: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginBottom: 10,
+        flexDirection: 'column',
     },
     brandLogo: {
         width: 40,
         height: 40,
-        resizeMode: 'contain',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#e0e0e0', 
+        backgroundColor: '#000',
+        padding: 20,
         marginRight: 10,
     },
+    brandLogoName:{
+        fontSize:14,
+    },
+
     fullImage: {
-        width: '100%',
-        height: 150,
+        width: "100%",
+        height: 180,
         borderRadius: 10,
         marginBottom: 10,
         resizeMode: "stretch",
@@ -235,7 +267,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         color: '#002f6c',
-        marginBottom: 4,
     },
     offerDescription: {
         fontSize: 13,

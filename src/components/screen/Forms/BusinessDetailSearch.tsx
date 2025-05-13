@@ -145,7 +145,7 @@ const BusinessDetailSearch = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContainer: { flex:1, paddingHorizontal: 20, paddingBottom: 50, backgroundColor: '#fff' },
+  scrollContainer: {paddingHorizontal: 20, paddingBottom: 50, backgroundColor: '#fff' },
   header: { fontSize: 18, fontWeight: 'bold' },
   headerLine: { width: '20%', height: 2, backgroundColor: '#FF4800', marginTop: 4 },
   inputGroup: { marginVertical: 15 },
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   inputError: { borderColor: '#FF3B30' },
   errorText: { color: '#FF3B30', fontSize: 12, marginTop: 4, textAlign: 'center' },
-  buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: 'center' },
+  buttonContainer: { left: 0, right: 0,  alignItems: 'center' },
   button: { backgroundColor: '#FF4800', paddingVertical: 15, borderRadius: 5, width: '90%', alignItems: 'center' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });

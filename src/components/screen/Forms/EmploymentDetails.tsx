@@ -67,11 +67,11 @@ const EmploymentDetails = ({ navigation }) => {
         let errorObj = {};
 
         if (!companyName.trim()) {
-            errorObj.companyName = "Company Name is required";
+            errorObj.companyName = "Company Name Is Required";
             valid = false;
         }
         if (!employmentLevel) {
-            errorObj.employmentLevel = "Please select your Employment Level";
+            errorObj.employmentLevel = "Please Select Your Employment Level";
             valid = false;
         }
 
@@ -134,7 +134,7 @@ const EmploymentDetails = ({ navigation }) => {
                         {/* Company Name */}
                         <ThemedTextInput
                             label="Company Name"
-                            placeHolder="Enter company name"
+                            placeHolder="Enter Company Name"
                             value={companyName}
                             onChangeText={setCompanyName}
                             error={errors.companyName}

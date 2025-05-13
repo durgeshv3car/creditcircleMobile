@@ -72,11 +72,11 @@ const RevenueIncomeDetailsProfessional = ({ navigation }) => {
         let errors = {};
 
         if (!netMonthlyIncome) {
-            errors.netMonthlyIncome = "Monthly income is required";
+            errors.netMonthlyIncome = "Monthly income Is Required";
             isValid = false;
         }
         if (!salaryMode) {
-            errors.salaryMode = "Mode of income is required";
+            errors.salaryMode = "Mode of income Is Required";
             isValid = false;
         }
         if (!hasCreditCard) {

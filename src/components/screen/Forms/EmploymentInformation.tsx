@@ -71,10 +71,10 @@ let options = [];
 
 if (loantype === 'PersonalLoan') {
   options = [
-    { label: "Salaried", description: "Working full-time with a regular income", value: "Salaried" },
-    { label: "Self Employed Business", description: "Running your own business or startup", value: "SelfEmployedBusiness" },
-    { label: "Self Employed Professional", description: "Practicing a profession (e.g. Doctor, CA, Lawyer)", value: "SelfEmployedProfessional" },
-    { label: "Student", description: "Currently studying or working part-time", value: "Student" },
+    { label: "Salaried", description: "Working Full-Time With A Regular Income", value: "Salaried" },
+    { label: "Self Employed Business", description: "Running Your Own Business Or Startup", value: "SelfEmployedBusiness" },
+    { label: "Self Employed Professional", description: "Practicing A Profession (e.g. Doctor, CA, Lawyer)", value: "SelfEmployedProfessional" },
+    { label: "Student", description: "Currently Studying Or Working Part-time", value: "Student" },
   ];
 } else if (loantype === 'BusinessLoan') {
   options = [
@@ -90,7 +90,7 @@ console.log(options)
   // ✅ Handle Employment Selection and Send API Request
   const handleSelection = async (selectedValue) => {
     if (!selectedValue) {
-      Alert.alert("Error", "Employment Status is required.");
+      Alert.alert("Error", "Employment Status Is Required.");
       return;
     }
 

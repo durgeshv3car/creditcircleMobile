@@ -58,15 +58,15 @@ const Professionaldetails = ({ navigation }) => {
         let errorObj = {};
 
         if (!profession) {
-            errorObj.profession = "Profession is required";
+            errorObj.profession = "Profession Is Required";
             isValid = false;
         }
         if (!registrationNumber.trim()) {
-            errorObj.registrationNumber = "Registration number is required";
+            errorObj.registrationNumber = "Registration number Is Required";
             isValid = false;
         }
         if (!yearRegistration) {
-            errorObj.yearRegistration = "Year of registration is required";
+            errorObj.yearRegistration = "Year of registration Is Required";
             isValid = false;
         }
 

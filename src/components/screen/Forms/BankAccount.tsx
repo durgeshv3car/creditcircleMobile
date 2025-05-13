@@ -193,7 +193,7 @@ const BankAccount = ({ navigation }) => {
 
             <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
                 <ThemedView style={styles.modalContainer}>
-                    <TextInput style={styles.searchBox} placeholder="Search your bank..." value={searchQuery} onChangeText={handleSearch} />
+                    <TextInput style={styles.searchBox} placeholder="Search Your Bank..." value={searchQuery} onChangeText={handleSearch} />
                     <FlatList data={filteredBanks} renderItem={renderBankItem} keyExtractor={(item, index) => index.toString()} />
                 </ThemedView>
             </Modal>
@@ -246,12 +246,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     searchBox: {
-        height: 50,
+        height: 48,
         backgroundColor: '#F1F1F1',
-        paddingHorizontal: 50,
-        marginBottom: 16,
-        flex: 1,
-        zIndex: 0
+        paddingHorizontal: 10,
+        zIndex: 1
     },
 
     openModalText: {

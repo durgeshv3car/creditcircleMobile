@@ -24,6 +24,20 @@ import {
 
 const API_BASE_URL = `${BASE_URL}/api`;
 
+
+
+const formatIndianCurrency = (value) => {
+  const x = value.replace(/,/g, "");
+  if (!x) return "";
+  const lastThree = x.slice(-3);
+  const otherNumbers = x.slice(0, -3);
+  if (otherNumbers !== "") {
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
+  } else {
+    return lastThree;
+  }
+}
+
 const IncomeandSalaryDetails = ({ navigation }) => {
   const [applicationId, setapplicationId] = useState("");
   const [netIncome, setNetIncome] = useState("");
@@ -47,6 +61,15 @@ const IncomeandSalaryDetails = ({ navigation }) => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+
+  
+  const handleInputChange = (text) => {
+    const rawValue = text.replace(/[^0-9]/g, "");
+    setNetIncome(rawValue)
+    // console.log("Not Coma", rawValue)    
+    setNetIncome(formatIndianCurrency(rawValue));
+  };
 
   const fetchPhoneNumber = async () => {
 
@@ -74,71 +97,61 @@ const IncomeandSalaryDetails = ({ navigation }) => {
   const validateInputs = () => {
     let valid = true;
     let errorObj = {};
-
-    if (!netIncome.trim() || isNaN(netIncome)) {
-      errorObj.netIncome = "Net Monthly Income is required & must be a number";
+  
+    // Remove commas for validation
+    const numericIncome = netIncome.replace(/,/g, "");
+  
+    if (!numericIncome.trim() || isNaN(numericIncome)) {
+      errorObj.netIncome = "Net Monthly Income Is Required & Must Be A Number";
       valid = false;
-    } else if (parseInt(netIncome) < 5000) { 
-      errorObj.netIncome = "Net Monthly Income must be at least ₹5000";
+    } else if (parseInt(numericIncome, 10) < 5000) { 
+      errorObj.netIncome = "Net Monthly Income Must Be At least ₹5000";
       valid = false;
     }
   
     if (!modeOfSalary) {
-      errorObj.modeOfSalary = "Please select your Mode of Salary";
+      errorObj.modeOfSalary = "Please Select Your Mode Of Salary";
       valid = false;
     }
     if (!creditCardOwnership) {
-      errorObj.creditCardOwnership = "Please select Credit Card Ownership";
+      errorObj.creditCardOwnership = "Please Select Credit Card Ownership";
       valid = false;
     }
-
+  
     setErrors(errorObj);
     return valid;
   };
-
+  
   // ✅ Submit Data to API
   const handleSubmit = async () => {
     if (!validateInputs()) return;
-
-
+  
     setIsLoading(true);
     try {
       const requestData = {
-        applicationId : applicationId,
-        netMonthlyIncome: netIncome, // Correct field name
-        salaryMode: modeOfSalary, // Correct field name
-        hasCreditCard: creditCardOwnership, // Correct field name
+        applicationId: applicationId,
+        netMonthlyIncome: netIncome.replace(/,/g, ""), // send numeric value without commas
+        salaryMode: modeOfSalary,
+        hasCreditCard: creditCardOwnership,
       };
-
-      console.log("📤 Sending Data:", requestData);
-
+  
       const response = await axios.post(
         `${API_BASE_URL}/loan-application/salaried-details`,
         requestData
       );
-
-      console.log("✅ API Response:", response.data);
-
+  
       if (response.status === 200) {
-       
         navigation.navigate("BankAccount");
       } else {
-        // Alert.alert("Error", response.data.message || "Failed to submit salary details.");
         console.log("❌ Error:", response.data.message || "Failed to submit salary details.");
       }
     } catch (error) {
       console.error("❌ Error submitting salary details:", error);
-      if (error.response) {
-        console.log("🔍 API Response Data:", error.response.data);
-        // Alert.alert("Error", error.response.data.message || "Invalid request.");
-      } else {
-        // Alert.alert("Error", "Network error. Please try again.");
-        console.log("Network error:", error.message);
-      }
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const theme = Appearance.getColorScheme();
   const dynamicStyles = {
@@ -170,14 +183,13 @@ const IncomeandSalaryDetails = ({ navigation }) => {
             {/* Net Monthly Income */}
             <ThemedTextInput
               label="Net Monthly Income"
-              placeHolder="Enter your monthly salary"
+              placeHolder="Enter Your Monthly Salary"
               keyboardType="numeric"
               value={netIncome}
-              onChangeText={setNetIncome}
+              // onChangeText={setNetIncome}
+              onChangeText={handleInputChange}
               error={errors.netIncome}
             />
-
-
 
 
 

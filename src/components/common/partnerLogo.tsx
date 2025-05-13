@@ -72,6 +72,7 @@ const PartnerLogo = () => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop:0,
     padding: 20,
   },
   title: {
@@ -101,8 +102,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 50,
-    height: 50,
+    width: "100%",
+    height: "100%",
     resizeMode: 'contain',
   },
   noDataText: {

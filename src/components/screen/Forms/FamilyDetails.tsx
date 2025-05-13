@@ -261,8 +261,8 @@ export default FamilyDetails;
 
 //   const validateForm = () => {
 //     const newErrors = {};
-//     if (!fatherName.trim()) newErrors.fatherName = "Father's name is required";
-//     if (!motherName.trim()) newErrors.motherName = "Mother's name is required";
+//     if (!fatherName.trim()) newErrors.fatherName = "Father's name Is Required";
+//     if (!motherName.trim()) newErrors.motherName = "Mother's name Is Required";
 //     if (!liveWithParents) newErrors.liveWithParents = "Please select an option";
 //     setErrors(newErrors);
 //     return Object.keys(newErrors).length === 0;

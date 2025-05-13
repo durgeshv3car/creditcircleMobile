@@ -157,7 +157,7 @@ const YesGSTBusinessDetail = ({ navigation }) => {
     
         // ✅ Check propertyOwnership instead of businessType
         if (!data.propertyOwnership) {
-            errors.propertyOwnership = "Select Business Type is required";
+            errors.propertyOwnership = "Select Business Type Is Required";
             isValid = false;
         }
     

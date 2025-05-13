@@ -146,8 +146,7 @@
 
 // export default NotificationHandler;
 
-
-
+// NotificationHandler.tsx
 
 import { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
@@ -157,131 +156,54 @@ import * as RootNavigation from '../../../RootNavigation';
 const NotificationHandler = () => {
   const { setNotifications } = useNotifications();
 
-  // const extractNotification = (remoteMessage: any, fromTap = false) => ({
-  //   id: Date.now().toString(),
-  //   title: remoteMessage.notification?.title || 'No Title',
-  //   description: remoteMessage.notification?.body || 'No Description',
-  //   image: remoteMessage.notification?.android?.imageUrl || '',
-  //   time: new Date().toLocaleTimeString(),
-  //   timestamp: new Date().getTime(),
-  //   isRead: false,
-  //   isForeground: !fromTap,
-  // });
-
-
   const extractNotification = (remoteMessage, fromTap = false) => {
     const data = remoteMessage.data || {};
     const notification = remoteMessage.notification || {};
-  
+
     return {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
       title: data.title || notification.title || 'No Title',
       description: data.body || notification.body || 'No Description',
       image: data.image || notification.android?.imageUrl || '',
       time: new Date().toLocaleTimeString(),
-      timestamp: new Date().getTime(),
+      timestamp: Date.now(),
       isRead: false,
       isForeground: !fromTap,
     };
   };
 
-  // 🔄 Handle background tap (app already open in background)
   useEffect(() => {
-    // const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
-    //   if (remoteMessage) {
-    //     const notification = extractNotification(remoteMessage, true);
-    //     setNotifications(prev => [notification, ...prev]);
-    //     RootNavigation.navigate('NotificationScreen');
-    //   }
-    // });
-
-    // return unsubscribe;
-
-
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      if (remoteMessage) {
-        const notification = extractNotification(remoteMessage);
-        setNotifications(prev => [notification, ...prev]);
-        RootNavigation.navigate('NotificationScreen', notification);
-      }
+      const notification = extractNotification(remoteMessage);
+      setNotifications(prev => [notification, ...prev]);
     });
-  
     return unsubscribe;
-
   }, []);
 
-//   // 🧊 Handle quit-state tap (app was killed)
-//   useEffect(() => {
-//     const handleInitialNotification = async () => {
-//       try {
-//         const remoteMessage = await messaging().getInitialNotification();
-//         if (remoteMessage) {
-//           const notification = extractNotification(remoteMessage, true);
-//           setNotifications(prev => [notification, ...prev]);
+  useEffect(() => {
+    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage) {
+        const notification = extractNotification(remoteMessage, true);
+        setNotifications(prev => [notification, ...prev]);
+        RootNavigation.navigate('NotificationScreen');
+      }
+    });
+    return unsubscribe;
+  }, []);
 
-//           const waitForNav = () => {
-//             if (RootNavigation.navigationRef.isReady()) {
-//               RootNavigation.navigate('NotificationScreen');
-//             } else {
-//               setTimeout(waitForNav, 100);
-//             }
-//           };
-
-//           waitForNav();
-//         }
-//       } catch (e) {
-//         console.error('❌ Error fetching initial FCM message:', e);
-//       }
-//     };
-
-//     handleInitialNotification();
-//   }, []);
-
-//   return null;
-// };
-
-// 🔁 Handle background tap
-useEffect(() => {
-  const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
-    if (remoteMessage) {
-      const notification = extractNotification(remoteMessage, true);
-      setNotifications(prev => [notification, ...prev]);
-      RootNavigation.navigate('NotificationScreen');
-    }
-  });
-
-  return unsubscribe;
-}, []);
-
-// 🧊 Handle quit state
-useEffect(() => {
-  const handleInitialNotification = async () => {
-    try {
+  useEffect(() => {
+    const checkInitialNotification = async () => {
       const remoteMessage = await messaging().getInitialNotification();
       if (remoteMessage) {
         const notification = extractNotification(remoteMessage, true);
         setNotifications(prev => [notification, ...prev]);
-
-        const waitForNav = () => {
-          if (RootNavigation.navigationRef.isReady()) {
-            RootNavigation.navigate('NotificationScreen');
-          } else {
-            setTimeout(waitForNav, 100);
-          }
-        };
-
-        waitForNav();
+        RootNavigation.navigate('NotificationScreen');
       }
-    } catch (e) {
-      console.error('❌ Error fetching initial FCM message:', e);
-    }
-  };
+    };
+    checkInitialNotification();
+  }, []);
 
-  handleInitialNotification();
-}, []);
-
-return null;
+  return null;
 };
-
 
 export default NotificationHandler;

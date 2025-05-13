@@ -32,13 +32,36 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
 
     useEffect(() => {
         fetchApplicationId();
+        charappid();
+
     }, []);
+
+
+    const charappid = async () => {
+        const jsonValue = await AsyncStorage.getItem("appIdData");
+        const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
+        if (!parsedValue || parsedValue.trim() === "") {
+            Alert.alert("Error", "Application ID is missing or invalid.");
+            navigation.navigate("LoanOffer");
+            return;
+            
+        }  
+ 
+}
+
 
     // ✅ Fetch Application ID from AsyncStorage
     const fetchApplicationId = async () => {
         try {
             const jsonValue = await AsyncStorage.getItem("appIdData");
             const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
+
+            if (!parsedValue || parsedValue.trim() === "") {
+                Alert.alert("Error", "Application ID is missing or invalid.");
+                return;
+                
+            }   
+
             setApplicationId(parsedValue);
         } catch (error) {
             console.error("❌ Error fetching application ID:", error);

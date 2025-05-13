@@ -95,23 +95,23 @@ const OfficeAddressInformation = ({ navigation }) => {
     let errorObj = {};
 
     if (!officeLocation.trim()) {
-        errorObj.officeLocation = "Office Location is required";
+        errorObj.officeLocation = "Office Location Is Required";
         valid = false;
     }
     if (!streetAddress.trim()) {
-        errorObj.streetAddress = "Street Address is required";
+        errorObj.streetAddress = "Street Address Is Required";
         valid = false;
     }
     if (!pinCode.trim() || pinCode.length !== 6 || isNaN(pinCode)) {
-        errorObj.pinCode = "Valid 6-digit Pin Code is required";
+        errorObj.pinCode = "Valid 6-digit Pin Code Is Required";
         valid = false;
     }
     if (!city.trim()) {
-        errorObj.city = "City is required";
+        errorObj.city = "City Is Required";
         valid = false;
     }
     if (!state.trim()) {
-        errorObj.state = "State is required";
+        errorObj.state = "State Is Required";
         valid = false;
     }
 
@@ -179,12 +179,14 @@ const handleSubmit = async () => {
                             <ThemedView style={{ width: "20%", height: 2, backgroundColor: "#FF4800", marginTop: 4 }}></ThemedView>
                         </View>
 
-                        <ThemedTextInput label="Office Location" placeHolder="Office no. / building" value={officeLocation} onChangeText={setOfficeLocation} error={errors.officeLocation} />
-                        <ThemedTextInput label="Street Address / Area" placeHolder="Road name, area, sector" value={streetAddress} onChangeText={setStreetAddress} error={errors.streetAddress} />
-                        <ThemedTextInput label="Pin Code" placeHolder="Enter your area code" keyboardType="number-pad" maxLength={6} value={pinCode} onChangeText={handlePinCodeChange} error={errors.pinCode} />
+                        <ThemedTextInput label="Office Location" placeHolder="Office No. / Building" value={officeLocation} onChangeText={setOfficeLocation} error={errors.officeLocation} />
+                        <ThemedTextInput label="Street Address / Area" placeHolder="Road Name, Area, Sector" value={streetAddress} onChangeText={setStreetAddress} error={errors.streetAddress} />
+                        <ThemedTextInput label="Pin Code" placeHolder="Enter Your Area Code" keyboardType="number-pad" maxLength={6} value={pinCode} onChangeText={handlePinCodeChange} error={errors.pinCode} />
                         <View style={{ flexDirection: "row", gap: 20 }}>
-                            <ThemedTextInput label="City" placeHolder="City" value={city} editable={false} error={errors.city} />
-                            <ThemedTextInput label="State" placeHolder="State" value={state} editable={false} error={errors.state} />
+                            <ThemedTextInput label="City" placeHolder="City" disable={false} value={city} editable={false} error={errors.city} />
+                            <ThemedTextInput label="State" placeHolder="State" disable={false} 
+                            value={state ? state.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()) : ""}
+                            editable={false} error={errors.state} />
                         </View>
                     </ScrollView>
                     <View style={styles.buttonContainer}>

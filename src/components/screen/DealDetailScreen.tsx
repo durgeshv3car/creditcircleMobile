@@ -17,7 +17,7 @@ const DealDetailScreen = ({ route, navigation }) => {
   return (
     <View style={styles.screenContainer}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image source={{ uri: offer.offerImage?.web }} style={styles.image} />
+        <Image source={{ uri: offer.offerImage?.mobile }} style={styles.image} />
         <Text style={styles.title}>{offer.title}</Text>
         <Text style={styles.category}>{offer.category}</Text>
         <Text style={styles.description}>{offer.description}</Text>
@@ -37,7 +37,7 @@ const DealDetailScreen = ({ route, navigation }) => {
           style={styles.bottomButton}
         >
           <View style={styles.buttoncon}>
-          <Text style={styles.buttonText}>{offer.buttonType}</Text>
+          <Text style={styles.buttonText}>{offer.buttonType==null ? "Get Offer" : offer.buttonType}</Text>
           </View>
         </TouchableOpacity>
       )}
@@ -55,10 +55,11 @@ const styles = StyleSheet.create({
     paddingBottom: 100, // Makes room for fixed button
   },
   image: {
-    width: '100%',
-    height: 130,
+    width: "100%",
+    height: 180,
     borderRadius: 10,
     marginBottom: 16,
+      resizeMode: 'contain'
   },
   title: {
     fontSize: 22,

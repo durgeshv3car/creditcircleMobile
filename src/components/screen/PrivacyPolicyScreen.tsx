@@ -13,22 +13,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
     const [isAccepted, setIsAccepted] = useState(false);
     const [isDeclined, setIsDeclined] = useState(false);
 
-    useEffect(() => {
-        // Check if the user has already accepted or declined the privacy policy
-        const checkPolicyStatus = async () => {
-            try {
-                const status = await AsyncStorage.getItem("privacyPolicyStatus");
-                if (status) {
-                    setIsAccepted(status === "accepted");
-                    setIsDeclined(status === "declined");
-                }
-            } catch (error) {
-                console.error("Error loading privacy policy status", error);
-            }
-        };
-
-        checkPolicyStatus();
-    }, []);
+  
 
     const handleAccept = async () => {
         try {
@@ -58,11 +43,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         return (
             <View style={styles.container}>
                 <Text style={styles.header}>Privacy Policy</Text>
-                <Text style={styles.content}>
-                    {isAccepted
-                        ? "You have accepted the Privacy Policy."
-                        : "You have declined the Privacy Policy. You may not proceed further."}
-                </Text>
+           
             </View>
         );
     }
@@ -96,16 +77,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
                     By accepting, you agree to our privacy practices as described above.
                 </Text>
             </ScrollView>
-            {!isAccepted && !isDeclined && (
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
-                        <Text style={styles.buttonText}>Accept</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.declineButton} onPress={handleDecline}>
-                        <Text style={styles.buttonText}>Decline</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+
         </View>
     );
 };

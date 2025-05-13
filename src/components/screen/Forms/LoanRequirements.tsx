@@ -99,20 +99,20 @@ const LoanRequirements = ({ navigation }) => {
     let errorObj = {};
   
     if (!phoneNumber) {
-      errorObj.phoneNumber = "Phone number is required.";
+      errorObj.phoneNumber = "Phone Number Is Required.";
       valid = false;
     }
   
     if (!NoloanAmount || isNaN(NoloanAmount) || NoloanAmount <= 0) {
-      errorObj.loanAmount = "Please enter a valid loan amount.";
+      errorObj.loanAmount = "Please Enter A Valid Loan Amount.";
       valid = false;
     } else if (parseInt(NoloanAmount) < 5000) {
-      errorObj.loanAmount = "Loan amount must be at least ₹5,000.";
+      errorObj.loanAmount = "Loan Amount Must Be At Least ₹5,000.";
       valid = false;
     }
   
     if (!loanTenure || isNaN(loanTenure) || loanTenure < 1 || loanTenure > 60) {
-      errorObj.loanTenure = "Loan tenure must be between 1 and 60 months.";
+      errorObj.loanTenure = "Loan Tenure Must Be Between 1 And 60 Months.";
       valid = false;
     }
   
@@ -178,13 +178,13 @@ const LoanRequirements = ({ navigation }) => {
             <View style={appStyle.HeadingTitle}>
               <ThemedHeadingText style={[styles.header]}>Loan Requirements</ThemedHeadingText>
               <ThemedView style={{ width: "20%", height: 2, backgroundColor: "#FF4800", marginTop: 4 }}></ThemedView>
-              <ThemedText style={styles.subHeader}>Your loan preferences</ThemedText>
+              <ThemedText style={styles.subHeader}>Your Loan Preferences</ThemedText>
             </View>
 
             <ThemedHeadingText style={{ fontSize: 12, fontWeight: "bold" }}>Desired Loan Amount</ThemedHeadingText>
             <ThemedTextInput
               style={[ { width: screenWidth - 40 , borderWidth: 1, borderRadius: 6, paddingLeft: 10, marginTop: 10, textAlign: 'center', height: 60 }]}
-              placeholder="Enter loan amount"
+              placeholder="Enter the loan amount you wish to borrow."
               keyboardType="decimal-pad"
               value={loanAmount}
               onChangeText={handleInputChange}
@@ -274,7 +274,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     right: 0,
     position: 'absolute',
-    marginTop: 10
+    marginTop: 20,
+    paddingVertical: 0,
+    height: 30,
+    borderColor: "#D5D5D5",
+    
   },
   buttonContainer: {
     position: "absolute",

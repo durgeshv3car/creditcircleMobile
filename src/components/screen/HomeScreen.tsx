@@ -84,9 +84,8 @@ const HomeScreen = ({ navigation }) => {
     <ThemedView style={styles.container}>
       <ScrollView>
         {/* Banners */}
-        <ThemedView style={styles.bannerContainer}>
+        <ThemedView>
         <BannerSlider></BannerSlider>
-
         </ThemedView>
        
 
@@ -138,7 +137,7 @@ const HomeScreen = ({ navigation }) => {
 >
 <View style={appStyle.iconContainer}>
   <Image
-    source={require("../../assets/icons/H-Personal-Loan.png")}
+    source={require("../../assets/icons/H-BusinessLoan.png")}
     style={[imagecoleor, appStyle.homeAppicon]}
   />
 </View>
@@ -297,11 +296,11 @@ navigation.navigate("QuickListing", { investmentType: 'carinsurance' });
         </ThemedView>
 
 
-     <MoneySmart/>
+        <MoneySmart limit={4} />
 
         {/* Invite & Earn */}
         <ThemedView style={styles.inviteSection}>
-          <ThemedHeadingText style={styles.sectionTitle}>
+          <ThemedHeadingText  style={[appStyle.sectionTitle, { marginBottom: -20 }]}>
             Invite & Earn
           </ThemedHeadingText>
           <InviteBanner/>
@@ -382,10 +381,10 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: "#ddd", padding: 10, marginVertical: 5, borderRadius: 5 },
   emiButton: { backgroundColor: "#007bff", padding: 10, borderRadius: 5, alignItems: "center" },
   emiButtonText: { color: "#fff" },
-  recommendedSection: { padding: 20 },
+  recommendedSection: { paddingHorizontal: 18},
   recommendedCard: { marginRight: 10 },
   recommendedImage: { width: 150, height: 270, borderRadius: 5 },
-  inviteSection: { padding: 20, },
+  inviteSection: { padding: 20, paddingTop:10, paddingBottom:10 },
   inviteImage: { width: "100%", height: 150, borderRadius: 10, resizeMode: 'contain' },
 
   partnerLogo: { width: 80, height: 80, borderRadius: 50, }

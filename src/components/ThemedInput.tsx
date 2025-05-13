@@ -54,8 +54,11 @@ export function ThemedTextInput({
     }
   };
 
+
+
   // ** Final error to display: External error takes priority **
   const finalError = externalError || internalError;
+
 
   return (
     <View style={{ minHeight: 48, flex: 1, marginBottom: 26 }}>
@@ -78,6 +81,7 @@ export function ThemedTextInput({
             borderRadius: borderRadiusroun,
           },
           style,
+          {fontSize:14},
         ]}
         placeholder={placeHolder}
         keyboardType={keyboardType || "default"}
@@ -100,3 +104,4 @@ export function ThemedTextInput({
     </View>
   );
 }
+

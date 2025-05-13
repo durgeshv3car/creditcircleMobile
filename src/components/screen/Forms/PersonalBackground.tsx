@@ -67,15 +67,15 @@ const PersonalBackground = ({ navigation }) => {
         let errorObj = {};
 
         if (!gender) {
-            errorObj.gender = "Gender is required";
+            errorObj.gender = "Gender Is Required";
             valid = false;
         }
         if (!education) {
-            errorObj.education = "Education is required";
+            errorObj.education = "Education Is Required";
             valid = false;
         }
         if (!maritalStatus) {
-            errorObj.maritalStatus = "Marital Status is required";
+            errorObj.maritalStatus = "Marital Status Is Required";
             valid = false;
         }
 
@@ -153,7 +153,7 @@ const PersonalBackground = ({ navigation }) => {
                 <View style={styles.headerContainer}>
                     <ThemedHeadingText style={styles.header}>Personal Background</ThemedHeadingText>
                     <ThemedView style={appStyle.headerLine}></ThemedView>
-                    <ThemedText style={styles.subHeader}>Share your personal background</ThemedText>
+                    <ThemedText style={styles.subHeader}>Share Your Personal Background</ThemedText>
                 </View>
 
                 <ThemedHeadingText style={styles.title}>Gender</ThemedHeadingText>
@@ -198,7 +198,7 @@ const PersonalBackground = ({ navigation }) => {
                     error={errors.maritalStatus} 
                 />
 
-                <View>
+                <View style={{marginTop:26}}>
                     {loantype === "BusinessLoan" ? 
                   <View style={appStyle.buttonContainer}>
                   <Pressable style={styles.button} onPress={handleSubmit}>
@@ -275,7 +275,11 @@ const styles = StyleSheet.create({
     },
     sectionContainer: {
         marginTop: 10,
-        marginBottom: 20
+        marginBottom: 20,
+        backgroundColor: "#F4F4F4",
+        borderRadius: 6,
+        padding: 10,
+        paddingBottom: 0,
     }
 });
 

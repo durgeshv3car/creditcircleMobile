@@ -66,7 +66,7 @@ const appStyle = StyleSheet.create({
     sectionTitle: {
         fontSize: 16, 
         fontWeight: "bold", 
-        marginBottom: 0, 
+        marginBottom: 6, 
         color: theme === 'dark' ? "#999" : "#273283",
       },
       scrocontainer: {
@@ -89,7 +89,7 @@ const appStyle = StyleSheet.create({
             margin: 16,
             backgroundColor: theme === 'dark' ? "#333" : "#F5F5F5",
             borderRadius: 10,
-            padding: 6
+            padding: 10
         
       },
       bellicon: {

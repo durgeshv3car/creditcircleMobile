@@ -66,19 +66,31 @@ const PersonalDetailsOne = ({ navigation }) => {
     let errorObj = {};
 
     if (!firstName.trim()) {
-      errorObj.firstName = "First Name is required";
+      errorObj.firstName = "First Name Is Required";
       valid = false;
     }
     if (!lastName.trim()) {
-      errorObj.lastName = "Last Name is required";
+      errorObj.lastName = "Last Name Is Required";
       valid = false;
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errorObj.email = "Valid Email is required";
+      errorObj.email = "Valid Email Is Required";
       valid = false;
     }
+
+    // if (
+    //   !email.trim() ||
+    //   !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) ||
+    //   email.includes('..') ||
+    //   /@[^\w.-]/.test(email)
+    // ) {
+    //   errorObj.email = "Valid Email Is Required";
+    //   valid = false;
+    // }
+    
+
     if (!dob) {
-      errorObj.dob = "Date of Birth is required";
+      errorObj.dob = "Date of Birth Is Required";
       valid = false;
     }
 
@@ -298,10 +310,10 @@ const PersonalDetailsOne = ({ navigation }) => {
             </View>
 
 <View style={styles.row}>
-            <ThemedTextInput label="First Name" placeHolder="First name as per PAN" value={firstName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setFirstName(alphabetOnly); }} error={errors.firstName} />
-            <ThemedTextInput label="Last Name" placeHolder="Last name as per PAN" value={lastName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setLastName(alphabetOnly); }} error={errors.lastName} />
+            <ThemedTextInput label="First Name" placeHolder="First Name As Per PAN" value={firstName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setFirstName(alphabetOnly); }} error={errors.firstName} />
+            <ThemedTextInput label="Last Name" placeHolder="Last Name As Per PAN" value={lastName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setLastName(alphabetOnly); }} error={errors.lastName} />
             </View>
-            <ThemedTextInput label="Email Address" placeHolder="Enter your email address" keyboardType="email-address" value={email}
+            <ThemedTextInput label="Email Address" placeHolder="Enter Your Email Address" keyboardType="email-address" value={email}
               onChangeText={(text) => {
                 const noSpaces = text.replace(/\s/g, '');
                 setEmail(noSpaces);

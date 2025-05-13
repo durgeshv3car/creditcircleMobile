@@ -79,11 +79,11 @@ const RevenueIncomeDetails = ({ navigation }) => {
         let errorObj = {};
 
         if (!businessTurnover.trim()) {
-            errorObj.businessTurnover = "Gross annual turnover is required";
+            errorObj.businessTurnover = "Gross annual turnover Is Required";
             isValid = false;
         }
         if (!businessIncome.trim()) {
-            errorObj.businessIncome = "Gross annual income is required";
+            errorObj.businessIncome = "Gross annual income Is Required";
             isValid = false;
         }
         if (!hasCreditCard) {

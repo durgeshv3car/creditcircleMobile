@@ -62,11 +62,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'column',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Add paddingTop for Android StatusBar
+    // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Add paddingTop for Android StatusBar
   },
   tinyLogo: {
     width: 200,
-    height: 25,
     resizeMode: 'contain',
   },
 });

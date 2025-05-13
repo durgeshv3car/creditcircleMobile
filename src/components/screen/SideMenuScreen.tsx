@@ -442,11 +442,12 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, BackHandler, Appearance } from 'react-native';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import axios from 'axios';
-import {useNavigation } from '@react-navigation/native';
+import {CommonActions, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedHeadingText, ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { BASE_URL } from '../util/api_url';
+import DeviceInfo from 'react-native-device-info';
 
 const SideMenuScreen = () => {
   const navigation = useNavigation();
@@ -559,15 +560,31 @@ const SideMenuScreen = () => {
   //   navigation.navigate('LoginScreen');
   // };
 
+  // const logout = async () => {
+  //   try {
+  //     await AsyncStorage.clear();
+  //     Alert.alert('Logout', 'You have been logged out successfully.');
+  
+  //     navigation.reset({
+  //       index: 0,
+  //       routes: [{ name: 'LoginScreen' }],
+  //     });
+  //   } catch (error) {
+  //     console.error('Error clearing storage: ', error);
+  //   }
+  // };
+
   const logout = async () => {
     try {
       await AsyncStorage.clear();
       Alert.alert('Logout', 'You have been logged out successfully.');
   
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'LoginScreen' }],
-      });
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'LoginScreen' }],
+        })
+      );
     } catch (error) {
       console.error('Error clearing storage: ', error);
     }
@@ -584,29 +601,29 @@ const SideMenuScreen = () => {
       submenu: [
         { id: 1, name: 'Personal Loan', screen: 'PersonalDetailsOne', loantype: 'PersonalLoan' },
         { id: 2, name: 'Business Loan', screen: 'PersonalDetailsOne', loantype: 'BusinessLoan' },
-        { id: 3, name: 'Credit Card', screen: 'PersonalDetailsOne' }
+        { id: 3, name: 'Credit Card', screen: 'QuickListing', loantype: 'CreditCard',  investmentType: 'creditcard' }
       ],
       icon: require('../../assets/icons/Loan-Credit.png'),
     },
     {
       id: 2, name: 'Investment',
       submenu: [
-        { id: 1, name: 'Income Plans', screen: 'OtpScreen' },
-        { id: 2, name: 'Stock Market', screen: 'PersonalDetailsTwo' },
-        { id: 3, name: 'Mutual Funds', screen: 'PersonalDetailsOne' }
+        { id: 1, name: 'Income Plans', screen: 'QuickListing', loantype: 'Incomeplans',  investmentType: 'incomeplan' },
+        { id: 2, name: 'Stock Market', screen: 'QuickListing', loantype: 'Stockmarket',  investmentType: 'stockmarket'  },
+        { id: 3, name: 'Mutual Funds', screen: 'QuickListing', loantype: 'Mutualfunds',  investmentType: 'mutualfund'  }
       ],
       icon: require('../../assets/icons/Investment.png'),
     },
     {
       id: 3, name: 'Insurance',
       submenu: [
-        { id: 1, name: 'Health Insurance', screen: 'LoginScreen' },
-        { id: 2, name: 'Life Insurance', screen: 'LoginScreen' },
-        { id: 3, name: 'Car Insurance', screen: 'PersonalDetailsOne' }
+        { id: 1, name: 'Health Insurance', screen: 'QuickListing', loantype: 'Healthinsurance',  investmentType: 'healthinsurance'  },
+        { id: 2, name: 'Life Insurance', screen: 'QuickListing', loantype: 'Lifeinsurance',  investmentType: 'lifeinsurance'  },
+        { id: 3, name: 'Car Insurance', screen: 'QuickListing', loantype: 'Carinsurance',  investmentType: 'carinsurance'  }
       ],
       icon: require('../../assets/icons/Insurance.png'),
     },
-    { id: 4, name: 'Money Smarts', submenu: [], icon: require('../../assets/icons/Money-Smarts.png') },
+    { id: 4, name: 'Money Smarts', screen: 'MoneySmartListing', submenu: [], icon: require('../../assets/icons/Money-Smarts.png') },
     { id: 5, name: 'EMI Calculator', submenu: [], icon: require('../../assets/icons/Tax-Calculator.png'), screen: 'EMICalculatorScreen' },
     { id: 6, name: 'FAQs', submenu: [], icon: require('../../assets/icons/FAQs.png'), screen: 'FAQScreen' },
     { id: 7, name: 'Privacy Policy', submenu: [], icon: require('../../assets/icons/Privacy-Policy.png'), screen: 'PrivacyPolicyScreen' },
@@ -718,7 +735,7 @@ const SideMenuScreen = () => {
                         setType(submenuItem.loantype);
                         AsyncStorage.setItem('loanType', submenuItem.loantype);
                       }
-                      navigation.navigate(submenuItem.screen);
+                      navigation.navigate(submenuItem.screen, { investmentType: submenuItem.investmentType });
                     }}
                     style={styles.submenuItem}>
                     <ThemedView style={styles.submenuText}>
@@ -738,9 +755,11 @@ const SideMenuScreen = () => {
         <TouchableOpacity style={styles.logoutButton} onPress={logout}>
           <ThemedText style={styles.logoutText}>Logout</ThemedText>
         </TouchableOpacity>
-        <ThemedText style={{ left: 20, bottom: 10, position: 'absolute', fontSize: 12 }}>
-          Version 0.0.1
-        </ThemedText>
+        
+
+<ThemedText style={{ left: 20, bottom: 10, position: 'absolute', fontSize: 12 }}>
+  Version {DeviceInfo.getVersion()}
+</ThemedText>
       </View>
     </View>
   );

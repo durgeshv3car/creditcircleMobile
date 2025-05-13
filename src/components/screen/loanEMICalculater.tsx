@@ -1,5 +1,7 @@
 import appStyle from '@/AppStyles';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
+import { Image } from 'react-native';
 import {
     View,
     Text,
@@ -10,6 +12,7 @@ import {
 } from 'react-native';
 
 export default function EMICalculator() {
+    const navigation = useNavigation();
     const [loanAmount, setLoanAmount] = useState('100000');
     const [interestRate, setInterestRate] = useState('6.5');
     const [loanTenure, setLoanTenure] = useState('12');
@@ -47,7 +50,9 @@ export default function EMICalculator() {
 
     return (
         <SafeAreaView style={appStyle.Emicontainer}>
+            <View>
             <Text style={styles.title}>Loan EMI Calculator</Text>
+            </View>
 
             <View style={styles.inputContainer}>
                 <View style={styles.inputGroup}>
@@ -108,11 +113,19 @@ export default function EMICalculator() {
                 <View style={styles.emiContainer}>
                     <View style={styles.emiBox}>
                         <Text style={styles.emiLabel}>EMI</Text>
+                        <Text style={styles.emiAmount}>₹{formatIndianCurrency(emi)}</Text>
                     </View>
-                    <Text style={styles.emiAmount}>₹{formatIndianCurrency(emi)}</Text>
-                    <TouchableOpacity style={styles.checkEligibility}>
+                    
+                    {/* <TouchableOpacity style={styles.checkEligibility}>
                         <Text style={styles.buttonText}>Check Eligibility →</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
+
+<TouchableOpacity
+  style={styles.checkEligibility}
+  onPress={() => navigation.navigate('EligibilityScreen')} // replace with your target screen name
+>
+  <Text style={styles.buttonText}>Check Eligibility →</Text>
+</TouchableOpacity>
                 </View>
             </View>
         </SafeAreaView>
@@ -124,7 +137,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#1a237e',
+        color: '#FF4800',
         textAlign: 'center',
     },
     inputContainer: {
@@ -141,16 +154,17 @@ const styles = StyleSheet.create({
 
     },
     label: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
         color: '#1a237e',
-        textAlign: 'center'
+        textAlign: 'left'
     },
     sublabel: {
-        fontSize: 12,
+        fontSize: 10,
         color: '#666',
+        marginTop:-4,
         marginBottom: 5,
-        textAlign: 'center'
+        textAlign: 'left'
     },
     input: {
         borderWidth: 1,
@@ -180,6 +194,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginHorizontal: 10,
         color: '#666',
+        width:20
     },
     resultLabel: {
         fontSize: 10,
@@ -190,22 +205,31 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
+        marginTop:-6
     },
     emiContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#fff'
+        borderRadius:6
+        
     },
     emiBox: {
-        backgroundColor: '#1a237e',
         padding: 10,
         borderRadius: 8,
+        width:"46%",
+        backgroundColor:"#fff"
     },
     emiLabel: {
-        color: '#fff',
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: 'bold',
+        marginTop:-16,
+        marginLeft:-10,
+        width:40,
+        textAlign:"center",
+        backgroundColor:"#273283",
+        color:"#fff",
+        borderRadius:100,        
     },
     emiAmount: {
         fontSize: 24,

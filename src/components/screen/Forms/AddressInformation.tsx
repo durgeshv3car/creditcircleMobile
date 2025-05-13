@@ -55,8 +55,6 @@ const fetchProfileData = async () => {
       `${BASE_URL}/api/otp/get-profile?phoneNumber=${parsedValue}`
     );
 
-    console.log("Hello", parsedValue)
-
     if(profileResponse.data.houseNo === null || profileResponse.data.streetAddress === null || profileResponse.data.landmark === null ){
         setProfileExists(true);
         
@@ -79,6 +77,8 @@ const fetchProfileData = async () => {
 
 useEffect(() => {
   fetchProfileData();
+
+  
 }, []);
 
     const validateInputs = () => {
@@ -86,11 +86,11 @@ useEffect(() => {
         let errorObj = {};
 
         if (!houseNo.trim()) {
-            errorObj.houseNo = "House No. is required";
+            errorObj.houseNo = "House No. Is Required";
             valid = false;
         }
         if (!streetAddress.trim()) {
-            errorObj.streetAddress = "Street Address is required";
+            errorObj.streetAddress = "Street Address Is Required";
             valid = false;
         }
 
@@ -153,20 +153,20 @@ useEffect(() => {
                     value={houseNo}
                     onChangeText={setHouseNo}
                     error={errors.houseNo}
-                    placeHolder="Flat no., Building name, Apartment"
+                    placeHolder="Flat No., Building Name, Apartment"
                 />
                 <ThemedTextInput
                     label="Street Address"
                     value={streetAddress}
                     onChangeText={setStreetAddress}
                     error={errors.streetAddress}
-                    placeHolder="Road name, Area, Sector, Colony, Village"
+                    placeHolder="Road Name, Area, Sector, Colony, Village"
                 />
                 <ThemedTextInput
                     label="Landmark"
                     value={landmark}
                     onChangeText={setLandmark}
-                    placeHolder="E.g. near apollo hospital"
+                    placeHolder="E.g. Near Apollo Hospital"
                 />
                 </ScrollView>
 

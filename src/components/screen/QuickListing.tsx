@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import RenderHTML, { defaultListItemStyleSpecs } from 'react-native-render-html';
 import { useRoute } from '@react-navigation/native';
+import NotAvailable from '../common/NotAvailable';
 
 const QuickListing = ({route,  navigation}) => {
      const { offer } = route.params;
@@ -106,11 +107,17 @@ const QuickListing = ({route,  navigation}) => {
                     />
     
                     <View style={styles.buttonContainer}>
+                    <Text style={styles.joinknowMoreText}>
+                            join Fee: <Text style={styles.joinTextBoldfree}>{item.joinFee === null ? ("₹"+item.joinFee) : "Free"}</Text>
+                        </Text>
+
                         <Text style={styles.knowMoreText}>
-                            Annual Fee: <Text style={styles.TextBoldfree}>₹ {item.annualFee}</Text>
+                            Annual Fee: <Text style={styles.TextBoldfree}>{item.annualFee}</Text>
                         </Text>
     
-                        <TouchableOpacity
+                    </View>
+                    
+                    <TouchableOpacity
                             style={styles.applyNowButton}
                             onPress={() =>
                                 navigation.navigate('WebviewScreen', { urlName: item.companyUrl })
@@ -118,7 +125,6 @@ const QuickListing = ({route,  navigation}) => {
                         >
                             <Text style={styles.applyNowText}>{item.buttonType || 'APPLY NOW'}</Text>
                         </TouchableOpacity>
-                    </View>
                 </View>
             </View>
         );
@@ -128,11 +134,15 @@ const QuickListing = ({route,  navigation}) => {
         <>
         
         {noData && (
-            <View style={{ padding: 20, alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, color: '#999' }}>
-                    No Data found for this category.
-                </Text>
-            </View>
+            // <View style={{ padding: 20, alignItems: 'center' }}>
+            //     {/* <Text style={{ fontSize: 16, color: '#999' }}>
+            //         No Data found for this category.
+            //     </Text> */}
+
+
+            // </View>
+
+            <NotAvailable title="Image not available for this item." uris={"https://placehold.co/300x200?text=Not+Available"} />
         )}
         
         <FlatList
@@ -163,8 +173,9 @@ const styles = StyleSheet.create({
     },
     cardImage: {
         width: '100%',
-        height: 210,
+        height: 180,
         resizeMode: 'cover',
+        borderRadius:12
     },
     title: {
         fontSize: 20,
@@ -176,6 +187,11 @@ const styles = StyleSheet.create({
     htmlText: {
         color: '#333',
     },
+
+    joinTextBoldfree: {
+        fontWeight: '900',
+        color: "green",
+    },
     TextBoldfree: {
         fontWeight: 'bold',
         color: '#000',
@@ -186,15 +202,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 12,
     },
+    joinknowMoreText: {
+        fontSize: 14,
+        color: 'green',
+    },
+
     knowMoreText: {
         fontSize: 14,
         color: '#333',
     },
+
     applyNowButton: {
         paddingVertical: 10,
         paddingHorizontal: 20,
         backgroundColor: '#FF4800',
-        borderRadius: 20,
+        borderRadius: 6,
+        marginTop:6
     },
     applyNowText: {
         color: '#fff',

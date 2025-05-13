@@ -11,11 +11,12 @@ import {
 import axios from 'axios';
 import { BASE_URL } from '../util/api_url';
 import { useNavigation } from '@react-navigation/native';
+import appStyle from '@/AppStyles';
 
-export const MoneySmart = () => {
+export const MoneySmart = ({ limit = 4 }) => {
     const [gridData, setGridData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showAll, setShowAll] = useState(false); // 👈 NEW
+    const [showAll, setShowAll] = useState(false);
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -40,15 +41,17 @@ export const MoneySmart = () => {
                 style={styles.image}
                 resizeMode="cover"
             />
-            <Text style={styles.text}>{item.name}</Text>
+            <Text style={styles.text} numberOfLines={3} ellipsizeMode="tail">
+    {item.title}
+</Text>
         </TouchableOpacity>
     );
 
-    const dataToDisplay = showAll ? gridData : gridData.slice(0, 4);
+    const dataToDisplay = showAll ? gridData : gridData.slice(0, limit);
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Money Smarts</Text>
+            <Text style={appStyle.sectionTitle}>Money Smarts</Text>
             {loading ? (
                 <ActivityIndicator size="large" color="#000" />
             ) : (
@@ -61,14 +64,14 @@ export const MoneySmart = () => {
                         contentContainerStyle={styles.gridContainer}
                     />
 
-                    {!showAll && gridData.length > 4 && (
+                    {/* {!showAll && gridData.length > limit && (
                         <TouchableOpacity
                             style={styles.viewAllButton}
                             onPress={() => setShowAll(true)}
                         >
                             <Text style={styles.viewAllText}>View All</Text>
                         </TouchableOpacity>
-                    )}
+                    )} */}
                 </>
             )}
         </View>
@@ -80,33 +83,57 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+        paddingBottom:0,
+        paddingRight: 8,
+        marginTop:10,
         backgroundColor: '#fff',
     },
     header: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 16,
+        
     },
     gridContainer: {
         justifyContent: 'space-between',
+        gap: 8,
+        paddingBottom: 16,
     },
     gridItem: {
         flex: 1,
-        margin: 8,
-        padding: 16,
-        backgroundColor: '#f9f9f9',
+        marginRight: 8,
+        borderColor: '#ccc',
+        backgroundColor:"#F9F9F9",
+        borderWidth: 1,
+        padding:6,
         borderRadius: 8,
         alignItems: 'center',
     },
     image: {
-        width: 100,
+        width: "100%",
         height: 100,
-        marginBottom: 8,
-        borderRadius: 8,
+        marginBottom: 4,
+        borderRadius: 4,
+        backgroundColor: '#ccc',
+        resizeMode: "cover",
+    
     },
+    // text: {
+    //     fontSize: 14,
+    //     textAlign: 'left',
+    //     padding: 2,
+    //     paddingHorizontal:8,
+    //     marginBottom: 8,
+    //     fontWeight:'600',
+    //     color:"#273283",
+
+    // },
+
     text: {
-        fontSize: 16,
-        textAlign: 'center',
-        flexShrink: 1,
+        fontSize: 14,
+        textAlign: 'left',
+        padding: 2,
+        fontWeight: '600',
+        color: "#273283",
+        lineHeight: 18,
     },
 });

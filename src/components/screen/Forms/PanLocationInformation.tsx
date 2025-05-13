@@ -139,11 +139,11 @@ useEffect(() => {
   //     return false;
   //   }
   //   if (!city.trim()) {
-  //     Alert.alert("Invalid City", "City cannot be empty");
+  //     Alert.alert("Invalid City", "City Cannot Be Empty");
   //     return false;
   //   }
   //   if (!state.trim()) {
-  //     Alert.alert("Invalid State", "State cannot be empty");
+  //     Alert.alert("Invalid State", "State Cannot Be Empty");
   //     return false;
   //   }
   //   return true;
@@ -159,22 +159,22 @@ useEffect(() => {
   
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
     if (!pan.trim() || !panRegex.test(pan)) {
-      errorObj.pan = "Enter a valid 10-character PAN (ABCDE1234F)";
+      errorObj.pan = "Enter A Valid 10-character PAN (ABCDE1234F)";
       valid = false;
     }
   
     if (!pinCode.trim() || !pinRegex.test(pinCode)) {
-      errorObj.pinCode = "Enter a valid 6-digit Pin Code";
+      errorObj.pinCode = "Enter A Valid 6-digit Pin Code";
       valid = false;
     }
   
     if (!city.trim()) {
-      errorObj.city = "City cannot be empty";
+      errorObj.city = "City Cannot Be Empty";
       valid = false;
     }
   
     if (!state.trim()) {
-      errorObj.state = "State cannot be empty";
+      errorObj.state = "State Cannot Be Empty";
       valid = false;
     }
   
@@ -203,7 +203,7 @@ useEffect(() => {
       } else {
       }
     } catch (error) {
-      console.error("Error updating PAN & location:", error);
+      console.error("Error Updating PAN & Location:", error);
     } finally {
       setLoading(false);
     }
@@ -239,7 +239,7 @@ useEffect(() => {
 
 <ThemedTextInput
   label="PAN"
-  placeHolder="Permanent account number"
+  placeHolder="Permanent Account Number"
   maxLength={10}
   value={pan}
   autoCapitalize="characters"
@@ -256,7 +256,7 @@ useEffect(() => {
         <ThemedTextInput
           label="Pin Code"
           maxLength={6}
-          placeHolder="Enter your area code"
+          placeHolder="Enter Your Area Code"
           keyboardType="number-pad"
           value={pinCode}
           onChangeText={(text) => {
@@ -274,13 +274,16 @@ useEffect(() => {
             placeHolder="City"
             editable={false}
             error={errors.city}
+            disable={false}
             containerStyle={{ flex: 1 }}
+            // style={{ backgroundColor:"#ccc",  borderRadius: 5 }}
           />
           <ThemedTextInput
             label="State"
-            value={state}
+            value={state ? state.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()) : ""}
             placeHolder="State"
             editable={false}
+            disable={false}
             error={errors.state}
             containerStyle={{ flex: 1 }}
           />
