@@ -170,7 +170,7 @@ const PersonalBackground = ({ navigation }) => {
                 />
 
                 <ThemedView style={styles.sectionContainer}>
-                    <ThemedHeadingText style={styles.title}>Educational Qualification</ThemedHeadingText>
+                    <Text style={styles.title}>Educational Qualification</Text>
                     <ThemedRadioButtonList 
                         options={[
                             { label: 'Under Graduate', description: "Currently pursuing a diploma or bachelor's degree", value: 'Under Graduate' },

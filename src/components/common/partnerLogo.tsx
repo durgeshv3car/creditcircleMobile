@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../util/api_url';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import appStyle from '@/AppStyles';
 
 const PartnerLogo = () => {
   const [data, setData] = useState([]);
@@ -18,7 +20,17 @@ const PartnerLogo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/banner/images/logo`);
+        // const response = await axios.get(`${BASE_URL}/api/banner/images/logo`);
+
+         const token = await AsyncStorage.getItem('userToken');
+
+  const response = await axios.get(`${BASE_URL}/api/banner/images/logo`, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+
         if (response.data.success && Array.isArray(response.data.images)) {
           setData(response.data.images);
         } else {
@@ -51,7 +63,7 @@ const PartnerLogo = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Our Lending Partners</Text>
+      <Text style={appStyle.sectionTitle}>Our Lending Partners</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : data.length > 0 ? (

@@ -12,6 +12,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { Image } from 'react-native';
 import { ThemedTextInput } from '../ThemedInput';
+import appStyle from '@/AppStyles';
 
 const TaxCalculatorScreen = () => {
   const [step, setStep] = useState(1);
@@ -212,7 +213,8 @@ const inputProps = {
         return (
           <>
             <Text style={styles.title}>Start Your Tax Calculation</Text>
-            <Text style={styles.label}>Financial Year</Text>
+            <Text style={[styles.label, appStyle.labelco]}>Financial Year</Text>
+             <View style={[styles.pickerWrapper]}>
             <Picker
               selectedValue={form.financialYear}
              
@@ -222,8 +224,10 @@ const inputProps = {
               <Picker.Item label="2023–24" value="2023-24" />
               <Picker.Item label="2024–25" value="2024-25" />
             </Picker>
+</View>
 
-            <Text style={styles.label}>Age Group</Text>
+            <Text style={[styles.label, appStyle.labelco]}>Age Group</Text>
+            <View style={[styles.pickerWrapper]}>
             <Picker
               selectedValue={form.ageGroup}
               style={styles.dropdown}
@@ -234,6 +238,7 @@ const inputProps = {
               <Picker.Item label="60–79 (Senior)" value="60-79" />
               <Picker.Item label="80+ (Super Senior)" value="80plus" />
             </Picker>
+            </View>
           </>
         );
 
@@ -245,7 +250,7 @@ const inputProps = {
   {/* Section: Salary & Allowances */}
   <Text style={styles.sectionHeading}>Salary & Allowances</Text>
 
-  <Text style={styles.label}>Income from Salary (before HRA, LTA)</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Income from Salary (before HRA, LTA)</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     placeholder="Income from Salary (before HRA, LTA)"
@@ -256,7 +261,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('incomeSalary', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Special Allowance</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Special Allowance</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     placeholder="Special Allowance"
@@ -266,7 +271,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('specialAllowance', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Bonus/Variable Pay</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Bonus/Variable Pay</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -277,7 +282,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('bonus', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Children Education Allowance</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Children Education Allowance</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -288,7 +293,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('childrenEducation', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Telephone/Internet Reimbursement</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Telephone/Internet Reimbursement</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -299,7 +304,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('telecom', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Other Allowances (Fuel, Driver, Attire)</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Other Allowances (Fuel, Driver, Attire)</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -313,7 +318,7 @@ const inputProps = {
   {/* Section: Rental & Investment Income */}
   <Text style={styles.sectionHeading}>Rental & Investment Income</Text>
 
-  <Text style={styles.label}>Rental Income (Let-Out Property)</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Rental Income (Let-Out Property)</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -324,7 +329,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('rentalIncome', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Income from Digital Assets</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Income from Digital Assets</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -335,7 +340,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('incomeDigitalAssets', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Interest Income (Savings/Deposits)</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Interest Income (Savings/Deposits)</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -346,7 +351,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('interestIncome', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Other Income (Freelancing, Perks)</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Other Income (Freelancing, Perks)</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -357,7 +362,7 @@ const inputProps = {
     onChangeText={(text) => handleInputChange('otherIncome', text.replace(/,/g, ''))}
   />
 
-  <Text style={styles.label}>Perquisite Income (House, Loan, etc.)</Text>
+  <Text style={[styles.label, appStyle.labelco]}>Perquisite Income (House, Loan, etc.)</Text>
   <ThemedTextInput
    placeholderTextColor="#DADADA"
     
@@ -379,7 +384,7 @@ const inputProps = {
             
               <Text style={styles.sectionHeading}>Salary-Linked Exemptions</Text>
             
-              <Text style={styles.label}>HRA Received</Text>
+              <Text style={[styles.label, appStyle.labelco]}>HRA Received</Text>
               <ThemedTextInput
    placeholderTextColor="#DADADA"
                 
@@ -390,7 +395,7 @@ const inputProps = {
                 onChangeText={(text) => handleInputChange('hraReceived', text.replace(/,/g, ''))}
               />
             
-              <Text style={styles.label}>LTA Claimed</Text>
+              <Text style={[styles.label, appStyle.labelco]}>LTA Claimed</Text>
               <ThemedTextInput
    placeholderTextColor="#DADADA"
                 
@@ -401,7 +406,7 @@ const inputProps = {
                 onChangeText={(text) => handleInputChange('ltaClaimed', text.replace(/,/g, ''))}
               />
             
-              <Text style={styles.label}>Professional Tax Paid</Text>
+              <Text style={[styles.label, appStyle.labelco]}>Professional Tax Paid</Text>
               <ThemedTextInput
    placeholderTextColor="#DADADA"
                 
@@ -414,7 +419,7 @@ const inputProps = {
             
               <Text style={styles.sectionHeading}>Education & Reimbursements</Text>
             
-              <Text style={styles.label}>Children Education Allowance (Exempt)</Text>
+              <Text style={[styles.label, appStyle.labelco]}>Children Education Allowance (Exempt)</Text>
               <ThemedTextInput
    placeholderTextColor="#DADADA"
                 
@@ -425,7 +430,7 @@ const inputProps = {
                 onChangeText={(text) => handleInputChange('childrenEducationExempt', text.replace(/,/g, ''))}
               />
             
-              <Text style={styles.label}>Other Reimbursements (Fuel, Driver, Internet, etc.)</Text>
+              <Text style={[styles.label, appStyle.labelco]}>Other Reimbursements (Fuel, Driver, Internet, etc.)</Text>
               <ThemedTextInput
    placeholderTextColor="#DADADA"
                 
@@ -438,7 +443,7 @@ const inputProps = {
             
               <Text style={styles.sectionHeading}>Home Loan Interest</Text>
             
-              <Text style={styles.label}>Home Loan Interest – Self Occupied</Text>
+              <Text style={[styles.label, appStyle.labelco]}>Home Loan Interest – Self Occupied</Text>
               <ThemedTextInput
    placeholderTextColor="#DADADA"
                 
@@ -461,7 +466,7 @@ const inputProps = {
                 {/* Section: 80C Investments */}
                 <Text style={styles.sectionHeading}>Declare Your 80C Investments</Text>
               
-                <Text style={styles.label}>LIC Premiums</Text>
+                <Text style={[styles.label, appStyle.labelco]}>LIC Premiums</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -472,7 +477,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('lic', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>ULIP (Unit Linked Insurance Plan)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>ULIP (Unit Linked Insurance Plan)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -483,7 +488,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('ulip', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>PPF (Public Provident Fund)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>PPF (Public Provident Fund)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -494,7 +499,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('ppf', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>Tuition Fees (for up to 2 children)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>Tuition Fees (for up to 2 children)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -505,7 +510,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('tuitionFees', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>ELSS Mutual Funds</Text>
+                <Text style={[styles.label, appStyle.labelco]}>ELSS Mutual Funds</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -516,7 +521,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('elss', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>NSC (National Savings Certificate)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>NSC (National Savings Certificate)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -527,7 +532,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('nsc', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>Post Office 5-Year Deposit</Text>
+                <Text style={[styles.label, appStyle.labelco]}>Post Office 5-Year Deposit</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -538,7 +543,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('postOffice', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>Tax Saver Fixed Deposit (5-Year FD)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>Tax Saver Fixed Deposit (5-Year FD)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -549,7 +554,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('taxSaverFd', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>Jeevan Suraksha Scheme (JSS)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>Jeevan Suraksha Scheme (JSS)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -560,7 +565,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('jss', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>NSS (National Saving Scheme)</Text>
+                <Text style={[styles.label, appStyle.labelco]}>NSS (National Saving Scheme)</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -571,7 +576,7 @@ const inputProps = {
                   onChangeText={(text) => handleInputChange('nss', text.replace(/,/g, ''))}
                 />
               
-                <Text style={styles.label}>Home Loan Principal Repayment</Text>
+                <Text style={[styles.label, appStyle.labelco]}>Home Loan Principal Repayment</Text>
                 <ThemedTextInput
    placeholderTextColor="#DADADA"
                   
@@ -599,7 +604,7 @@ const inputProps = {
       </TouchableOpacity>
     </View>
   
-    <Text style={styles.label}>80D – Medical Insurance & Preventive Checkup</Text>
+    <Text style={[styles.label, appStyle.labelco]}>80D – Medical Insurance & Preventive Checkup</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -610,7 +615,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80D', text.replace(/,/g, ''))}
     />
   
-    <Text style={styles.label}>80E – Interest on Education Loan</Text>
+    <Text style={[styles.label, appStyle.labelco]}>80E – Interest on Education Loan</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -620,7 +625,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80E', text.replace(/,/g, ''))}
     />
   
-    <Text style={styles.label}>80CCD(1B) – Employee Voluntary NPS Contribution</Text>
+    <Text style={[styles.label, appStyle.labelco]}>80CCD(1B) – Employee Voluntary NPS Contribution</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -630,7 +635,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80CCD1B', text.replace(/,/g, ''))}
     />
   
-    {/* <Text style={styles.label}>80CCD(2) – Employer NPS Contribution</Text>
+    {/* <Text style={[styles.label, appStyle.labelco]}>80CCD(2) – Employer NPS Contribution</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -640,7 +645,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80CCD2', text.replace(/,/g, ''))}
     /> */}
   
-    {/* <Text style={styles.label}>80EEA – Home Loan Interest (FY 2022–23)</Text>
+    {/* <Text style={[styles.label, appStyle.labelco]}>80EEA – Home Loan Interest (FY 2022–23)</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -650,7 +655,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80EEA', text.replace(/,/g, ''))}
     /> */}
   
-    <Text style={styles.label}>80TTA – Interest from Savings Account</Text>
+    <Text style={[styles.label, appStyle.labelco]}>80TTA – Interest from Savings Account</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -660,7 +665,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80TTA', text.replace(/,/g, ''))}
     />
   
-    <Text style={styles.label}>80G – Donations to Approved Funds</Text>
+    <Text style={[styles.label, appStyle.labelco]}>80G – Donations to Approved Funds</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -670,7 +675,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80G', text.replace(/,/g, ''))}
     />
   
-    <Text style={styles.label}>80U / 80DD – Disability Deduction</Text>
+    <Text style={[styles.label, appStyle.labelco]}>80U / 80DD – Disability Deduction</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -680,7 +685,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80U', text.replace(/,/g, ''))}
     />
   
-    {/* <Text style={styles.label}>80DDB – Specified Disease Treatment</Text>
+    {/* <Text style={[styles.label, appStyle.labelco]}>80DDB – Specified Disease Treatment</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -690,7 +695,7 @@ const inputProps = {
       onChangeText={(text) => handleInputChange('deduction80DDB', text.replace(/,/g, ''))}
     />
    */}
-    <Text style={styles.label}>Other Deductions</Text>
+    <Text style={[styles.label, appStyle.labelco]}>Other Deductions</Text>
     <ThemedTextInput
    placeholderTextColor="#DADADA"
       
@@ -724,7 +729,7 @@ const inputProps = {
   {/* Old Regime Block */}
   <View style={styles.taxBox}>
     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <Text style={styles.label}>Old Regime</Text>
+      <Text style={[styles.label, appStyle.labelco]}>Old Regime</Text>
       {recommendedRegime === 'Old' && (
         <Text style={{fontSize:12, backgroundColor:"#349c67", paddingHorizontal:2, borderRadius:4, color:"#fff"}}>Recommended</Text>
       )}
@@ -773,7 +778,7 @@ const inputProps = {
   {/* New Regime Block */}
   <View style={styles.taxBox}>
     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <Text style={styles.label}>New Regime</Text>
+      <Text style={[styles.label, appStyle.labelco]}>New Regime</Text>
       {recommendedRegime === 'New' && (
         // <Image
         //   source={require('../../assets/icons/checkmark.png')}
@@ -933,7 +938,6 @@ const inputProps = {
     marginTop:-55, 
     paddingRight:30,
     height:40,
-    // backgroundColor:"red"
     }}>
     {step > 1 && (
       <TouchableOpacity onPress={() => setStep(step - 1)}>
@@ -947,7 +951,7 @@ const inputProps = {
    
   
 
-  <ScrollView contentContainerStyle={[styles.container]}>
+  <ScrollView contentContainerStyle={[styles.container, appStyle.incometex]}>
     {renderStep()}
   </ScrollView>
 
@@ -965,7 +969,7 @@ const inputProps = {
     </View> */}
 
 {step !== 6 && (
-  <View style={[styles.buttonContainer, { height:60 }]}>
+  <View style={[styles.buttonContainer, appStyle.buttoncont,  { height:60 }]}>
     {step > 1 && step < 6 && (
       <TouchableOpacity onPress={() => setStep(step - 1)} style={styles.backButton}>
         <Text style={styles.buttonText}>Back</Text>
@@ -987,7 +991,7 @@ const inputProps = {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20, flexGrow: 1, backgroundColor: '#ffffff' },
+  container: { padding: 20, flexGrow: 1 },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16, color:"#FF4800" },
   input: {
     borderWidth: 1,
@@ -1001,9 +1005,13 @@ const styles = StyleSheet.create({
   dropdown: {
     borderWidth: 1,
     borderColor: 'red',
-    borderRadius: 6,
-    marginBottom: 20,
-    backgroundColor: '#fff',
+  },
+      pickerWrapper: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#ccc', // default, can be overridden
+    marginVertical: 10,
+    overflow: 'hidden',
   },
   sectionHeading: {
     fontSize: 16,
@@ -1016,11 +1024,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex:0,
- 
     padding:4,
     width:'100%',
     zIndex:9999,
-    gap:5
+    gap:5,
   },
   nextButton: {
     backgroundColor: '#FF4800',
@@ -1039,12 +1046,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,    
     flex:1,
     width:"100%",
-    textAlign:'center'
+    textAlign:'center',
   },
   buttonText: {
     color: '#fff',
     width:'100%',
-    textAlign:'center'
+    textAlign:'center',
+    top: 4,
   },
   cardContainer: {
     padding: 0,
@@ -1091,6 +1099,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
+
   ctaText: { color: '#fff', fontWeight: '600' },
   checkmark:{width:30, height:30},
   titleresult:{fontSize:20, color:"#FF4800", fontWeight:600},

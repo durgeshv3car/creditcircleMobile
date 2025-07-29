@@ -1,4 +1,4 @@
-package com.creditcircle
+package com.credit.creditcircle
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

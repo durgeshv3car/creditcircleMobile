@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">creditcircle.us-east-1.elasticbeanstalk.com</domain>
+        <domain includeSubdomains="true">https://app.creditcircle.in</domain>
     </domain-config>
     <debug-overrides>
         <trust-anchors>

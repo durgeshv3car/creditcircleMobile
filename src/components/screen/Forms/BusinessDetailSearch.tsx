@@ -96,9 +96,9 @@ const BusinessDetailSearch = ({ navigation }) => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={appStyle.gstcraeccontainer}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView style={{ flex: 1 }}>
+        <KeyboardAvoidingView style={{flex:1}}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={appStyle.HeadingTitle}>
               <ThemedHeadingText style={styles.header}>GST Details</ThemedHeadingText>
@@ -120,7 +120,7 @@ const BusinessDetailSearch = ({ navigation }) => {
               <View style={styles.inputGroup}>
                 <TextInput
                   placeholder="Enter your business GST number"
-                  style={[styles.input, gstError && styles.inputError]}
+                  style={[appStyle.gstsearch, gstError && styles.inputError]}
                   value={gstNumber}
                   onChangeText={handleGSTChange}
                   maxLength={15}
@@ -144,22 +144,15 @@ const BusinessDetailSearch = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContainer: {paddingHorizontal: 20, paddingBottom: 50, backgroundColor: '#fff' },
+  
+  scrollContainer: {paddingHorizontal: 20, paddingBottom: 50},
   header: { fontSize: 18, fontWeight: 'bold' },
   headerLine: { width: '20%', height: 2, backgroundColor: '#FF4800', marginTop: 4 },
   inputGroup: { marginVertical: 15 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 50,
-    paddingHorizontal: 15,
-    height: 48,
-    textAlign: 'center',
-  },
+ 
   inputError: { borderColor: '#FF3B30' },
   errorText: { color: '#FF3B30', fontSize: 12, marginTop: 4, textAlign: 'center' },
-  buttonContainer: { left: 0, right: 0,  alignItems: 'center' },
+  buttonContainer: { left: 0, right: 0,  alignItems: 'center', height:80 },
   button: { backgroundColor: '#FF4800', paddingVertical: 15, borderRadius: 5, width: '90%', alignItems: 'center' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });

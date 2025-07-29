@@ -93,7 +93,6 @@ const Professionaldetails = ({ navigation }) => {
             const response = await axios.post(API_BASE_URL, requestBody);
 
             if (response.status === 200) {
-                Alert.alert("Success", "Professional details updated successfully");
                 navigation.navigate("BusinessDetailSearch");
             }
         } catch (error) {
@@ -136,6 +135,7 @@ const Professionaldetails = ({ navigation }) => {
                             value={registrationNumber}
                             onChangeText={setRegistrationNumber}
                             error={errors.registrationNumber}
+                            
                         />
 
                         {/* Year of Registration */}
@@ -163,7 +163,7 @@ const Professionaldetails = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, paddingTop:20 },
     scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
     title: { fontSize: 12, fontWeight: "bold", marginBottom: 5 },
     button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },

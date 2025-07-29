@@ -129,9 +129,10 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../util/api_url';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get('window').width;
-const cardWidth = (screenWidth - 48) / 2;
+const cardWidth = (screenWidth - 38) / 2;
 
 const MoneySmartListing = ({ navigation }) => {
     const [listData, setListData] = useState([]);
@@ -139,18 +140,43 @@ const MoneySmartListing = ({ navigation }) => {
 
     useEffect(() => {
         axios
-            .get(`${BASE_URL}/api/offer/money`)
-            .then(response => {
-                if (response.data?.offers && Array.isArray(response.data.offers)) {
-                    setListData(response.data.offers);
-                } else {
-                    setListData([]);
+            // .get(`${BASE_URL}/api/offer/money`)
+            // .then(response => {
+            //     if (response.data?.offers && Array.isArray(response.data.offers)) {
+            //         setListData(response.data.offers);
+            //     } else {
+            //         setListData([]);
+            //     }
+            // })
+            // .catch(error => {
+            //     console.error('Error fetching list data:', error);
+            // })
+            // .finally(() => setLoading(false));
+
+            const fetchData = async () => {
+                try {
+                    const token = await AsyncStorage.getItem('userToken');
+
+                    const response = await axios.get(`${BASE_URL}/api/offer/money`, {
+                        headers: {
+                            Authorization: token,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.data?.offers && Array.isArray(response.data.offers)) {
+                        setListData(response.data.offers);
+                    } else {
+                        setListData([]);
+                    }
+                } catch (error) {
+                    console.error('Error fetching list data:', error);
+                } finally {
+                    setLoading(false);
                 }
-            })
-            .catch(error => {
-                console.error('Error fetching list data:', error);
-            })
-            .finally(() => setLoading(false));
+            };
+
+            fetchData();
     }, []);
 
     const renderItem = ({ item }) => (
@@ -164,7 +190,7 @@ const MoneySmartListing = ({ navigation }) => {
             <Image source={{ uri: item.offerImage?.mobile }} style={styles.cardImage} />
             <View style={styles.cardContent}>
                 <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
-                <Text style={styles.cardSubtitle} numberOfLines={2}>{item.description}</Text>
+                {/* <Text style={styles.cardSubtitle} numberOfLines={2}>{item.description}</Text> */}
             </View>
         </Pressable>
     );
@@ -193,31 +219,26 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f9fafa',
-        paddingHorizontal: 16,
-        paddingTop: 16,
+        paddingHorizontal: 10,
+        marginTop:10
+      
     },
     card: {
         width: cardWidth,
         backgroundColor: '#ffffffee',
-        borderRadius: 16,
-        padding: 12,
-        marginBottom: 16,
+        borderRadius: 6,
+        padding: 4,
+        marginTop:8,
+        margin: 2,
+       justifyContent: 'center',
+       alignItems: 'center',
         overflow: 'hidden',
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOpacity: 0.1,
-                shadowOffset: { width: 0, height: 4 },
-                shadowRadius: 8,
-            },
-            android: {
-                elevation: 4,
-            },
-        }),
+        borderColor: '#ccc',
+        borderWidth: 1,
     },
     cardImage: {
         width: '100%',
-        height: 100,
+        height: 80,
         borderRadius: 12,
         marginBottom: 10,
         backgroundColor: '#e0e0e0',
@@ -226,13 +247,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardTitle: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '600',
         color: '#1e1e1e',
         marginBottom: 4,
     },
     cardSubtitle: {
-        fontSize: 13,
+        fontSize: 12,
         color: '#666',
     },
     noData: {

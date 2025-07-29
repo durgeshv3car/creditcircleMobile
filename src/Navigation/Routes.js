@@ -58,7 +58,7 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { Appearance, StatusBar } from 'react-native';
 import { NavigationIndependentTree, ThemeProvider } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -119,6 +119,8 @@ import DealDetailScreen from '@/components/screen/DealDetailScreen';
 import { MyWebComponent } from '@/components/common/MyWebComponent';
 import { navigationRef } from '../../RootNavigation'; // adjust path if needed
 import QuickListing from '@/components/screen/QuickListing';
+import WalletPoint from '@/components/screen/WalletPoint';
+import appStyle from '@/AppStyles';
 // import FingerprintAuthScreen from '@/components/common/FingerprintAuthScreen';
 
 
@@ -136,6 +138,9 @@ const LightTheme = {
   activeTab: '#000000',
 };
 
+
+  const theme = Appearance.getColorScheme();
+
 const useThemeColor = (light, dark) => useColorScheme() === 'dark' ? dark : light;
 
 const BottomTabs = () => {
@@ -144,9 +149,9 @@ const BottomTabs = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarStyle: {
-          backgroundColor: colorScheme === 'dark' ? DarkTheme.tabBar : LightTheme.tabBar,
+          backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
           paddingBottom: 10,
-          height: 60,
+          height: 70,
         },
         headerShown: true,
         tabBarInactiveTintColor: '#333',
@@ -154,8 +159,8 @@ const BottomTabs = () => {
         tabBarIcon: ({ focused }) => {
           let iconSource;
           if (route.name === 'Home') iconSource = require('../assets/icons/homeIcon.png');
-          else if (route.name === 'Loan Offers') iconSource = require('../assets/icons/Loan-Offers.png');
-          else if (route.name === 'Offers') iconSource = require('../assets/icons/Deals.png');
+          else if (route.name === 'Loan Status') iconSource = require('../assets/icons/Loan-Offers.png');
+          else if (route.name === 'All Offers') iconSource = require('../assets/icons/Deals.png');
           else if (route.name === 'Tax Calculator') iconSource = require('../assets/icons/Tax-Calculator.png');
           else if (route.name === 'Profile') iconSource = require('../assets/icons/Profile.png');
 
@@ -177,15 +182,78 @@ const BottomTabs = () => {
                 header: ({ route }) =>
                    <CustomHeader titleName="Personal Details" step="2/6" />,
                }} />
-      <Tab.Screen name="Loan Offers" component={LoanOffer} />
-      <Tab.Screen name="Offers" component={DealsScreen} />
-      <Tab.Screen name="Tax Calculator" component={IncomeTaxCalculator} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+  name="Loan Status"
+  component={LoanOffer}
+  options={{
+    headerShown: true, // make sure header is visible
+    headerStyle: {
+       backgroundColor: colorScheme === 'dark' ? "#222" : "#fff",
+        elevation: 4,              // Android shadow
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+    },
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color:colorScheme === 'dark' ? "#fff" : "#000",
+    },
+  }}
+/>
+
+      <Tab.Screen name="All Offers" component={DealsScreen} 
+      options={{
+    headerShown: true, // make sure header is visible
+    headerStyle: {
+       backgroundColor: colorScheme === 'dark' ? "#222" : "#fff",
+        elevation: 4,              // Android shadow
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+    },
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color:colorScheme === 'dark' ? "#fff" : "#000",
+    },
+  }}
+      />
+      <Tab.Screen name="Tax Calculator" component={IncomeTaxCalculator}
+      options={{
+    headerShown: true, // make sure header is visible
+    headerStyle: {
+       backgroundColor: colorScheme === 'dark' ? "#222" : "#fff",
+        elevation: 4,              // Android shadow
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+    },
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color:colorScheme === 'dark' ? "#fff" : "#000",
+    },
+  }}
+      />
+      <Tab.Screen name="Profile" component={ProfileScreen} 
+      options={{
+    headerShown: true, // make sure header is visible
+    headerStyle: {
+       backgroundColor: colorScheme === 'dark' ? "#222" : "#fff",
+        elevation: 4,              // Android shadow
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+    },
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color:colorScheme === 'dark' ? "#fff" : "#000",
+    },
+  }}
+      />
     </Tab.Navigator>
   );
 };
 
-const Routes = () => {
+const Routes = ({ onReady }) => {
   const [splashVisible, setSplashVisible] = useState(true);
   const [userToken, setUserToken] = useState(null);
 
@@ -203,35 +271,48 @@ const Routes = () => {
   }, []);
 
   return (
-    <NavigationContainer ref={navigationRef}>
-      <StatusBar barStyle="dark-content" />
+    <NavigationContainer ref={navigationRef} onReady={onReady}>
+   
+   
+
       {splashVisible ? (
         <SplashScreen />
       ) : (
         <Stack.Navigator 
-        // screenOptions={{ headerShown: true }}
+        initialRouteName={userToken ? "Main" : "LoginScreen"}
+       screenOptions={{
+  headerTitle: () => (
+    <Image
+      source={require("../assets/images/logo-full-width.png")}
+      style={{ width: 200, height: 25, resizeMode: 'contain' }}
+    />
+  ),
+  headerTitleAlign: 'center',
+  headerTintColor: theme === 'dark' ? '#fff' : '#000', // back arrow & title color
+  headerStyle: {
+    backgroundColor: theme === 'dark' ? '#000' : '#fff',
+  },
+  
+}}
 
-        screenOptions={{
-          headerTitle: () => (
-            <Image
-              source={require("../assets/images/logo-full-width.png")}  // Your logo path here
-              style={{  width: 200, height: 25, resizeMode: 'contain' }}
-            />
-          ),
-          // headerTitle: () => <CustomHeader />,
-          headerTitleAlign: 'center', // Optional: to center the logo
-          headerStyle: {
-            backgroundColor: '#ffffff', // Optional: set header background color
-          },
-        }}
         
         >
-          {!userToken ? (
-            // <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false, gestureEnabled: false }}/>
-            <Stack.Screen name="LoginScreen" component={LoginScreen}  options={{ headerShown: false, gestureEnabled: false }} />
-          ) : (
-            <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
-          )}
+
+
+        {userToken ? (
+                <>
+                  <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
+                  {/* Add all other screens here */}
+                </>
+              ) : (
+                <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
+              )}
+
+
+
+          
+          {/* <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="LoginScreen" component={LoginScreen}  options={{ headerShown: false, gestureEnabled: false }} /> */}
 
                <Stack.Screen name="Home" component={withAuthCheck(BottomTabs)} options={{ headerShown: false }} />
                <Stack.Screen name="side" component={SideMenuScreen} options={{ headerShown: true }} />
@@ -393,7 +474,7 @@ const Routes = () => {
 
               
                <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ header: ({ route }) => <CustomHeader />, }} />
-               <Stack.Screen name="TermsandConditions" component={TermsandConditions}  options={{ headerShown: false }}  />
+               <Stack.Screen name="TermsandConditions" component={TermsandConditions}  options={{ headerShown: true }}  />
 
         
 
@@ -404,6 +485,8 @@ const Routes = () => {
          <Stack.Screen name="DealDetail" component={DealDetailScreen} options={{ title: 'Offer Details' }} />
 
          <Stack.Screen name="QuickListing" component={QuickListing} options={{ title: 'Offer Details' }} />
+         
+         <Stack.Screen name="WalletPoint" component={WalletPoint} options={{ title: 'Offer Details' }} />
 
          <Stack.Screen name="WebviewScreen" component={MyWebComponent}  options={{
                 header: ({ route }) =>

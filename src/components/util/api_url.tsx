@@ -1,7 +1,7 @@
 
-const Local = "http://192.168.0.17:5000"
-const production = "http://creditcircle.us-east-1.elasticbeanstalk.com"
+const Local = "http://192.168.0.184:5000"
+const production = "https://app.creditcircle.in"
 
-export const BASE_URL = Local
+export const BASE_URL = production
 
 

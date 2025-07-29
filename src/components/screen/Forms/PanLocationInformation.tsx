@@ -65,8 +65,7 @@ const fetchProfileData = async () => {
 
     const jsonValue = await AsyncStorage.getItem('userData');
     const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
-    console.log(parsedValue, "PUria");
-    
+   
     setPhoneNumber(parsedValue);
 
 
@@ -78,7 +77,7 @@ const fetchProfileData = async () => {
 
     if(profileResponse.data.pan === null || profileResponse.data.pinCode === null ){
       setProfileExists(true);
-      console.log("Hello")
+      
     }else{
       setProfileExists(false);
     }

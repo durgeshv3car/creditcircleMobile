@@ -98,13 +98,16 @@ export const CreditScoreMeter: React.FC<CreditScoreMeterProps> = ({
                             <Text style={styles.changeText}>↑ {scoreDiff}</Text>
                         )}
                     </View>
-                    <Text style={styles.scoreText}>{score}</Text>
-                    <View style={styles.ratingContainer}>
+                    {/* <Text style={styles.scoreText}>{score}</Text> */}
+                    <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#1A237E', top:-16 }}>Not</Text>
+                    <Text style={styles.NotAvailable}>Available</Text>
+
+                    {/* <View style={styles.ratingContainer}>
                         <Text style={[styles.ratingText, { color: getCurrentRating(score).color }]}>
                             {getCurrentRating(score).rating}
                         </Text>
                         <Text style={styles.infoIcon}>ⓘ</Text>
-                    </View>
+                    </View> */}
                 </View>
 
                 <View style={styles.rangeLabels}>
@@ -152,6 +155,13 @@ const styles = StyleSheet.create({
         color: '#1A237E',
         marginTop: -10
     },
+        NotAvailable: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#1A237E',
+        marginTop: -16
+    },
+
     ratingContainer: {
         flexDirection: 'row',
         alignItems: 'center',

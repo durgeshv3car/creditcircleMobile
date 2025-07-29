@@ -96,51 +96,103 @@ function MainApp() {
   // }, [isNavReady]);
 
 
+  // useEffect(() => {
+  //   const handleInitialNotification = async () => {
+  //     try {
+  //       const remoteMessage = await messaging().getInitialNotification();
+  
+  //       console.log('🔥 getInitialNotification() result:', remoteMessage);
+  
+  //       if (!remoteMessage) {
+  //         console.log('⚠️ No remoteMessage found (user opened app directly or message was not a data-only payload)');
+  //         return;
+  //       }
+  
+  //       const data = remoteMessage.data || {};
+  //       const notification = {
+  //         id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+  //         title: data.title || remoteMessage.notification?.title || 'No Title',
+  //         description: data.body || remoteMessage.notification?.body || 'No Description',
+  //         image: data.image || remoteMessage.notification?.android?.imageUrl || '',
+  //         time: new Date().toLocaleTimeString(),
+  //         timestamp: Date.now(), // ✅ Ensure this is valid
+  //         isRead: false,
+  //         isForeground: false,
+  //       };
+  
+  //       console.log('📥 Notification object created from FCM:', notification);
+  
+  //       setTimeout(() => {
+  //         setNotifications(prev => {
+  //           const updated = [notification, ...prev];
+  //           console.log('📦 Final list after adding:', updated);
+  //           return updated;
+  //         });
+  
+  //         RootNavigation.navigate('NotificationScreen');
+  //       }, 1000); // 1 sec delay is enough
+  //     } catch (e) {
+  //       console.error('❌ Error in handleInitialNotification:', e);
+  //     }
+  //   };
+  
+  //   if (isNavReady) {
+  //     handleInitialNotification();
+  //   }
+  // }, [isNavReady]);
+  
+
+
   useEffect(() => {
-    const handleInitialNotification = async () => {
-      try {
-        const remoteMessage = await messaging().getInitialNotification();
-  
-        console.log('🔥 getInitialNotification() result:', remoteMessage);
-  
-        if (!remoteMessage) {
-          console.log('⚠️ No remoteMessage found (user opened app directly or message was not a data-only payload)');
-          return;
-        }
-  
-        const data = remoteMessage.data || {};
-        const notification = {
-          id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-          title: data.title || remoteMessage.notification?.title || 'No Title',
-          description: data.body || remoteMessage.notification?.body || 'No Description',
-          image: data.image || remoteMessage.notification?.android?.imageUrl || '',
-          time: new Date().toLocaleTimeString(),
-          timestamp: Date.now(), // ✅ Ensure this is valid
-          isRead: false,
-          isForeground: false,
-        };
-  
-        console.log('📥 Notification object created from FCM:', notification);
-  
-        setTimeout(() => {
-          setNotifications(prev => {
-            const updated = [notification, ...prev];
-            console.log('📦 Final list after adding:', updated);
-            return updated;
-          });
-  
-          RootNavigation.navigate('NotificationScreen');
-        }, 1000); // 1 sec delay is enough
-      } catch (e) {
-        console.error('❌ Error in handleInitialNotification:', e);
+  let hasHandledInitialNotification = false;
+
+  const handleInitialNotification = async () => {
+    if (hasHandledInitialNotification) return;
+
+    try {
+      const remoteMessage = await messaging().getInitialNotification();
+      hasHandledInitialNotification = true;
+
+      console.log('🔥 getInitialNotification() result:', remoteMessage);
+
+      if (!remoteMessage) {
+        console.log('⚠️ No remoteMessage found (opened app directly or no data)');
+        return;
       }
-    };
-  
-    if (isNavReady) {
-      handleInitialNotification();
+
+      const data = remoteMessage.data || {};
+      const notification = {
+        id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        title: data.title || remoteMessage.notification?.title || 'No Title',
+        description: data.body || remoteMessage.notification?.body || 'No Description',
+        image: data.image || remoteMessage.notification?.android?.imageUrl || '',
+        time: new Date().toLocaleTimeString(),
+        timestamp: Date.now(),
+        isRead: false,
+        isForeground: false,
+      };
+
+      console.log('📥 Notification object created from FCM:', notification);
+
+      setTimeout(() => {
+        setNotifications(prev => {
+          const updated = [notification, ...prev];
+          console.log('📦 Final list after adding:', updated);
+          return updated;
+        });
+
+        RootNavigation.navigate('NotificationScreen');
+      }, 1000);
+    } catch (e) {
+      console.error('❌ Error in handleInitialNotification:', e);
     }
-  }, [isNavReady]);
+  };
+
   
+  if (isNavReady) {
+    handleInitialNotification();
+  }
+}, [isNavReady]);
 
 
   return (

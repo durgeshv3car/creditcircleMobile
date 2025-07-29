@@ -16,6 +16,8 @@ import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { BASE_URL } from '../util/api_url';
 import NotAvailable from '../common/NotAvailable';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import appStyle from '@/AppStyles';
 
 const DEALS_API_URL = `${BASE_URL}/api/offer/offer`;
 
@@ -38,10 +40,23 @@ const DealsScreen = ({ navigation }) => {
 
     const fetchOffers = async () => {
         try {
-            const response = await axios.get(DEALS_API_URL);
+            // const response = await axios.get(DEALS_API_URL);
+             const token = await AsyncStorage.getItem('userToken');
+
+  const response = await axios.get(DEALS_API_URL, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+
             if (response.data.success && Array.isArray(response.data.offers)) {
-                setOffers(response.data.offers);
-                setFilteredOffers(response.data.offers);
+                const activeOffers = response.data.offers.filter(item => {
+                    return item.isActive === true || item.isActive === 'true';
+                });
+
+                setOffers(activeOffers);
+                setFilteredOffers(activeOffers);
             } else {
                 Alert.alert('Error', 'Invalid response from server');
             }
@@ -88,13 +103,12 @@ const DealsScreen = ({ navigation }) => {
     };
 
     const renderOffer = ({ item }) => (
-        console.log('Itemsss:', item),
         <TouchableOpacity
             onPress={() => navigation.navigate('DealDetail', { offer: item })}
-            style={styles.offerCard}
+            style={[styles.offerCard, appStyle.offerCardmain]}
         >
-             {item.offerImage?.mobile ? (
-                <Image source={{ uri: item.offerImage.mobile }} style={styles.fullImage} />
+             {item.offerBanner?.banner ? (
+                <Image source={{ uri: item.offerBanner.banner }} style={styles.fullImage} />
             ) : null}
 
             <View >
@@ -153,9 +167,9 @@ const DealsScreen = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.filtersContainer}>
-                <View style={styles.pickerWrapper}>
+        <SafeAreaView style={appStyle.gstcraeccontainer}>
+            <View style={[styles.filtersContainer, appStyle.filtersContainera]}>
+                <View style={[styles.pickerWrapper, appStyle.pickerWrapperdrop]}>
                     <Picker
                         selectedValue={categoryFilter}
                         onValueChange={setCategoryFilter}
@@ -169,8 +183,9 @@ const DealsScreen = ({ navigation }) => {
                 </View>
 
                 <TextInput
-                    style={styles.searchInput}
+                    style={[styles.searchInput, appStyle.searchInputs]}
                     placeholder="Search offers..."
+                     placeholderTextColor='#666'
                     value={searchText}
                     onChangeText={text => setSearchText(text)}
                 />
@@ -297,7 +312,6 @@ const styles = StyleSheet.create({
     pickerWrapper: {
         flex: 1,
         marginRight: 10,
-        backgroundColor: '#eee',
         borderRadius: 6,
     },
     picker: {

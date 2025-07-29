@@ -1,3 +1,4 @@
+import appStyle from '@/AppStyles';
 import React from 'react';
 import {
   View,
@@ -12,20 +13,33 @@ import RenderHTML from 'react-native-render-html';
 const DealDetailScreen = ({ route, navigation }) => {
   const { offer } = route.params;
 
-  console.log('DealDetailScreen offer:', offer.buttonType); // Debug log
+  // console.log('DealDetailScreen offer:', offer); // Debug log
 
   return (
-    <View style={styles.screenContainer}>
+    <View style={appStyle.gstcraeccontainer}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image source={{ uri: offer.offerImage?.mobile }} style={styles.image} />
-        <Text style={styles.title}>{offer.title}</Text>
-        <Text style={styles.category}>{offer.category}</Text>
-        <Text style={styles.description}>{offer.description}</Text>
-        <Text style={styles.description}>
-          {/* {offer.detailDescription} */}
-          <RenderHTML
+        <Image source={{ uri: offer.offerBanner?.banner }} style={styles.image} />
+        <Text style={[styles.title, appStyle.detailston]}>{offer.title}</Text>
+        <Text style={[styles.category, appStyle.detailston]}>{offer.category}</Text>
+        <Text style={[styles.description, appStyle.detailston]}>{offer.description}</Text>
+        <Text style={[styles.description, appStyle.detailston]}>
+          {/* <RenderHTML source={{ html: offer.detailDescription || '' }}/> */}
+
+<RenderHTML
   source={{ html: offer.detailDescription || '' }}
-/>
+  tagsStyles={{
+    p: appStyle.commonStyle,
+    div: appStyle.commonStyle,
+    span: appStyle.commonStyle,
+    li: appStyle.commonStyle,
+    ol: appStyle.commonStyle,
+    ul: appStyle.commonStyle,
+    h1: { ...appStyle.commonStyle, fontSize: 20 },
+    h2: { ...appStyle.commonStyle, fontSize: 18 },
+    h3: { ...appStyle.commonStyle, fontSize: 16 },
+    // etc.
+  }}></RenderHTML>
+
           </Text>
       </ScrollView>
 
@@ -46,10 +60,7 @@ const DealDetailScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+
   scrollContainer: {
     padding: 16,
     paddingBottom: 100, // Makes room for fixed button
@@ -68,12 +79,10 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 16,
-    color: '#888',
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    color: '#444',
     marginBottom: 8,
   },
   bottomButton: {
@@ -81,7 +90,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+ 
   },
   buttoncon:{
     width: '90%',

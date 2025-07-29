@@ -137,7 +137,7 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
     ];
 
     return (
-        <SafeAreaView style={[styles.container]}>
+        <SafeAreaView style={appStyle.gstcraeccontainer}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
                     <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
@@ -171,10 +171,9 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff" },
     scrollContainer: { paddingHorizontal: 20, paddingBottom: 20 },
     header: { fontSize: 18, fontWeight: "bold", marginBottom: 5 },
-    buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: "center" },
+    buttonContainer: { left: 0, right: 0, bottom: 20, alignItems: "center" },
     button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
     buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
     errorText: { color: "red", fontSize: 12, marginTop: 5 },

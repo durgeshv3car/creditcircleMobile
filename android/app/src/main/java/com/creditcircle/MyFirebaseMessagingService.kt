@@ -1,4 +1,4 @@
-package com.creditcircle
+package com.credit.creditcircle
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,7 +9,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.creditcircle.R
+import com.credit.creditcircle.R
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 

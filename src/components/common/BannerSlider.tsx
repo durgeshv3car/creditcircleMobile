@@ -7,6 +7,7 @@ import { ThemedView } from '../ThemedView';
 import NotAvailable from '../../assets/slider/NotAvailable.png';
 import { BASE_URL } from '../util/api_url';
 import appStyle from '@/AppStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BannerSlider = () => {
   const [banners, setBanners] = useState([]);
@@ -15,9 +16,24 @@ const BannerSlider = () => {
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/banner/images/slider`);
+        // const response = await axios.get(`${BASE_URL}/api/banner/images/slider`, );
+
+ const token = await AsyncStorage.getItem('userToken');
+
+  const response = await axios.get(`${BASE_URL}/api/banner/images/slider`, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+
+
+
+        // Check if the response is successful
+
         if (response.data.success) {
-          setBanners(response.data.images);
+           const activeBanners = response.data.images.filter(banner => banner.active);
+          setBanners(activeBanners);
         }
       } catch (error) {
         console.log('Error fetching banners:', error);
@@ -36,24 +52,27 @@ const BannerSlider = () => {
           loop
           dotStyle={styles.dot}
           activeDotStyle={styles.activeDot}
-          style={{ height: 166 }}
+          style={{ height: 180 }}
         >
-          {banners.map((banner) => (
-            <ThemedView key={banner.id}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('WebviewScreen', { urlName: banner.companyUrl })
-                }
-                style={styles.bottomButton}
-              >
-                <Image
-                  source={{ uri: banner.mobileUrl }}
-                  style={appStyle.Sliderimage}
-                  onError={(error) => console.error('Image Load Error:', error)}
-                />
-              </TouchableOpacity>
-            </ThemedView>
-          ))}
+          {banners
+  .filter(banner => banner.active)  // Only show banners where active is true
+  .map((banner) => (
+    <ThemedView key={banner.id}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('WebviewScreen', { urlName: banner.companyUrl })
+        }
+        style={styles.bottomButton}
+      >
+        <Image
+          source={{ uri: banner.mobileUrl }}
+          style={appStyle.Sliderimage}
+          onError={(error) => console.error('Image Load Error:', error)}
+        />
+      </TouchableOpacity>
+    </ThemedView>
+))}
+
         </Swiper>
       ) : (
         <Image
@@ -92,10 +111,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     width: 20,
     height: 4,
-    borderRadius: 4,
+    borderRadius: 100,
     marginHorizontal: 3,
-
+    overflow: 'hidden',
   },
+
+  
 });
 
 export default BannerSlider;

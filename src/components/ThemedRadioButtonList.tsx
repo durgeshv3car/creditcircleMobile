@@ -1,3 +1,4 @@
+import appStyle from '@/AppStyles';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Appearance, Pressable } from 'react-native';
 
@@ -41,34 +42,10 @@ const ThemedRadioButtonList = ({
   const theme = Appearance.getColorScheme();
   const borderColor = { borderColor: theme === 'dark' ? "#ffffff" : "#273283" };
   const backgroundColor = { backgroundColor: theme === 'dark' ? "#ffffff" : "#273283" };
-  const backgroundColorList = { backgroundColor: theme === 'dark' ? "#999999" : "#ffffff" };
+  const backgroundColorList = { backgroundColor: theme === 'dark' ? "#222" : "#ffffff" };
 
   return (
-    // <View>
-    //   <View style={[styles.container, style, { flexDirection: direction }]}>
-    //     {options.map((option) => (
-    //       <TouchableOpacity
-    //         key={option.value}
-    //         style={[styles.option, { paddingVertical: option.description?.length > 0 ? 10 : 10 }, backgroundColorList]}
-    //         onPress={() => handlePress(option.value)}
-    //       >
-    //         <View style={{ paddingVertical: option?.description?.length ? 0 : 12 }}>
-    //           <Text style={styles.Heading}>{option.label}</Text>
-    //           {option.description && option.description.length > 0 ? (
-    //             <Text style={styles.label}>{option.description}</Text>
-    //           ) : null}
-    //         </View>
-
-    //         <View style={[styles.radioButton, borderColor]}>
-    //           {selectedValue === option.value && <View style={[styles.selectedDot, backgroundColor]} />}
-    //         </View>
-    //       </TouchableOpacity>
-    //     ))}
-    //   </View>
-
-    //   {/* ✅ Display error message if present */}
-    //   {error && <Text style={styles.errorText}>{error}</Text>}
-    // </View>
+    
 
     <View style={[styles.container, style, { flexDirection: direction === 'row' ? 'row' : 'column' }]} >
           {options.map(option => (
@@ -76,20 +53,14 @@ const ThemedRadioButtonList = ({
               key={option.value}
               // onPress={() => onValueChange(option.value)}
               onPress={() => handlePress(option.value)}
-              // style={{
-              //   marginRight: direction === 'row' ? 16 : 0,
-              //   marginBottom: direction === 'column' ? 8 : 0,
-              //   flexDirection: 'row',
-              //   alignItems: 'center',
-                
-              // }}
+              
               style={[styles.option, { paddingVertical: option.description?.length > 0 ? 10 : 10 }, backgroundColorList]}
             >
               
               <View style={{ paddingVertical: option?.description?.length ? 0 : 12 }}>
-               <Text style={styles.Heading}>{option.label}</Text>
+               <Text style={appStyle.Headingco}>{option.label}</Text>
               {option.description && option.description.length > 0 ? (
-                 <Text style={styles.label}>{option.description}</Text>
+                 <Text style={appStyle.labelco}>{option.description}</Text>
                ) : null}
              </View>
               

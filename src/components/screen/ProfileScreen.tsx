@@ -14,6 +14,7 @@ import { ThemedText } from '../ThemedText';
 import { BASE_URL } from '../util/api_url';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import appStyle from '@/AppStyles';
 
 
 const FIELD_LABELS = {
@@ -184,14 +185,15 @@ const App = () => {
     const ThemedDropdown = ({ label, options, selectedValue, onValueChange }) => (
         <View style={{ marginVertical: 8 }}>
             <Text style={{ marginBottom: 4 }}>{label}</Text>
+            <View style={[styles.pickerWrapper]}>
             <RNPickerSelect
                 onValueChange={onValueChange}
                 value={selectedValue}
                 items={options.map(opt => ({ label: opt.label, value: opt.value }))}
                 style={{
-                    inputAndroid: { padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 8 }
+                    inputAndroid: {  borderWidth: 1, borderColor: '#ccc', borderRadius: 8 }
                 }}
-            />
+            /></View>
         </View>
     );
     
@@ -280,9 +282,7 @@ const App = () => {
                         employmentLevel: profileData.employmentLevel || '',
                         officeNo: profileData.officeNo || '',
                         officeStreet: profileData.officeStreet || '',
-                        officePinCode: profileData.officePinCode || '',
-                        officeCity: profileData.officeCity || '',
-                        officeState: profileData.officeState || ''
+                        
                     }
                 },
                 incomeDetails: {
@@ -329,39 +329,116 @@ const App = () => {
         return Math.round((filledFields / totalFields) * 100);
     };
 
+    // const handleInputChange = useCallback((sectionKey, fieldKey, value) => {
+    //     setSections((prevSections) => {
+    //         const updatedFields = {
+    //             ...prevSections[sectionKey].fields,
+    //             [fieldKey]: value
+    //         };
+
+    //         return {
+    //             ...prevSections,
+    //             [sectionKey]: {
+    //                 fields: updatedFields,
+    //                 progress: calculateProgress(updatedFields)
+    //             }
+    //         };
+    //     });
+
+    //     if (debounceTimer.current) {
+    //         clearTimeout(debounceTimer.current);
+    //     }
+
+    //     debounceTimer.current = setTimeout(async () => {
+    //         try {
+    //             await axios.post(UPDATE_PROFILE_URL, {
+    //                 phoneNumber: Phone,
+    //                 section: sectionKey,
+    //                 field: fieldKey,
+    //                 value
+    //             });
+    //         } catch (error) {
+    //             console.error(`❌ Error updating ${fieldKey}:`, error.message);
+    //         }
+    //     }, 800);
+    // }, [Phone]);
+
+
+
     const handleInputChange = useCallback((sectionKey, fieldKey, value) => {
-        setSections((prevSections) => {
-            const updatedFields = {
-                ...prevSections[sectionKey].fields,
-                [fieldKey]: value
-            };
+    let newValue = value;
 
-            return {
-                ...prevSections,
-                [sectionKey]: {
-                    fields: updatedFields,
-                    progress: calculateProgress(updatedFields)
-                }
-            };
-        });
+    // Input restrictions
+    if (fieldKey === 'mobile') {
+        newValue = value.replace(/[^0-9]/g, '').slice(0, 10);
+    } else if (fieldKey === 'dob') {
+        newValue = value.replace(/[^0-9\-]/g, '').slice(0, 10);
+    } else if (fieldKey === 'pinCode') {
+        newValue = value.replace(/[^0-9]/g, '').slice(0, 6);
+    } else if (
+        ['netMonthlyIncome', 'bankAccount', 'hasCreditCard'].includes(fieldKey)
+    ) {
+        newValue = value.replace(/[^0-9]/g, '');
+    }
 
-        if (debounceTimer.current) {
-            clearTimeout(debounceTimer.current);
-        }
+    setSections((prevSections) => {
+        const updatedFields = {
+            ...prevSections[sectionKey].fields,
+            [fieldKey]: newValue
+        };
 
-        debounceTimer.current = setTimeout(async () => {
-            try {
-                await axios.post(UPDATE_PROFILE_URL, {
-                    phoneNumber: Phone,
-                    section: sectionKey,
-                    field: fieldKey,
-                    value
-                });
-            } catch (error) {
-                console.error(`❌ Error updating ${fieldKey}:`, error.message);
+        return {
+            ...prevSections,
+            [sectionKey]: {
+                fields: updatedFields,
+                progress: calculateProgress(updatedFields)
             }
-        }, 800);
-    }, [Phone]);
+        };
+    });
+
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    debounceTimer.current = setTimeout(async () => {
+        try {
+            await axios.post(UPDATE_PROFILE_URL, {
+                phoneNumber: Phone,
+                section: sectionKey,
+                field: fieldKey,
+                value: newValue
+            });
+
+            // Auto-fill city/state from pinCode
+            if (fieldKey === 'pinCode' && newValue.length === 6) {
+                try {
+                    const res = await axios.get(`https://app.creditcircle.in/api/pincode/${newValue}`);
+                    const { PostOffice } = res.data[0];
+                    if (PostOffice && PostOffice.length > 0) {
+                        const { District, State } = PostOffice[0];
+
+                        setSections((prev) => {
+                            const newFields = {
+                                ...prev[sectionKey].fields,
+                                city: District,
+                                state: State
+                            };
+                            return {
+                                ...prev,
+                                [sectionKey]: {
+                                    fields: newFields,
+                                    progress: calculateProgress(newFields)
+                                }
+                            };
+                        });
+                    }
+                } catch (error) {
+                    console.warn('PIN code lookup failed:', error.message);
+                }
+            }
+        } catch (error) {
+            console.error(`❌ Error updating ${fieldKey}:`, error.message);
+        }
+    }, 800);
+}, [Phone]);
 
     const toggleSection = (section) => {
         setExpandedSections((prevState) => ({
@@ -457,69 +534,151 @@ const App = () => {
     //     ));
 
 
-    const renderInputs = (sectionKey) =>
-        Object.entries(sections[sectionKey]?.fields || {}).map(([fieldKey, value]) => {
-            const label = FIELD_LABELS[sectionKey]?.[fieldKey] || fieldKey;
-            // Radio for "liveWith"
-            if (sectionKey === 'personalDetails' && fieldKey === 'liveWith') {
-                return (
-                    <>
-                    <ThemedText style={{ marginVertical: 8 }}>
-                    {/* {fieldKey} */}
-                    Who do you live with?
-                    </ThemedText>
+// const renderInputs = (sectionKey) =>
+//     Object.entries(sections[sectionKey]?.fields || {}).map(([fieldKey, value]) => {
+//         const label = FIELD_LABELS[sectionKey]?.[fieldKey] || fieldKey;
+
+//         if (sectionKey === 'personalDetails' && fieldKey === 'liveWith') {
+//             return (
+//                 <>
+//                     <ThemedText style={{ marginVertical: 8 }}>
+//                         Who do you live with?
+//                     </ThemedText>
+//                     <ThemedRadioButtonList
+//                         key={fieldKey}
+//                         label={label}
+//                         options={liveWithOptions}
+//                         selectedValue={value}
+//                         onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
+//                     />
+//                 </>
+//             );
+//         }
+
+//         if (sectionKey === 'personalDetails' && fieldKey === 'education') {
+//             return (
+//                 <ThemedDropdown
+//                     key={fieldKey}
+//                     label={label}
+//                     options={educationOptions}
+//                     selectedValue={value}
+//                     onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
+//                 />
+//             );
+//         }
+
+//         if (sectionKey === 'personalDetails' && fieldKey === 'maritalStatus') {
+//             return (
+//                 <ThemedDropdown
+//                     key={fieldKey}
+//                     label={label}
+//                     options={maritalStatusOptions}
+//                     selectedValue={value}
+//                     onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
+//                 />
+//             );
+//         }
+
+//         return (
+//              <ThemedTextInput
+//         key={fieldKey}
+//         label={label}
+//         value={value}
+//         onChangeText={(text) => handleInputChange(sectionKey, fieldKey, text)}
+//         placeholder={
+//             fieldKey === 'dob' ? 'DD-MM-YYYY'
+//             : fieldKey === 'mobile' ? '10-digit mobile number'
+//             : fieldKey === 'pinCode' ? '6-digit PIN'
+//             : ['netMonthlyIncome', 'bankAccount', 'hasCreditCard'].includes(fieldKey)
+//                 ? 'Enter numeric value'
+//             : `Enter ${label}`
+//         }
+//         keyboardType={
+//             ['mobile', 'pinCode', 'netMonthlyIncome', 'bankAccount', 'hasCreditCard'].includes(fieldKey)
+//                 ? 'name-phone-pad'
+//             : 'default'
+//         }
+//     />
+//         );
+//     });
+
+
+
+const renderInputs = (sectionKey) =>
+    Object.entries(sections[sectionKey]?.fields || {}).map(([fieldKey, value]) => {
+        const label = FIELD_LABELS[sectionKey]?.[fieldKey] || fieldKey;
+
+        if (sectionKey === 'personalDetails' && fieldKey === 'liveWith') {
+            return (
+                <View key={fieldKey}>
+                    <ThemedText style={{ marginVertical: 8 }}>Who do you live with?</ThemedText>
                     <ThemedRadioButtonList
-                        key={fieldKey}
                         label={label}
                         options={liveWithOptions}
                         selectedValue={value}
                         onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
                     />
-                    </>
-                );
-            }
-    
-            // Dropdown for "education"
-            if (sectionKey === 'personalDetails' && fieldKey === 'education') {
-                return (
-                    <ThemedDropdown
-                        key={fieldKey}
-                        label={label}
-                        options={educationOptions}
-                        selectedValue={value}
-                        onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
-                    />
-                );
-            }
-    
-            // Dropdown for "maritalStatus"
-            if (sectionKey === 'personalDetails' && fieldKey === 'maritalStatus') {
-                return (
-                    <ThemedDropdown
-                        key={fieldKey}
-                        label={label}
-                        options={maritalStatusOptions}
-                        selectedValue={value}
-                        onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
-                    />
-                );
-            }
-    
-            // Default input
+                </View>
+            );
+        }
+
+        if (sectionKey === 'personalDetails' && fieldKey === 'education') {
             return (
-                <ThemedTextInput
+                
+                <ThemedDropdown
                     key={fieldKey}
                     label={label}
-                    value={value}
-                    onChangeText={(text) => handleInputChange(sectionKey, fieldKey, text)}
+                    options={educationOptions}
+                    selectedValue={value}
+                    onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
                 />
             );
-        });
+        }
+
+        if (sectionKey === 'personalDetails' && fieldKey === 'maritalStatus') {
+            return (
+                <ThemedDropdown
+                    key={fieldKey}
+                    label={label}
+                    options={maritalStatusOptions}
+                    selectedValue={value}
+                    onValueChange={(newValue) => handleInputChange(sectionKey, fieldKey, newValue)}
+                />
+            );
+        }
+
+        // Define keyboardType and placeholder dynamically
+        let keyboardType = 'default';
+        if (['mobile', 'pinCode', 'netMonthlyIncome', 'bankAccount', 'hasCreditCard'].includes(fieldKey)) {
+            keyboardType = 'numeric';
+        } else if (fieldKey === 'dob') {
+            keyboardType = 'numbers-and-punctuation';
+        }
+
+        let placeholder = `Enter ${label}`;
+        if (fieldKey === 'dob') placeholder = 'DD-MM-YYYY';
+        else if (fieldKey === 'mobile') placeholder = '10-digit mobile number';
+        else if (fieldKey === 'pinCode') placeholder = '6-digit PIN';
+        else if (['netMonthlyIncome', 'bankAccount', 'hasCreditCard'].includes(fieldKey)) {
+            placeholder = 'Enter numeric value';
+        }
+
+        return (
+            <ThemedTextInput
+                key={fieldKey}
+                label={label}
+                value={value}
+                onChangeText={(text) => handleInputChange(sectionKey, fieldKey, text)}
+                placeholder={placeholder}
+                keyboardType={keyboardType}
+            />
+        );
+    });
 
         
 
     return (
-        <ScrollView style={styles.screenContainer}>
+        <ScrollView style={[styles.screenContainer, appStyle.gstcraeccontainer]}>
             {Object.keys(sections).map((sectionKey) => (
                 <View key={sectionKey} style={styles.cardHeading} >
                     {renderSectionHeader(sectionKey, sections[sectionKey]?.progress || 0, sectionKey)}
@@ -537,9 +696,15 @@ const styles = StyleSheet.create({
     screenContainer: {
         flex: 1,
         padding: 16,
-        
-        backgroundColor: '#fff',
     },
+
+     pickerWrapper: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#ccc', // default, can be overridden
+    
+    overflow: 'hidden',
+  },
 
     cardHeading:{
         borderWidth:1,

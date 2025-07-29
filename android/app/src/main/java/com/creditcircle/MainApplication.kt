@@ -1,4 +1,4 @@
-package com.creditcircle
+package com.credit.creditcircle
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,3 +1,4 @@
+import appStyle from '@/AppStyles';
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -24,7 +25,7 @@ const NotAvailable = ({ title = 'Data not available', uris }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, appStyle.gstcraeccontainer]}>
       <Animated.View style={[styles.shadowWrapper, { opacity: fadeAnim }]}>
         <View style={styles.card}>
         

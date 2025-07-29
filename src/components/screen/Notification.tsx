@@ -1,286 +1,109 @@
-// import React, { useState, useEffect } from 'react';
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   FlatList,
-//   TouchableOpacity,
-//   Image,
-// } from 'react-native';
-// import { listenForMessages, requestFcmToken } from '../util/firebase';
-
-// const NotificationScreen = ({ navigation }) => {
-//   const [notifications, setNotifications] = useState([]);
-
-
-//   useEffect(() => {
-//     // ✅ Request Token on Load
-//     const fetchToken = async () => {
-//       const token = await requestFcmToken();
-//       if (token) {
-//         console.log("✅ Notification Token:", token);
-//       }
-//     };
-
-//     fetchToken();
-
-    
-
-//     // ✅ Listen for incoming notifications
-//     const unsubscribe = listenForMessages((payload) => {
-//       console.log("📩 New Foreground Notification:", payload);
-
-//       // ✅ Store the notification in state
-//       setNotifications((prevNotifications) => [
-//         {
-//           id: Date.now().toString(),
-//           title: payload.notification?.title || 'No Title',
-//           description: payload.notification?.body || 'No Description',
-//           image: payload.notification?.android?.imageUrl || 'No Description',
-//           time: new Date().toLocaleTimeString(),
-//         },
-//         ...prevNotifications,
-//       ]);
-//     });
-
-//     return () => {
-//       unsubscribe(); // ✅ Cleanup listener on unmount
-//     };
-//   }, []);
-
-//   const renderItem = ({ item }) => (
-
-//     <TouchableOpacity
-//     style={styles.card}
-//     onPress={() => navigation.navigate('DetailScreen', { notification: item })}
-//   >
-//     <Text style={styles.title}>{item.title}</Text>
-//     <Text style={styles.description}>{item.description}</Text>
-
-//     {/* Show image if available */}
-//     {item.image ? (
-//       <Image
-//         source={{ uri: item.image }}
-//         style={{ width: '100%', height: 150, borderRadius: 8, marginTop: 10 }}
-//         resizeMode="cover"
-//       />
-//     ) : null}
-
-//     <Text style={styles.time}>{item.time}</Text>
-//   </TouchableOpacity>
-//   );
-
-//   return (
-//     <View style={styles.container}>
-//       <FlatList
-//         data={notifications}
-//         keyExtractor={(item) => item.id}
-//         renderItem={renderItem}
-//         contentContainerStyle={styles.listContainer}
-//       />
-//     </View>
-//   );
-// };
-
-// export default NotificationScreen;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#FFFFFF',
-//   },
-//   listContainer: {
-//     padding: 10,
-//   },
-//   card: {
-//     padding: 10,
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#E0E0E0',
-//     marginBottom: 10,
-//   },
-//   title: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     color: '#000000',
-//   },
-//   description: {
-//     fontSize: 14,
-//     color: '#555555',
-//     marginVertical: 4,
-//   },
-//   time: {
-//     fontSize: 12,
-//     color: '#888888',
-//   },
-// });
-
-
-
-
-  // import React, { useEffect } from 'react';
-  // import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Button } from 'react-native';
-  // import { listenForMessages } from '../util/firebase';
-  // import { useNotifications } from '@/context/NotificationContext';
-
-
-  // const NotificationScreen = ({ navigation }) => {
-  //   // const { notifications, setNotifications } = useNotifications();
-
-  //   const { notifications, markAsRead } = useNotifications();
-
-
-  //   useEffect(() => {
-  //     // const unsubscribe = listenForMessages((payload) => {
-  //     //   const newNotification = {
-  //     //     id: Date.now().toString(),
-  //     //     title: payload.notification?.title || 'No Title',
-  //     //     description: payload.notification?.body || 'No Description',
-  //     //     image: payload.notification?.android?.imageUrl || '',
-  //     //     time: new Date().toLocaleTimeString(),
-  //     //   };
-  //     //   setNotifications((prev) => [newNotification, ...prev]);
-  //     // });
-
-  //     // return () => unsubscribe();
-  //   }, []);
-
-  //   const renderItem = ({ item }) => (
-
-  //     console.log("📩 New Foreground Notification:", item)  ,
-
-  //     <TouchableOpacity
-  //   style={styles.card}
-  //   onPress={() => {
-  //     markAsRead(item.id);
-  //     navigation.navigate('DetailScreen', { notification: item });
-  //   }}
-  // >
-  //       <Text style={styles.title}>{item.title}</Text>
-  //       <Text style={styles.description}>{item.description}</Text>
-  //       {item.image ? (
-  //         <Image source={{ uri: item.image }} style={styles.image} />
-  //       ) : null}
-  //       <Text style={styles.time}>{item.time}</Text>
-  //     </TouchableOpacity>
-      
-  //   );
-
-  //   return (
-  //     <View style={styles.container}>
-  //       <FlatList
-  //         data={notifications}
-  //         keyExtractor={(item) => item.id}
-  //         renderItem={renderItem}
-  //         contentContainerStyle={styles.listContainer}
-  //       />
-
-  //     </View>
-  //   );
-  // };
-
-  // export default NotificationScreen;
-
-  // const styles = StyleSheet.create({
-  //   container: {
-  //     flex: 1,
-  //     backgroundColor: '#FFFFFF',
-  //   },
-  //   listContainer: {
-  //     padding: 10,
-  //   },
-  //   card: {
-  //     padding: 10,
-  //     borderBottomWidth: 1,
-  //     borderBottomColor: '#E0E0E0',
-  //     marginBottom: 10,
-  //   },
-  //   title: {
-  //     fontSize: 16,
-  //     fontWeight: 'bold',
-  //     color: '#000000',
-  //   },
-  //   description: {
-  //     fontSize: 14,
-  //     color: '#555555',
-  //     marginVertical: 4,
-  //   },
-  //   image: {
-  //     width: '100%',
-  //     height: 150,
-  //     borderRadius: 8,
-  //     marginVertical: 8,
-  //   },
-  //   time: {
-  //     fontSize: 12,
-  //     color: '#888888',
-  //   },
-  // });
-
-/****************************** */
-
-import React, { useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useNotifications } from '@/context/NotificationContext';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
+import { BASE_URL } from '../util/api_url';
 
 dayjs.extend(relativeTime);
 
 const NotificationScreen = ({ navigation }) => {
-  const { notifications, markAsRead } = useNotifications();
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const renderItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => {
-          markAsRead(item.id);
-          navigation.navigate('DetailScreen', { notification: item });
-        }}
-      >
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        {item.image ? (
-          <Image source={{ uri: item.image }} style={styles.image} />
-        ) : null}
-        <Text style={styles.time}>{formatNotificationTime(item.timestamp)}</Text>
-      </TouchableOpacity>
-    );
-  };
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (!token) {
+          console.error('No user token found');
+          return;
+        }
+
+        const decoded = jwtDecode(token);
+        const userId = decoded.userID; // Adjust this key if needed
+
+        console.log('Using BASE_URL:', BASE_URL); 
+
+        const response = await fetch(`${BASE_URL}/api/getnotifications/${userId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: token,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const json = await response.json();
+        console.log('API response:', json); // Debug: log actual structure
+
+        // Handle various possible structures
+        const notificationsArray =
+          json?.notifications || json?.data?.notifications || (Array.isArray(json) ? json : []);
+
+        if (Array.isArray(notificationsArray)) {
+          setNotifications(notificationsArray);
+        } else {
+          console.warn('Unexpected API structure:', json);
+        }
+      } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   const formatNotificationTime = (timestamp) => {
     const now = dayjs();
     const time = dayjs(timestamp);
 
     const minutesAgo = now.diff(time, 'minute');
-
-    if (minutesAgo < 1) {
-      return 'Just now';
-    }
-
-    if (minutesAgo < 60) {
-      return `${minutesAgo} min ago`;  // ✅ Dynamic minutes
-    }
-
-    if (now.isSame(time, 'day')) {
-      return `Today at ${time.format('h:mm A')}`;
-    } else if (now.subtract(1, 'day').isSame(time, 'day')) {
-      return `Yesterday at ${time.format('h:mm A')}`;
-    } else if (now.diff(time, 'hour') < 24) {
-      return time.fromNow(); // Example: "8 hours ago"
-    } else {
-      return time.format('D MMM, YYYY'); // Example: "26 Apr, 2025"
-    }
+    if (minutesAgo < 1) return 'Just now';
+    if (minutesAgo < 60) return `${minutesAgo} min ago`;
+    if (now.isSame(time, 'day')) return `Today at ${time.format('h:mm A')}`;
+    if (now.subtract(1, 'day').isSame(time, 'day')) return `Yesterday at ${time.format('h:mm A')}`;
+    if (now.diff(time, 'hour') < 24) return time.fromNow();
+    return time.format('D MMM, YYYY');
   };
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('DetailScreen', { notification: item })}
+    >
+     <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.description}>{item.body} asdfasd</Text>
+      {item.offer?.offerBanner.banner && <Image source={{ uri: item.offer?.offerBanner.banner }} style={styles.image} />}
+      <Text style={styles.time}>{formatNotificationTime(item.createdAt)}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={[...notifications].sort((a, b) => b.timestamp - a.timestamp)}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" style={{ marginTop: 50 }} />
+      ) : (
+        <FlatList
+          data={[...notifications].sort(
+            (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+          )}
+          keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
     </View>
   );
 };
@@ -290,106 +113,37 @@ export default NotificationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
   },
-  listContainer: {
-    padding: 10,
-  },
+
   card: {
-    padding: 12,
-    backgroundColor: '#FAFAFA',
     borderRadius: 8,
+    padding: 8,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    backgroundColor: "#f9f9f9",
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#222222',
+    marginBottom: 4,
   },
   description: {
     fontSize: 14,
-    color: '#555555',
-    marginTop: 4,
+    color: '#555',
+    marginBottom: 8,
   },
   image: {
     width: '100%',
-    height: 150,
+    height: 180,
     borderRadius: 8,
-    marginVertical: 10,
+    marginBottom: 8,
   },
   time: {
     fontSize: 12,
-    color: '#888888',
-    marginTop: 4,
+    color: '#888',
     textAlign: 'right',
   },
+  listContainer: {
+    padding: 16,
+  },
 });
-
-
-
-
-
-///***************************************** */
-
-// import React from 'react';
-// import { View, FlatList, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-// import { useNotifications } from '@/context/NotificationContext';
-
-// const NotificationScreen = () => {
-//   const { notifications, markAsRead, loading } = useNotifications();
-
-//   const renderItem = ({ item }) => (
-//     <TouchableOpacity
-//       style={[styles.card, item.isRead ? styles.read : styles.unread]}
-//       onPress={() => markAsRead(item.id)}
-//     >
-//       <Text style={styles.title}>{item.title}</Text>
-//       <Text style={styles.description}>{item.description}</Text>
-//       <Text style={styles.time}>{item.time}</Text>
-//     </TouchableOpacity>
-//   );
-
-//   if (loading) {
-//     return (
-//       <View style={styles.centered}>
-//         <ActivityIndicator size="large" />
-//       </View>
-//     );
-//   }
-
-//   if (notifications.length === 0) {
-//     return (
-//       <View style={styles.centered}>
-//         <Text>No notifications</Text>
-//       </View>
-//     );
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       <FlatList
-//         data={[...notifications].sort((a, b) => b.timestamp - a.timestamp)}
-//         keyExtractor={(item) => item.id}
-//         renderItem={renderItem}
-//       />
-//     </View>
-//   );
-// };
-
-// export default NotificationScreen;
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: '#fff', padding: 10 },
-//   card: { padding: 12, marginBottom: 10, borderRadius: 8 },
-//   unread: { backgroundColor: '#f5f5f5' },
-//   read: { backgroundColor: '#e0e0e0' },
-//   title: { fontWeight: 'bold', fontSize: 16 },
-//   description: { fontSize: 14, marginVertical: 4 },
-//   time: { fontSize: 12, color: '#888' },
-//   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-// });

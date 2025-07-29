@@ -103,6 +103,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { BASE_URL } from "../util/api_url";
 import { ThemedText } from "../ThemedText";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DEALS_API_URL = `${BASE_URL}/api/offer/offer`;
 
@@ -117,7 +118,17 @@ const OffersSlider = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await axios.get(DEALS_API_URL);
+      // const response = await axios.get(DEALS_API_URL);
+
+       const token = await AsyncStorage.getItem('userToken');
+
+  const response = await axios.get(DEALS_API_URL, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+      
       if (response.data.success && Array.isArray(response.data.offers)) {
         setOffers(response.data.offers);
       } else {
@@ -131,7 +142,7 @@ const OffersSlider = () => {
   };
 
   const getImageUrl = (item) => {
-    const imagePath = item.offerBanner?.banner;
+    const imagePath = item.offerImage?.mobile;
     if (!imagePath) return null;
     return imagePath.startsWith("http") ? imagePath : `${BASE_URL}${imagePath}`;
   };

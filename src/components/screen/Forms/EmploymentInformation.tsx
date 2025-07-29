@@ -144,7 +144,7 @@ console.log(options)
   return (
     <SafeAreaView style={[styles.container, dynamicStyles]}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
             <View style={appStyle.HeadingTitle}>
               <ThemedHeadingText style={[styles.header]}>Employment Information</ThemedHeadingText>

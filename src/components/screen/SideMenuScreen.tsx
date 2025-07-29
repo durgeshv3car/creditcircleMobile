@@ -625,6 +625,7 @@ const SideMenuScreen = () => {
     },
     { id: 4, name: 'Money Smarts', screen: 'MoneySmartListing', submenu: [], icon: require('../../assets/icons/Money-Smarts.png') },
     { id: 5, name: 'EMI Calculator', submenu: [], icon: require('../../assets/icons/Tax-Calculator.png'), screen: 'EMICalculatorScreen' },
+    { id: 5, name: 'Wallet Point', submenu: [], icon: require('../../assets/icons/Tax-Calculator.png'), screen: 'WalletPoint' },
     { id: 6, name: 'FAQs', submenu: [], icon: require('../../assets/icons/FAQs.png'), screen: 'FAQScreen' },
     { id: 7, name: 'Privacy Policy', submenu: [], icon: require('../../assets/icons/Privacy-Policy.png'), screen: 'PrivacyPolicyScreen' },
     { id: 8, name: 'Help', submenu: [], icon: require('../../assets/icons/Help.png'), screen: 'ContactUsScreen' },
@@ -655,7 +656,7 @@ const SideMenuScreen = () => {
               inActiveStrokeWidth={8}
               showProgressValue={false}
             />
-            <View style={{
+            {/* <View style={{
               width: 80,
               backgroundColor: '#FF4800',
               marginTop: -30,
@@ -670,11 +671,33 @@ const SideMenuScreen = () => {
               <ThemedText style={{ color: '#ffffff', textAlign: 'center', fontSize: 16 }}>
                 {profileData.progress}%
               </ThemedText>
-            </View>
+            </View> */}
+
+
+            <TouchableOpacity
+  onPress={() => navigation.navigate('ProfileScreen')}
+  style={{
+    width: 80,
+    backgroundColor: '#FF4800',
+    marginTop: -30,
+    zIndex: 30,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    justifyContent: 'center',
+    paddingTop: 6,
+    paddingBottom: 6,
+    alignItems: 'center',
+    borderRadius: 100,
+  }}
+>
+  <ThemedText style={{ color: '#ffffff', textAlign: 'center', fontSize: 16 }}>
+    {profileData.progress}%
+  </ThemedText>
+</TouchableOpacity>
           </View>
 
           <View style={[styles.profileImageContainer, { marginTop: 24 }]}>
-            <ThemedText style={[styles.profileImageText, { color: '#000000' }]}>
+            <ThemedText style={[styles.profileImageText]}>
               {profileData.firstName[0]}{profileData.lastName[0]}
             </ThemedText>
           </View>

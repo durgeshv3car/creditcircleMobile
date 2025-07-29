@@ -13,6 +13,9 @@ import axios from 'axios';
 import RenderHTML, { defaultListItemStyleSpecs } from 'react-native-render-html';
 import { useRoute } from '@react-navigation/native';
 import NotAvailable from '../common/NotAvailable';
+import { BASE_URL } from '../util/api_url';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import appStyle from '@/AppStyles';
 
 const QuickListing = ({route,  navigation}) => {
      const { offer } = route.params;
@@ -45,7 +48,18 @@ const QuickListing = ({route,  navigation}) => {
 
     const fetchServices = async (type) => {
         try {
-            const response = await axios.get(`http://192.168.0.17:5000/api/service/${type}`);
+            // const response = await axios.get(`${BASE_URL}/api/service/${type}`);
+
+
+             const token = await AsyncStorage.getItem('userToken');
+
+  const response = await axios.get(`${BASE_URL}/api/service/${type}`, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+
     
             console.log('Response:', response.data); // Debug log
     
@@ -77,7 +91,7 @@ const QuickListing = ({route,  navigation}) => {
             <View style={styles.card}>
                 <Image source={{ uri: item.mobileUrl }} style={styles.cardImage} />
     
-                <View style={{ paddingBottom: 20, paddingHorizontal: 10 }}>
+                <View style={{ paddingBottom: 10, paddingHorizontal: 10 }}>
                     <Text style={styles.title}>{item.title}</Text>
     
                     <RenderHTML
@@ -131,18 +145,10 @@ const QuickListing = ({route,  navigation}) => {
     };
     
     return (
-        <>
+        <View style={appStyle.gstcraeccontainer}>
         
         {noData && (
-            // <View style={{ padding: 20, alignItems: 'center' }}>
-            //     {/* <Text style={{ fontSize: 16, color: '#999' }}>
-            //         No Data found for this category.
-            //     </Text> */}
-
-
-            // </View>
-
-            <NotAvailable title="Image not available for this item." uris={"https://placehold.co/300x200?text=Not+Available"} />
+               <NotAvailable title="Image not available for this item." uris={"https://placehold.co/300x200?text=Not+Available"} />
         )}
         
         <FlatList
@@ -150,10 +156,10 @@ const QuickListing = ({route,  navigation}) => {
             keyExtractor={(item) => item.id}
             renderItem={renderCard}
             contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10 }}
-            style={{ backgroundColor: '#FFFFFF' }}
+            
         />
 
-        </>
+        </View>
 
     );
 };
@@ -217,10 +223,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         backgroundColor: '#FF4800',
         borderRadius: 6,
-        marginTop:6
+        marginTop:10
     },
     applyNowText: {
         color: '#fff',
         fontWeight: 'bold',
+        textAlign: 'center',
+        paddingVertical: 6,
     },
 });

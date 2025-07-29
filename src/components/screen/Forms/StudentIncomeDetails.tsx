@@ -100,7 +100,7 @@ const StudentIncomeDetails = ({ navigation }) => {
             const response = await axios.post(API_URL, requestData);
 
             if (response.status === 200) {
-                Alert.alert("Success", "Income details saved successfully.");
+              
                 navigation.navigate("BankAccount");
             } else {
                 Alert.alert("Error", response.data.message || "Failed to save details.");

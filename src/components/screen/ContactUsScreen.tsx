@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, Linking, Alert } from 'react-native';
+import SocialMediaSection from '../common/SocialMediaSection';
 
 
 const ContactUsScreen = () => {
@@ -22,40 +23,50 @@ const ContactUsScreen = () => {
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Let's get in touch!</Text>
-            </View>
+          
 
             {/* Illustration */}
             <View style={styles.illustrationContainer}>
+                  <View style={styles.header}>
+                <Text style={styles.headerText}>Let's get in touch!</Text>
+            </View>
                 <Image
-                    source={{
-                        uri: 'https://img.freepik.com/premium-vector/customer-support-concepts_662093-1854.jpg',
-                    }}
+                    // source={{
+                    //     uri: '../../../../assets/images/emailus.jpg', // Replace with your illustration path
+                    // }}
+
+                     source={require('../../assets/images/emailus.jpg')} // Replace with your illustration path
                     style={styles.illustration}
                 />
+
+                 {/* <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Email')}>
+                    
+                    <Text style={styles.buttonText}>Email Us</Text>
+                </TouchableOpacity> */}
+
+
+  <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Email')}>
+    <Text style={styles.buttonText}>📧 Email Us</Text> {/* You can remove emoji or replace with icon */}
+  </TouchableOpacity>
+
             </View>
 
             {/* Contact Options */}
             <View style={styles.contactOptions}>
-                <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Call')}>
+                {/* <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Call')}>
                     
                     <Text style={styles.buttonText}>Call Us</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Email')}>
-                    
-                    <Text style={styles.buttonText}>Email Us</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Chat')}>
+                </TouchableOpacity> */}
+               
+                {/* <TouchableOpacity style={styles.contactButton} onPress={() => handlePress('Chat')}>
                     
                     <Text style={styles.buttonText}>Chat</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
 
             {/* Social Media Links */}
             <View style={styles.socialMedia}>
-                <Text style={styles.socialMediaText}>Our social media</Text>
-           
+           <SocialMediaSection />
             </View>
         </View>
     );
@@ -66,6 +77,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFFFF',
         padding: 16,
+        justifyContent:"space-between"
     },
     header: {
         alignItems: 'center',
@@ -91,21 +103,30 @@ const styles = StyleSheet.create({
         marginVertical: 20,
     },
     contactButton: {
-        alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#F8F9FA',
-        borderRadius: 8,
-        width: '30%',
-        elevation: 3,
+       backgroundColor: '#1E90FF',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5, // Android shadow
+    marginVertical: 10,
     },
     buttonText: {
-        marginTop: 8,
-        fontSize: 14,
-        color: '#333333',
+       color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
     },
     socialMedia: {
         alignItems: 'center',
         marginTop: 30,
+        backgroundColor: '#F8F9FA',
+        borderRadius: 8,
     },
     socialMediaText: {
         fontSize: 16,
@@ -117,6 +138,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         width: '60%',
     },
+
+
+
 });
 
 export default ContactUsScreen;

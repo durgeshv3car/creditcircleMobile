@@ -1,8 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import RenderHTML from 'react-native-render-html';
 
 const DetailScreen = ({ route, navigation }) => {
   const { notification } = route.params || {};
+
+
+  console.log("Noti", notification)
 
   if (!notification) {
     return (
@@ -16,22 +20,31 @@ const DetailScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>{notification.title || 'No Title'}</Text>
 
-      <Text style={styles.description}>
-        {notification.description || 'No description provided.'}
-      </Text>
-
-      {notification.image ? (
+         {notification.offer?.offerBanner.banner ? (
         <Image
-          source={{ uri: notification.image }}
+          source={{ uri: notification.offer?.offerBanner.banner }}
           style={styles.image}
-          resizeMode="cover"
+          resizeMode="contain"
         />
       ) : null}
 
-    
+      <Text>{notification.body || 'No Title'}</Text>
+
+      <Text style={styles.description}>
+<RenderHTML
+  source={{ html: notification.description || notification.detailDescription || 'No description provided.' }}
+/>
+
+      </Text>
+
+      
+
+   
+
+    {notification.buttonType ? 
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('WebviewScreen', { urlName: notification.redirectUrl })
+            navigation.navigate('WebviewScreen', { urlName: notification.url })
           }
           style={styles.bottomButton}
         >
@@ -39,6 +52,7 @@ const DetailScreen = ({ route, navigation }) => {
           <Text style={styles.buttonText}>{notification.buttonType}</Text>
           </View>
         </TouchableOpacity>
+        : null}
 
     </View>
   );
@@ -64,8 +78,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    width: '100%',
-    height: 200,
+    width: "100%",
+    height: 180,
     borderRadius: 12,
     marginBottom: 20,
   },

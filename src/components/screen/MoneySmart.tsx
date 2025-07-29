@@ -12,6 +12,7 @@ import axios from 'axios';
 import { BASE_URL } from '../util/api_url';
 import { useNavigation } from '@react-navigation/native';
 import appStyle from '@/AppStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const MoneySmart = ({ limit = 4 }) => {
     const [gridData, setGridData] = useState([]);
@@ -20,16 +21,50 @@ export const MoneySmart = ({ limit = 4 }) => {
     const navigation = useNavigation();
 
     useEffect(() => {
-        axios
-            .get(`${BASE_URL}/api/offer/money`)
-            .then((response) => {
-                setGridData(response.data.offers);
-            })
-            .catch((error) => {
-                console.error('Error fetching money smart data:', error);
-            })
-            .finally(() => setLoading(false));
-    }, []);
+
+        
+        // axios.get(`${BASE_URL}/api/offer/money`)
+        //     .then((response) => {
+        //         setGridData(response.data.offers);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error fetching money smart data:', error);
+        //     })
+        //     .finally(() => setLoading(false));
+
+
+
+        const Moneysmart = async () => {
+      try {
+        // const response = await axios.get(`${BASE_URL}/api/banner/images/slider`, );
+
+ const token = await AsyncStorage.getItem('userToken');
+
+  const response = await axios.get(`${BASE_URL}/api/offer/money`, {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+  });
+
+
+        if (response.data.success) {
+        //   setBanners(response.data.images);
+             setGridData(response.data.offers);
+             setLoading(false);
+        }
+      } catch (error) {
+        console.log('Error fetching banners:', error);
+      }
+    };
+
+    Moneysmart();
+
+    
+  }, []);
+
+            
+
 
     const renderGridItem = ({ item }) => (
         <TouchableOpacity
@@ -86,7 +121,6 @@ const styles = StyleSheet.create({
         paddingBottom:0,
         paddingRight: 8,
         marginTop:10,
-        backgroundColor: '#fff',
     },
     header: {
         fontSize: 16,
@@ -104,36 +138,26 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         backgroundColor:"#F9F9F9",
         borderWidth: 1,
-        padding:6,
+        padding:3,
         borderRadius: 8,
         alignItems: 'center',
     },
     image: {
         width: "100%",
-        height: 100,
+        height: 80,
         marginBottom: 4,
         borderRadius: 4,
         backgroundColor: '#ccc',
         resizeMode: "cover",
     
     },
-    // text: {
-    //     fontSize: 14,
-    //     textAlign: 'left',
-    //     padding: 2,
-    //     paddingHorizontal:8,
-    //     marginBottom: 8,
-    //     fontWeight:'600',
-    //     color:"#273283",
-
-    // },
-
+    
     text: {
-        fontSize: 14,
+        fontSize: 12,
         textAlign: 'left',
         padding: 2,
         fontWeight: '600',
         color: "#273283",
-        lineHeight: 18,
+        lineHeight: 16,
     },
 });

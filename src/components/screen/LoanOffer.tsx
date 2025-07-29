@@ -1,23 +1,32 @@
+import appStyle from "@/AppStyles";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, BackHandler } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  BackHandler,
+  StatusBar,
+  useColorScheme,
+} from "react-native";
 
 export default function LoanOffer() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const scheme = useColorScheme(); // detect dark/light mode
 
-useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        navigation.navigate('Home');
-        return true; // prevent default back behavior
+        navigation.navigate("Home");
+        return true;
       };
 
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-      return () => backHandler.remove(); // ✅ modern cleanup
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => backHandler.remove();
     }, [navigation])
   );
-
 
   const [loanData] = useState([
     { id: "1", name: "Piramal", interestRate: 27.5, emi: 17283, chances: "Excellent", preApproved: true },
@@ -33,14 +42,12 @@ useFocusEffect(
   const filteredAndSortedLoans = useMemo(() => {
     let loans = [...loanData];
 
-    // Apply filter
     if (filter === "preApproved") {
       loans = loans.filter((item) => item.preApproved);
     } else if (filter === "excellentChance") {
       loans = loans.filter((item) => item.chances === "Excellent");
     }
 
-    // Apply sorting
     if (sortOrder === "interestAsc") {
       loans.sort((a, b) => a.interestRate - b.interestRate);
     } else if (sortOrder === "interestDesc") {
@@ -55,42 +62,46 @@ useFocusEffect(
   }, [loanData, filter, sortOrder]);
 
   const LoanCard = ({ item }) => (
-    <View style={styles.card}>
+    <View style={appStyle.acard}>
       {item.preApproved && <Text style={styles.preApproved}>Pre-Approved</Text>}
-      <Text style={styles.title}>{item.name}</Text>
+      <Text style={[styles.title, appStyle.offetitle]}>{item.name}</Text>
       <View style={styles.infoRow}>
         <View>
-          <Text style={styles.label}>Interest Rate</Text>
-          <Text style={styles.value}>{item.interestRate}%</Text>
+          <Text style={[styles.label, appStyle.doblebal]}>Interest Rate</Text>
+          <Text style={[styles.value, appStyle.perctvalu]}>{item.interestRate}%</Text>
         </View>
         <View>
-          <Text style={styles.label}>EMI</Text>
-          <Text style={styles.value}>₹ {item.emi}</Text>
+          <Text style={[styles.label, appStyle.doblebal]}>EMI</Text>
+          <Text style={[styles.value, appStyle.perctvalu]}>₹ {item.emi}</Text>
         </View>
       </View>
       <View style={styles.chanceRow}>
-        <Text style={styles.label}>Chances of Approval</Text>
+        <Text style={[styles.label, appStyle.doblebal]}>Chances of Approval</Text>
         <Text style={styles.chanceValue}>{item.chances}</Text>
       </View>
       <TouchableOpacity style={styles.selectButton}>
         <Text style={styles.selectButtonText}>SELECT</Text>
       </TouchableOpacity>
       <View style={styles.loanDetails}>
-        <Text style={styles.detailText}>Maximum Loan Amount: Rs. 5,00,000</Text>
-        <Text style={styles.detailText}>Loan Tenure: 60 months</Text>
+        <Text style={[styles.detailText, appStyle.perctvalu]}>Maximum Loan Amount: Rs. 5,00,000</Text>
+        <Text style={[styles.detailText, appStyle.perctvalu]}>Loan Tenure: 60 months</Text>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={appStyle.gstcraeccontainer}>
+      <StatusBar
+        barStyle={scheme === "dark" ? "light-content" : "dark-content"}
+        backgroundColor={scheme === "dark" ? "#000000" : "#FFFFFF"}
+      />
       <FlatList
         data={filteredAndSortedLoans}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <LoanCard item={item} />}
         contentContainerStyle={styles.listContainer}
       />
-      <View style={styles.footer}>
+      <View style={[styles.footer, appStyle.offerfooter]}>
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => {
@@ -139,24 +150,10 @@ useFocusEffect(
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F7FA",
-  },
   listContainer: {
     padding: 12,
   },
-  card: {
-    backgroundColor: "#FFFFFF",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-  },
+  
   preApproved: {
     backgroundColor: "#35B8E0",
     color: "white",
@@ -218,7 +215,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#FFFFFF",
+    
     borderTopWidth: 1,
     borderColor: "#ddd",
   },

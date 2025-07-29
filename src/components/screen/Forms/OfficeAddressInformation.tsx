@@ -168,7 +168,7 @@ const handleSubmit = async () => {
     
 
     return (
-        <SafeAreaView style={[styles.container]}>
+        <SafeAreaView style={appStyle.gstcraeccontainer}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <KeyboardAvoidingView style={{ flex: 1 }}
                 //  behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -199,10 +199,10 @@ const handleSubmit = async () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff" },
+    
     scrollContainer: { paddingHorizontal: 20, paddingBottom: 50 },
     header: { fontSize: 18, fontWeight: "bold" },
-    buttonContainer: { left: 0, right: 0, bottom: 0, alignItems: "center" },
+    buttonContainer: { left: 0, right: 0, bottom: 20, alignItems: "center" },
     button: { backgroundColor: "#FF4800", paddingVertical: 15, borderRadius: 5, width: "90%" },
     buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", textAlign: "center" },
     errorText: { color: "red", fontSize: 12, marginTop: 5 },

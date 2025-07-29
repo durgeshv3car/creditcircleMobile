@@ -1,7 +1,7 @@
 import appStyle from '@/AppStyles';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
-import { Image } from 'react-native';
+import { Image, useColorScheme } from 'react-native';
 import {
     View,
     Text,
@@ -11,6 +11,7 @@ import {
     SafeAreaView,
 } from 'react-native';
 
+
 export default function EMICalculator() {
     const navigation = useNavigation();
     const [loanAmount, setLoanAmount] = useState('100000');
@@ -19,6 +20,9 @@ export default function EMICalculator() {
     const [emi, setEmi] = useState('0');
     const [totalInterest, setTotalInterest] = useState('0');
     const [totalAmount, setTotalAmount] = useState('0');
+
+    
+     const isDarkMode = useColorScheme() === 'dark'; 
 
     const calculateEMI = () => {
         const principal = parseFloat(loanAmount);
@@ -43,6 +47,7 @@ export default function EMICalculator() {
         return num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
       };
       
+
       
     useEffect(() => {
         calculateEMI();
@@ -51,15 +56,15 @@ export default function EMICalculator() {
     return (
         <SafeAreaView style={appStyle.Emicontainer}>
             <View>
-            <Text style={styles.title}>Loan EMI Calculator</Text>
+            <Text style={styles.title}>Loan Calculator</Text>
             </View>
 
             <View style={styles.inputContainer}>
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Loan Amount</Text>
+                    <Text style={appStyle.calulabel}>Loan Amount</Text>
                     <Text style={styles.sublabel}>(In Rupees)</Text>
                     <TextInput
-                        style={styles.input}
+                        style={appStyle.caluinput}
                         value={loanAmount}
                         onChangeText={setLoanAmount}
                         keyboardType="numeric"
@@ -68,10 +73,10 @@ export default function EMICalculator() {
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Interest Rate</Text>
+                    <Text style={appStyle.calulabel}>Interest Rate</Text>
                     <Text style={styles.sublabel}>(In Percentage %)</Text>
                     <TextInput
-                        style={styles.input}
+                         style={appStyle.caluinput}
                         value={interestRate}
                         onChangeText={setInterestRate}
                         keyboardType="numeric"
@@ -80,10 +85,10 @@ export default function EMICalculator() {
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Loan Tenure</Text>
+                    <Text style={appStyle.calulabel}>Loan Tenure</Text>
                     <Text style={styles.sublabel}>(In Months)</Text>
                     <TextInput
-                        style={styles.input}
+                         style={appStyle.caluinput}
                         value={loanTenure}
                         onChangeText={setLoanTenure}
                         keyboardType="numeric"
@@ -95,23 +100,23 @@ export default function EMICalculator() {
             <View style={styles.resultContainer}>
                 <View style={styles.row}>
                     <View style={styles.column}>
-                        <Text style={styles.resultLabel}>Principal Amount</Text>
-                        <Text style={styles.amount}>₹{formatIndianCurrency(loanAmount)}</Text>
+                        <Text style={appStyle.resultLabel}>Principal Amount</Text>
+                        <Text style={appStyle.caluamount}>₹{formatIndianCurrency(loanAmount)}</Text>
                     </View>
                     <Text style={styles.operator}>+</Text>
                     <View style={styles.column}>
-                        <Text style={styles.resultLabel}>Interest Amount</Text>
-                        <Text style={styles.amount}>₹{formatIndianCurrency(totalInterest)}</Text>
+                        <Text style={appStyle.resultLabel}>Interest Amount</Text>
+                        <Text style={appStyle.caluamount}>₹{formatIndianCurrency(totalInterest)}</Text>
                     </View>
                     <Text style={styles.operator}>=</Text>
                     <View style={styles.column}>
-                        <Text style={styles.resultLabel}>Payable Amount</Text>
-                        <Text style={styles.amount}>₹{formatIndianCurrency(totalAmount)}</Text>
+                        <Text style={appStyle.resultLabel}>Payable Amount</Text>
+                        <Text style={appStyle.caluamount}>₹{formatIndianCurrency(totalAmount)}</Text>
                     </View>
                 </View>
 
                 <View style={styles.emiContainer}>
-                    <View style={styles.emiBox}>
+                    <View style={appStyle.emiBox}>
                         <Text style={styles.emiLabel}>EMI</Text>
                         <Text style={styles.emiAmount}>₹{formatIndianCurrency(emi)}</Text>
                     </View>
@@ -122,7 +127,7 @@ export default function EMICalculator() {
 
 <TouchableOpacity
   style={styles.checkEligibility}
-  onPress={() => navigation.navigate('EligibilityScreen')} // replace with your target screen name
+  onPress={() => navigation.navigate('PersonalDetailsOne')} // replace with your target screen name
 >
   <Text style={styles.buttonText}>Check Eligibility →</Text>
 </TouchableOpacity>
@@ -153,12 +158,7 @@ const styles = StyleSheet.create({
         flex: 1,
 
     },
-    label: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#1a237e',
-        textAlign: 'left'
-    },
+ 
     sublabel: {
         fontSize: 10,
         color: '#666',
@@ -166,18 +166,9 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         textAlign: 'left'
     },
-    input: {
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        textAlign: 'center'
-    },
+   
     resultContainer: {
-        backgroundColor: '#f5f5f5',
         borderRadius: 10,
-
     },
     row: {
         flexDirection: 'row',
@@ -196,11 +187,7 @@ const styles = StyleSheet.create({
         color: '#666',
         width:20
     },
-    resultLabel: {
-        fontSize: 10,
-        color: '#666',
-        marginBottom: 5,
-    },
+ 
     amount: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -214,12 +201,12 @@ const styles = StyleSheet.create({
         borderRadius:6
         
     },
-    emiBox: {
-        padding: 10,
-        borderRadius: 8,
-        width:"46%",
-        backgroundColor:"#fff"
-    },
+    // emiBox: {
+    //     padding: 10,
+    //     borderRadius: 8,
+    //     width:"46%",
+    //     backgroundColor:"#fff"
+    // },
     emiLabel: {
         fontSize: 12,
         fontWeight: 'bold',

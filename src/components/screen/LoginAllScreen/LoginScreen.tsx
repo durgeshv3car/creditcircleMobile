@@ -1,3 +1,4 @@
+import ads from '@/components/common/ads';
 import { ThemedTextInput } from '@/components/ThemedInput';
 import { ThemedHeadingText, ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -18,14 +19,18 @@ import {
   Modal,
   Pressable,
   BackHandler,
+  useColorScheme,
 } from 'react-native';
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import DeviceInfo from 'react-native-device-info';
+
+import ReactNativeIdfaAaid, { AdvertisingInfoResponse } from '@sparkfabrik/react-native-idfa-aaid';
+
 
 const withY = Dimensions.get("window").width;
 const CELL_COUNT = 4;
 const API_BASE_URL = `${BASE_URL}/api/otp/`;
 
-console.log(API_BASE_URL)
 
 const LoginScreen = ({ navigation }) => {
   const [otp, setOtp] = useState('');
@@ -36,9 +41,15 @@ const LoginScreen = ({ navigation }) => {
   const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [keyboardOn, setKeyboardOn] = useState(false);
+  const [idfa, setIdfa] = useState(null);
+  const [refrCode, setrefrCode] = useState('');
+   const [showRefrContainer, setShowRefrContainer] = useState(false);
 
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const clearByFocusCell = useClearByFocusCell({ value, setValue });
+
+  const colorScheme = useColorScheme(); // 🆕
+  const isDarkMode = colorScheme === 'dark'; // 🆕
 
   const handleGetOtp = async () => {
     const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString();
@@ -75,7 +86,40 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+
+ 
+
+  
   useEffect(() => {
+
+let deviceId = DeviceInfo.getDeviceId();
+
+let buildNumber = DeviceInfo.getBrand();
+
+let model = DeviceInfo.getModel();
+
+let AndroidId = DeviceInfo.getUniqueId();
+
+console.log("Device Info:", refrCode);
+
+
+     ReactNativeIdfaAaid.getAdvertisingInfo()
+        .then((res: AdvertisingInfoResponse) =>
+          !res.isAdTrackingLimited ? setIdfa(res.id) : setIdfa(null),
+        )
+        .catch((err) => {
+          console.log('Error fetching advertising ID:', err);
+          setIdfa(null);
+        });
+
+
+
+// console.log("DUrgesh"+buildNumber, deviceId, model, idfa)
+
+console.log(
+  `Build Number: ${buildNumber}, Device ID: ${deviceId}, Model: ${model}, IDFA: ${idfa}`
+);
+
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => true // Disable hardware back
@@ -84,77 +128,166 @@ const LoginScreen = ({ navigation }) => {
     return () => backHandler.remove();
   }, []);
 
-  const handleVerifyOTP = async () => {
+// const handleVerifyOTP = async () => {
+//   if (value.length !== CELL_COUNT) {
+//     Alert.alert('Invalid OTP', 'Please enter the full OTP.');
+//     return;
+//   }
+
+//   setValue('');
+//   const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString();
+//   setLoading(true);
+
+//   try {
+//     const token = await requestFcmToken();
+
+//     const verifyRes = await fetch(`${API_BASE_URL}/verify-otp`, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({
+//         phoneNumber: sanitizedNumber,
+//         otp: value,
+//         whatsApp: isWhatsAppEnabled,
+//         fcm_token: token,
+//       }),
+//     });
+
+//     const data = await verifyRes.json();
+//     if (!verifyRes.ok) {
+//       Alert.alert('Error', data.message || 'Invalid OTP. Please try again.');
+//       return;
+//     }
 
 
-    if (value.length !== CELL_COUNT) {
-      Alert.alert('Invalid OTP', 'Please enter the full OTP.');
+//     console.log("Data logo", data)
+
+
+//     await AsyncStorage.setItem('userToken', data.token);
+//     await AsyncStorage.setItem('userData', JSON.stringify(sanitizedNumber));
+
+//     // ✅ Fetch IDFA just before saving device info
+//     let advertisingId = null;
+//     try {
+//       const adInfo = await ReactNativeIdfaAaid.getAdvertisingInfo();
+//       if (!adInfo.isAdTrackingLimited) advertisingId = adInfo.id;
+//     } catch (e) {
+//       console.log('Failed to get advertising ID:', e);
+//     }
+
+//     const payload = {
+//       phoneNumber: sanitizedNumber,
+//       deviceId: DeviceInfo.getDeviceId(),
+//       model: DeviceInfo.getModel(),
+//       brand: DeviceInfo.getBrand(),
+//       idfa: advertisingId,
+//       fcmToken: token,
+//     };
+
+//     await fetch(`${BASE_URL}/api/devices`, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(payload),
+//     });
+
+//     const profileResponse = await fetch(`${API_BASE_URL}/get-profile?phoneNumber=${sanitizedNumber}`);
+//     const profileData = await profileResponse.json();
+
+//     setTimeout(() => {
+//       if (profileData.isCompleted === "1") {
+//         navigation.navigate('Home');
+//       } else {
+//         navigation.navigate('PersonalDetailsOne');
+//       }
+//     }, 1000);
+//   } catch (error) {
+//     Alert.alert('Error', 'Network error. Please try again.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
+
+const handleVerifyOTP = async () => {
+  if (value.length !== CELL_COUNT) {
+    Alert.alert('Invalid OTP', 'Please enter the full OTP.');
+    return;
+  }
+
+  setValue('');
+  const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString();
+  setLoading(true);
+
+  try {
+    const token = await requestFcmToken();
+
+    const verifyRes = await fetch(`${API_BASE_URL}/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phoneNumber: sanitizedNumber,
+        otp: value,
+        whatsApp: isWhatsAppEnabled,
+        fcm_token: token,
+        code:refrCode,
+
+      }),
+    });
+
+    const data = await verifyRes.json();
+    if (!verifyRes.ok) {
+      Alert.alert('Error', data.message || 'Invalid OTP. Please try again.');
       return;
     }
 
-    setValue("")
-    const sanitizedNumber = mobileNumber.replace(/\D/g, '').toString();
+    await AsyncStorage.setItem('userToken', data.token);
+    await AsyncStorage.setItem('userData', JSON.stringify(sanitizedNumber));
+
+    // 🔍 Fetch IDFA + Play Install Referrer
+    let advertisingId = null;
+    let installReferrer = null;
 
     try {
-      const token = await requestFcmToken();
-
-      const response = await fetch(`${API_BASE_URL}/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumber: sanitizedNumber,
-          otp: value,
-          whatsApp: isWhatsAppEnabled,
-          fcm_token: token
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        Alert.alert('Error', data.message || 'Invalid OTP. Please try again.');
-        return;
-      }
-
-      await AsyncStorage.setItem('userToken', data.token);
-      await AsyncStorage.setItem('userData', JSON.stringify(sanitizedNumber));
+      const adInfo = await ReactNativeIdfaAaid.getAdvertisingInfo();
+      if (!adInfo.isAdTrackingLimited) advertisingId = adInfo.id;
+    } catch (e) {
+      console.log('Failed to get advertising ID:', e);
+    }
 
 
+    const payload = {
+      phoneNumber: sanitizedNumber,
+      deviceId: DeviceInfo.getDeviceId(),
+      model: DeviceInfo.getModel(),
+      brand: DeviceInfo.getBrand(),
+      idfa: advertisingId,
+      fcmToken: token,
+    };
 
-      // Reset navigation stack
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [{ name: 'Home' }],
-      // });
+    await fetch(`${BASE_URL}/api/devices`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-      const profileResponse = await fetch(`${API_BASE_URL}/get-profile?phoneNumber=${sanitizedNumber}`);
-      const profileData = await profileResponse.json();
+    const profileResponse = await fetch(`${API_BASE_URL}/get-profile?phoneNumber=${sanitizedNumber}`);
+    const profileData = await profileResponse.json();
 
-      console.log("Profile Data", profileData)
-
-
+    setTimeout(() => {
       if (profileData.isCompleted === "1") {
         navigation.navigate('Home');
       } else {
         navigation.navigate('PersonalDetailsOne');
       }
-
-      
-      // setTimeout(() => {
-      //   if (profileData.isCompleted === "1") {
-      //     navigation.navigate('Home');
-      //   } else {
-      //     navigation.navigate('PersonalDetailsOne');
-      //   }
-      // }, 500);
-      
+    }, 1000);
+  } catch (error) {
+    Alert.alert('Error', 'Network error. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
 
-    } catch (error) {
-      Alert.alert('Error', 'Network error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const resendOtp = () => {
     setTimer(30);
@@ -167,7 +300,6 @@ const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
  
-    
     if (modalVisible && timer > 0) {
       const interval = setInterval(() => setTimer(prev => prev - 1), 1000);
       return () => clearInterval(interval);
@@ -187,7 +319,7 @@ const LoginScreen = ({ navigation }) => {
           <Image source={require("../../../assets/icons/flag.png")} style={{ width: 20, height: 14, marginRight: 16 }} />
           <ThemedText style={styles.countryCode}>+91 -</ThemedText>
           <TextInput
-            style={[styles.input]}
+            style={[styles.input, { color: isDarkMode ? '#fff' : '#000' }]}
             // keyboardType="number-pad"
             keyboardType="number-pad"
             maxLength={10}
@@ -206,16 +338,13 @@ const LoginScreen = ({ navigation }) => {
           <ThemedText style={styles.switchText}>Get updates on Whatsapp</ThemedText>
           <Switch value={isWhatsAppEnabled} onValueChange={setIsWhatsAppEnabled} />
 
-          {/* <Switch
-    trackColor={{ false: "#767577", true: "#81b0ff" }}
-    thumbColor={isWhatsAppEnabled ? "#f5dd4b" : "#f4f3f4"}
-    onValueChange={setIsWhatsAppEnabled}
-    value={isWhatsAppEnabled}
-    style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }], // Adjust size
-        height: 50 }} // Set track height
-/> */}
-
         </ThemedView>
+
+
+       
+
+
+
 
       </ThemedView>
 
@@ -253,9 +382,35 @@ const LoginScreen = ({ navigation }) => {
               />
             </View>
 
+
+{showRefrContainer && (
+        <View >
+          <TextInput
+          style={{ width: '100%', minWidth:250, textAlign:'center', height: 50, borderColor: '#ccc', borderWidth: 1, paddingHorizontal: 10, marginTop: 10, marginBottom:10, borderRadius:10 }}
+            keyboardType="default"
+            autoCapitalize="none"
+            maxLength={10}
+            placeholder="Enter Referral Code (Optional)"
+            value={refrCode}
+            onChangeText={(text) => setrefrCode(text)}
+          />
+        </View>
+      )}
+
+
+
             <Pressable style={styles.verifyButton} onPress={handleVerifyOTP} disabled={loading}>
               <Text style={styles.verifyText}>{loading ? 'Verifying...' : 'Verify'}</Text>
             </Pressable>
+
+                <Pressable
+      style={{ marginBottom: 20, marginTop: 10,}}
+        onPress={() => setShowRefrContainer(!showRefrContainer)}
+      >
+        <Text >
+          You Have RefrCode? Click Here
+        </Text>
+      </Pressable>
 
             <View style={{ marginBottom: 20 }}>
               {timer > 0 ? (
@@ -266,6 +421,9 @@ const LoginScreen = ({ navigation }) => {
                 </TouchableOpacity>
               )}
             </View>
+
+
+
           </View>
         </ThemedView>
       </Modal>
@@ -301,6 +459,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16
+
   },
   button: {
     backgroundColor: '#FF5722',

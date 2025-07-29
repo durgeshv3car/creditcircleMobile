@@ -1,3 +1,4 @@
+import appStyle from '@/AppStyles';
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 
@@ -38,9 +39,9 @@ const DateOfBirthInput = ({ value, onChange }) => {
 
     return (
         <View>
-            <Text style={styles.label}>Date Of Birth</Text>
+            <Text style={appStyle.doblebal}>Date Of Birth</Text>
             <TextInput
-                style={styles.input}
+                style={appStyle.dobinput}
                 value={value} // ✅ Controlled input
                 onChangeText={handleChange}
                 placeholder="DD/MM/YYYY"

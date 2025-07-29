@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import appStyle from '@/AppStyles';
 
 const YearDropdown = ({ label, selectedYear, onYearSelect }) => {
     const [selectedValue, setSelectedValue] = useState(selectedYear || "");
@@ -12,7 +13,7 @@ const YearDropdown = ({ label, selectedYear, onYearSelect }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.label}>{label}</Text>
+            <Text style={appStyle.doblebal}>{label}</Text>
             <Picker
                 selectedValue={selectedValue}
                 onValueChange={handleChange}

@@ -28,6 +28,7 @@ import { ThemeContext } from "@react-navigation/native";
 import InviteBanner from "./Refer";
 import OffersSlider from "../common/OffersSlider";
 import appStyle from "@/AppStyles";
+import Ads from "../common/ads";
 
 
 // import MoneySmart from "./MoneySmart";
@@ -93,8 +94,34 @@ const HomeScreen = ({ navigation }) => {
         <ThemedView>
           <CreditScoreMeter
             score={score}
-            previousScore={300}
-            onCheckScore={() => {}}
+            previousScore={600}
+            // onCheckScore={() => {}}
+             onCheckScore={async () => {
+    try {
+
+      const token = await AsyncStorage.getItem('userToken');
+      const response = await fetch('http://creditcircle.ap-south-1.elasticbeanstalk.com/api/credit-score-url', {
+        method: 'GET',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+      });
+  // const response = await fetch('http://creditcircle.ap-south-1.elasticbeanstalk.com/api/credit-score-url');
+
+      const json = await response.json();
+
+      console.log('Response JSON:', json);
+
+      if (json?.data?.[0]?.companyUrl) {
+        navigation.navigate('WebviewScreen', { urlName: json.data[0].companyUrl });
+      } else {
+        console.warn('No company URL found');
+      }
+    } catch (error) {
+      console.error('Failed to fetch credit score URL', error);
+    }
+  }}
           />
         </ThemedView> 
 
@@ -288,7 +315,7 @@ navigation.navigate("QuickListing", { investmentType: 'carinsurance' });
        
         <ThemedView style={styles.recommendedSection}>
           <ThemedHeadingText style={appStyle.sectionTitle}>
-            Recommended for you
+            Offers
           </ThemedHeadingText>
 
 <OffersSlider/>
@@ -338,32 +365,30 @@ navigation.navigate("QuickListing", { investmentType: 'carinsurance' });
 
 const styles = StyleSheet.create({
  
-  image: { width: '100%', height: 140, resizeMode: 'stretch', borderRadius: 10 },
+  // image: { width: '100%', height: 140, resizeMode: 'stretch', borderRadius: 10 },
 
 
-  BrandLogo: {
-    flex: 1,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-  },
+  // BrandLogo: {
+  //   flex: 1,
+  //   justifyContent: 'space-between',
+  //   flexDirection: 'row',
+  // },
 
 
-  dot: {
-    backgroundColor: 'rgba(0,0,0,.2)', // Inactive dot color
-    width: 20,
-    height: 2,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: '#007bff', // Active dot color
-    width: 30,
-    height: 3,
-    borderRadius: 6,
-    marginHorizontal: 5,
-  },
+  // dot: {
+  //   backgroundColor: 'rgba(0,0,0,.2)', // Inactive dot color
+  //   width: 20,
+  //   height: 2,
+  //   borderRadius: 5,
+  //   marginHorizontal: 5,
+  // },
+  // activeDot: {
+  //   backgroundColor: '#007bff', // Active dot color
+  //   width: 30,
+  //   height: 3,
+  //   borderRadius: 6,
+  // },
 
-  container: { flex: 1 },
   header: { flexDirection: "row", justifyContent: "space-between", padding: 20, backgroundColor: "#f8f8f8" },
   logo: { fontSize: 18, fontWeight: "bold" },
   notifications: { backgroundColor: "#ff0000", borderRadius: 15, padding: 5 },
