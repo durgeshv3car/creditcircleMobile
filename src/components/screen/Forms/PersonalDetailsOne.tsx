@@ -112,15 +112,15 @@ const PersonalDetailsOne = ({ navigation }) => {
 
       const jsonValue = await AsyncStorage.getItem('userData');
       const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
-
-
-
       setPhoneNumber(parsedValue)
 
 
       const profileResponse = await axios.get(
         `${BASE_URL}/api/otp/get-profile?phoneNumber=${parsedValue}`
       );
+
+    await AsyncStorage.setItem('UserId', profileResponse.data.id);
+      
 
 
 
@@ -226,13 +226,13 @@ const PersonalDetailsOne = ({ navigation }) => {
     if (!validate()) return;
 
     try {
-      console.log("📤 Fetching Phone Number...");
-      const otpResponse = await fetch(`${BASE_URL}/api/otp/get-phone-number`);
-      const otpData = await otpResponse.json();
+      // console.log("📤 Fetching Phone Number...");
+      // const otpResponse = await fetch(`${BASE_URL}/api/otp/get-phone-number`);
+      // const otpData = await otpResponse.json();
 
-      console.log("📌 Phone Number Data:", otpData);
+      console.log("📌 Phone Number Data:", phoneNumber);
 
-      if (!otpResponse.ok || !otpData.phoneNumber) {
+      if (!phoneNumber || !phoneNumber) {
         console.error("❌ Error: Failed to retrieve phone number.");
         Alert.alert("Error", "Failed to retrieve phone number.");
         return;

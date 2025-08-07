@@ -29,6 +29,7 @@ import InviteBanner from "./Refer";
 import OffersSlider from "../common/OffersSlider";
 import appStyle from "@/AppStyles";
 import Ads from "../common/ads";
+import { checkTokenValidity } from "../util/checkTokenValidity";
 
 
 // import MoneySmart from "./MoneySmart";
@@ -48,6 +49,23 @@ const HomeScreen = ({ navigation }) => {
     //   "Welcome to MoneySmart",
     //   "Get the best financial advice and services at your fingertips."
     // );
+
+
+        const verifyToken = async () => {
+      const valid = await checkTokenValidity();
+      if (!valid) {
+        await AsyncStorage.removeItem('userToken'); // Clear if needed
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      }
+
+
+    };
+
+    verifyToken();
+
 
     let currentScore = 300;
     const maxScore = 900;

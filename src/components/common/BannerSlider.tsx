@@ -40,6 +40,9 @@ const BannerSlider = () => {
       }
     };
 
+    console.log('Fetching banners... banners:', banners);
+
+
     fetchBanners();
   }, []);
 

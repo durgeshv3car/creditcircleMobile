@@ -54,13 +54,9 @@ const PanLocationInformation = () => {
 const fetchProfileData = async () => {
   try {
     // ✅ Fetch the phone number from the OTP model
-    const otpResponse = await axios.get(`${BASE_URL}/api/otp/get-phone-number`);
+    // const otpResponse = await axios.get(`${BASE_URL}/api/otp/get-phone-number`);
 
-    if (!otpResponse.data.phoneNumber) {
-      Alert.alert("Error", "Phone number not found. Verify OTP first.");
-      return;
-    }
-
+  
 
 
     const jsonValue = await AsyncStorage.getItem('userData');
@@ -68,12 +64,19 @@ const fetchProfileData = async () => {
    
     setPhoneNumber(parsedValue);
 
+      if (!parsedValue) {
+      Alert.alert("Error", "Phone number not found. Verify OTP first.");
+      return;
+    }
+
 
     // ✅ Fetch Profile using Phone Number
     const profileResponse = await axios.get(
       `${BASE_URL}/api/otp/get-profile?phoneNumber=${parsedValue}`
     );
 
+
+    console.log("🔍 Profile Response:", profileResponse.data);
 
     if(profileResponse.data.pan === null || profileResponse.data.pinCode === null ){
       setProfileExists(true);

@@ -34,17 +34,19 @@ const PersonalBackground = ({ navigation }) => {
         setLoantype(loan ?? "PersonalLoan");
 
         try {
-            const otpResponse = await axios.get(`${BASE_URL}/api/otp/get-phone-number`);
+              const jsonValue = await AsyncStorage.getItem('userData');
+    const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
+    
+    if (!parsedValue) {
+      Alert.alert("Error", "Phone number not found. Verify OTP first.");
+      return;
+    }
 
-            if (!otpResponse.data.phoneNumber) {
-                Alert.alert("Error", "Phone number not found. Verify OTP first.");
-                return;
-            }
 
-            setPhoneNumber(otpResponse.data.phoneNumber);
+            setPhoneNumber(parsedValue);
 
             const profileResponse = await axios.get(
-                `${BASE_URL}/api/otp/get-profile?phoneNumber=${otpResponse.data.phoneNumber}`
+                `${BASE_URL}/api/otp/get-profile?phoneNumber=${parsedValue}`
             );
 
             if (profileResponse.data) {

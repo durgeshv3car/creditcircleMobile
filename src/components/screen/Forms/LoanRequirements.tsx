@@ -70,13 +70,15 @@ const LoanRequirements = ({ navigation }) => {
   useEffect(() => {
 
     const fetchPhoneNumber = async () => {
-      const jsonValue = await AsyncStorage.getItem('loanType');
-      setloantype(jsonValue)
+      const loanTypess= await AsyncStorage.getItem('loanType');
+      setloantype(loanTypess)
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/otp/get-phone-number`);
-        if (response.data.phoneNumber) {
-          setPhoneNumber(response.data.phoneNumber);
+        // const response = await axios.get(`${API_BASE_URL}/otp/get-phone-number`);
+         const jsonValue = await AsyncStorage.getItem('userData');
+        const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
+        if (parsedValue) {
+          setPhoneNumber(parsedValue);
         } else {
           Alert.alert("Error", "Phone number not found. Please verify OTP first.");
           navigation.navigate("LoginScreen");
@@ -136,9 +138,13 @@ const LoanRequirements = ({ navigation }) => {
 
       console.log("🚀 Sending Loan Requirements:", requestData);
 
+
+
       const response = await axios.post(`${API_BASE_URL}/loan-application/loan-requirements`, requestData);
-      
+       
       const appId = response.data.applicationId
+
+      
 
       try {
         const jsonValue = JSON.stringify(appId);
