@@ -4,17 +4,17 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-
 const socialLinks = [
   {
     name: 'Facebook',
-    url: 'https://facebook.com',
+    url: 'https://www.youtube.com/',
     icon: require('../../assets/images/youtube.png'),
   },
   {
-    name: 'Instagram',
-    url: 'https://instagram.com',
+    name: 'Facebook',
+    url: 'https://www.facebook.com/Creditcircleindia',
     icon: require('../../assets/images/facebook.png'),
   },
   {
-    name: 'Youtube',
-    url: 'https://youtube.com',
+    name: 'insta',
+    url: 'https://www.instagram.com/creditcircleindia/',
     icon: require('../../assets/images/insta.png'),
   },
 ];

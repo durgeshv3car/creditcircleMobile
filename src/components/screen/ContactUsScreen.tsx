@@ -11,7 +11,7 @@ const ContactUsScreen = () => {
                 Alert.alert('Error', 'Unable to open the phone dialer.')
             );
         } else if (type === 'Email') {
-            const email = 'mailto:support@example.com'; // Replace with your email address
+            const email = 'mailto:info@creditcircle.in'; // Replace with your email address
             Linking.openURL(email).catch((err) =>
                 Alert.alert('Error', 'Unable to open the email client.')
             );

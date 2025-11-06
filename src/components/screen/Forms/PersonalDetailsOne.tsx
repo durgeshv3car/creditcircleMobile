@@ -69,10 +69,7 @@ const PersonalDetailsOne = ({ navigation }) => {
       errorObj.firstName = "First Name Is Required";
       valid = false;
     }
-    if (!lastName.trim()) {
-      errorObj.lastName = "Last Name Is Required";
-      valid = false;
-    }
+
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errorObj.email = "Valid Email Is Required";
       valid = false;
@@ -311,7 +308,7 @@ const PersonalDetailsOne = ({ navigation }) => {
 
 <View style={styles.row}>
             <ThemedTextInput label="First Name" placeHolder="First Name As Per PAN" value={firstName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setFirstName(alphabetOnly); }} error={errors.firstName} />
-            <ThemedTextInput label="Last Name" placeHolder="Last Name As Per PAN" value={lastName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setLastName(alphabetOnly); }} error={errors.lastName} />
+            <ThemedTextInput label="Last Name" placeHolder="Last Name As Per PAN" value={lastName} onChangeText={(text) => { const alphabetOnly = text.replace(/[^a-zA-Z. ]/g, ''); setLastName(alphabetOnly); }} />
             </View>
             <ThemedTextInput label="Email Address" placeHolder="Enter Your Email Address" keyboardType="email-address" value={email}
               onChangeText={(text) => {

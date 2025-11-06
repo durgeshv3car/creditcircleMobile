@@ -51,7 +51,7 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import NotificationHandler from '@/components/common/NotificationHandler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as RootNavigation from './RootNavigation'; // ✅ adjust path if needed
-
+import { AppEventsLogger, Settings } from 'react-native-fbsdk-next';
 // ✅ This part now lives **inside** the provider context
 function MainApp() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -67,80 +67,6 @@ function MainApp() {
     return () => clearTimeout(timer);
   }, []);
 
-  // useEffect(() => {
-  //   const handleInitialNotification = async () => {
-  //     const remoteMessage = await messaging().getInitialNotification();
-  //     if (remoteMessage) {
-  //       const data = remoteMessage.data || {};
-  //       const notification = {
-  //         id: Date.now().toString(),
-  //         title: data.title || remoteMessage.notification?.title || 'No Title',
-  //         description: data.body || remoteMessage.notification?.body || 'No Description',
-  //         image: data.image || remoteMessage.notification?.android?.imageUrl || '',
-  //         time: new Date().toLocaleTimeString(),
-  //         timestamp: new Date().getTime(),
-  //         isRead: false,
-  //         isForeground: false,
-  //       };
-
-  //       setTimeout(() => {
-  //         setNotifications(prev => [notification, ...prev]);
-  //         RootNavigation.navigate('NotificationScreen');
-  //       }, 500); // delay just enough for hydration
-  //     }
-  //   };
-
-  //   if (isNavReady) {
-  //     handleInitialNotification();
-  //   }
-  // }, [isNavReady]);
-
-
-  // useEffect(() => {
-  //   const handleInitialNotification = async () => {
-  //     try {
-  //       const remoteMessage = await messaging().getInitialNotification();
-  
-  //       console.log('🔥 getInitialNotification() result:', remoteMessage);
-  
-  //       if (!remoteMessage) {
-  //         console.log('⚠️ No remoteMessage found (user opened app directly or message was not a data-only payload)');
-  //         return;
-  //       }
-  
-  //       const data = remoteMessage.data || {};
-  //       const notification = {
-  //         id: `${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-  //         title: data.title || remoteMessage.notification?.title || 'No Title',
-  //         description: data.body || remoteMessage.notification?.body || 'No Description',
-  //         image: data.image || remoteMessage.notification?.android?.imageUrl || '',
-  //         time: new Date().toLocaleTimeString(),
-  //         timestamp: Date.now(), // ✅ Ensure this is valid
-  //         isRead: false,
-  //         isForeground: false,
-  //       };
-  
-  //       console.log('📥 Notification object created from FCM:', notification);
-  
-  //       setTimeout(() => {
-  //         setNotifications(prev => {
-  //           const updated = [notification, ...prev];
-  //           console.log('📦 Final list after adding:', updated);
-  //           return updated;
-  //         });
-  
-  //         RootNavigation.navigate('NotificationScreen');
-  //       }, 1000); // 1 sec delay is enough
-  //     } catch (e) {
-  //       console.error('❌ Error in handleInitialNotification:', e);
-  //     }
-  //   };
-  
-  //   if (isNavReady) {
-  //     handleInitialNotification();
-  //   }
-  // }, [isNavReady]);
-  
 
 
   useEffect(() => {
@@ -193,6 +119,20 @@ function MainApp() {
     handleInitialNotification();
   }
 }, [isNavReady]);
+
+  useEffect(() => {
+    // (Optional) Explicit init/consent toggles
+    
+    Settings.setAppID('766848652858707');
+Settings.setClientToken('a9432c883e5644de41e62094005c37b8');
+Settings.initializeSDK();
+
+  }, []);
+
+
+
+
+
 
 
   return (

@@ -12,6 +12,7 @@
   "dependencies": {
     "@miblanchard/react-native-slider": "^2.6.0",
     "@react-native-async-storage/async-storage": "^2.1.1",
+    "@react-native-community/datetimepicker": "^8.4.4",
     "@react-native-firebase/app": "^21.12.3",
     "@react-native-firebase/auth": "^21.12.3",
     "@react-native-firebase/messaging": "^21.12.3",
@@ -31,6 +32,7 @@
     "react-native-device-info": "^14.0.4",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-fast-image": "^8.6.3",
+    "react-native-fbsdk-next": "^13.4.1",
     "react-native-gesture-handler": "^2.23.1",
     "react-native-inappbrowser-reborn": "^3.7.0",
     "react-native-permissions": "^5.3.0",

@@ -58,7 +58,7 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { Appearance, StatusBar } from 'react-native';
+import { Appearance, Pressable, StatusBar, Text } from 'react-native';
 import { NavigationIndependentTree, ThemeProvider } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -186,6 +186,7 @@ const BottomTabs = () => {
   name="Loan Status"
   component={LoanOffer}
   options={{
+   headerLeft: () => null,
     headerShown: true, // make sure header is visible
     headerStyle: {
        backgroundColor: colorScheme === 'dark' ? "#222" : "#fff",
@@ -280,20 +281,48 @@ const Routes = ({ onReady }) => {
       ) : (
         <Stack.Navigator 
         initialRouteName={userToken ? "Main" : "LoginScreen"}
-       screenOptions={{
+//        screenOptions={{
+//   headerTitle: () => (
+//     <Image
+//       source={require("../assets/images/logo-full-width.png")}
+//       style={{ width: 200, height: 25, resizeMode: 'contain' }}
+//     />
+//   ),
+//   headerTitleAlign: 'center',
+//   headerTintColor: theme === 'dark' ? '#fff' : '#000', // back arrow & title color
+//   headerStyle: {
+//     backgroundColor: theme === 'dark' ? '#000' : '#fff',
+//   },
+  
+// }}
+
+
+screenOptions={({ navigation }) => ({
   headerTitle: () => (
-    <Image
-      source={require("../assets/images/logo-full-width.png")}
-      style={{ width: 200, height: 25, resizeMode: 'contain' }}
-    />
+    <Pressable onPress={() => navigation.navigate("Home")}>
+      <Image
+        source={require("../assets/images/logo-full-width.png")}
+        style={{ width: 200, height: 25, resizeMode: 'contain' }}
+      />
+    </Pressable>
   ),
   headerTitleAlign: 'center',
-  headerTintColor: theme === 'dark' ? '#fff' : '#000', // back arrow & title color
+  headerTintColor: theme === 'dark' ? '#fff' : '#000',
   headerStyle: {
     backgroundColor: theme === 'dark' ? '#000' : '#fff',
   },
-  
-}}
+  headerRight: () => (
+    <Pressable
+      onPress={() => navigation.navigate("Home")}
+      style={{ marginRight: 15 }}
+    >
+      <Text style={{ color: theme === 'dark' ? '#fff' : '#000', fontWeight: 'bold' }}>
+        Home
+      </Text>
+    </Pressable>
+  ),
+})}
+
 
         
         >
@@ -320,7 +349,7 @@ const Routes = ({ onReady }) => {
                  {() => <View><Text>Data Not Found</Text></View>}
                </Stack.Screen>
                <Stack.Screen name="DealsScreen" component={DealsScreen} options={{ headerShown: true }} />
-               <Stack.Screen name="LoanOffer" component={LoanOffer} options={{ headerShown: true }} />
+               <Stack.Screen name="LoanOffer" component={LoanOffer} options={{ headerLeft: () => null, headerShown: true }} />
 
                <Stack.Screen name="SideMenuScreen" component={SideMenuScreen} options={{ headerShown: false }} />
                <Stack.Screen name="PersonalDetailsOne"  component={PersonalDetailsOne} options={{

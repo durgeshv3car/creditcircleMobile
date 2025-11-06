@@ -67,7 +67,7 @@ const CustomHeader = () => {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => navigation.navigate('NotificationScreen')}
               style={{ padding: 10 }}
             >
@@ -107,9 +107,54 @@ const CustomHeader = () => {
                 <Image
                   style={appStyle.bellicon}
                   source={require('../../assets/images/notificationBell.png')}
-                />
+                /> <Text>1</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+
+            <TouchableOpacity
+  onPress={() => navigation.navigate('NotificationScreen')}
+  style={{ padding: 10 }}
+  accessibilityRole="button"
+  accessibilityLabel={`Notifications, ${unreadCount} unread`}
+>
+  <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
+    {/* Bell Icon */}
+    <Image
+      style={appStyle.bellicon}
+      source={require('../../assets/images/notificationBell.png')}
+    />
+
+    {/* Badge */}
+    {unreadCount > 0 && (
+      <View
+        style={{
+          position: 'absolute',
+          top: -10,
+          right: -2,
+          backgroundColor: '#FF4800',
+          minWidth: 18,
+          height: 18,
+          paddingHorizontal: 4, // lets it grow for 2–3 digits
+          borderRadius: 9,
+          zIndex: 10,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 10,
+            fontWeight: 'bold',
+            color: '#fff',
+            textAlign: 'center',
+          }}
+        >
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </Text>
+      </View>
+    )}
+  </View>
+</TouchableOpacity>
           </ThemedView>
         
       </SafeAreaView>

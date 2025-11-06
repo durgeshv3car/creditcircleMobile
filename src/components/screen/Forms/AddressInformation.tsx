@@ -88,10 +88,6 @@ useEffect(() => {
         let valid = true;
         let errorObj = {};
 
-        if (!houseNo.trim()) {
-            errorObj.houseNo = "House No. Is Required";
-            valid = false;
-        }
         if (!streetAddress.trim()) {
             errorObj.streetAddress = "Street Address Is Required";
             valid = false;
@@ -155,7 +151,6 @@ useEffect(() => {
                     label="House No."
                     value={houseNo}
                     onChangeText={setHouseNo}
-                    error={errors.houseNo}
                     placeHolder="Flat No., Building Name, Apartment"
                 />
                 <ThemedTextInput

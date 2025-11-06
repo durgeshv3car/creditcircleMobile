@@ -22,9 +22,10 @@ const DealDetailScreen = ({ route, navigation }) => {
         <Text style={[styles.title, appStyle.detailston]}>{offer.title}</Text>
         <Text style={[styles.category, appStyle.detailston]}>{offer.category}</Text>
         <Text style={[styles.description, appStyle.detailston]}>{offer.description}</Text>
-        <Text style={[styles.description, appStyle.detailston]}>
-          {/* <RenderHTML source={{ html: offer.detailDescription || '' }}/> */}
+        {/* <Text style={[styles.description, appStyle.detailston]}> */}
 
+          {/* <RenderHTML source={{ html: offer.detailDescription || '' }}/> */}
+<View style={{ flex: 1 }}>
 <RenderHTML
   source={{ html: offer.detailDescription || '' }}
   tagsStyles={{
@@ -40,7 +41,8 @@ const DealDetailScreen = ({ route, navigation }) => {
     // etc.
   }}></RenderHTML>
 
-          </Text>
+</View>
+          {/* </Text> */}
       </ScrollView>
 
       {offer.buttonType !== '' && (

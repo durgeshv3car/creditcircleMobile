@@ -148,7 +148,7 @@ const QuickListing = ({route,  navigation}) => {
         <View style={appStyle.gstcraeccontainer}>
         
         {noData && (
-               <NotAvailable title="Image not available for this item." uris={"https://placehold.co/300x200?text=Not+Available"} />
+               <NotAvailable title="Offer not available in category" uris={"https://placehold.co/300x200?text=Not+Available"} />
         )}
         
         <FlatList

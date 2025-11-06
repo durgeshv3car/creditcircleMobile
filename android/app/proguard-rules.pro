@@ -2,3 +2,5 @@
 -keep class com.google.firebase.messaging.** { *; }
 -keepattributes Signature
 -keepattributes *Annotation*
+-keep class com.facebook.** { *; }
+-dontwarn com.facebook.**

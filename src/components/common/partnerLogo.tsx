@@ -31,9 +31,13 @@ const PartnerLogo = () => {
     },
   });
 
-        if (response.data.success && Array.isArray(response.data.images)) {
-          setData(response.data.images);
-        } else {
+         if (response.data.success && Array.isArray(response.data.images)) {
+      // Filter only active images
+      const activeImages = response.data.images.filter((item) => item.active === true);
+
+      setData(activeImages);
+    }
+        else {
           console.warn('Invalid data structure:', response.data);
         }
       } catch (error) {
@@ -58,6 +62,7 @@ const PartnerLogo = () => {
           onError={(e) => console.log('Image Load Error:', e.nativeEvent.error)}
         />
       </TouchableOpacity>
+       <Text style={styles.title}>{item.title}</Text>
     </View>
   );
 
@@ -88,8 +93,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 13,
     color: '#1e2c78', // blue
     marginBottom: 20,
     textAlign: 'left',
@@ -112,11 +116,14 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     justifyContent: 'center',
     alignItems: 'center',
+        padding: 5,
   },
   logo: {
     width: "100%",
     height: "100%",
     resizeMode: 'contain',
+    borderRadius: 100,
+
   },
   noDataText: {
     fontSize: 16,

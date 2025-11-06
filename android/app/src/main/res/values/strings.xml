@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">creditcircle</string>
+     <string name="facebook_app_id">766848652858707</string>
+    <string name="facebook_client_token">a9432c883e5644de41e62094005c37b8</string>
 </resources>

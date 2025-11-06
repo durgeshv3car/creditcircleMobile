@@ -217,7 +217,6 @@
 
 
 // New Data
-
 import appStyle from "@/AppStyles";
 import { ThemedTextInput } from "@/components/ThemedInput";
 import ThemedRadioButtonList from "@/components/ThemedRadioButtonList";
@@ -255,49 +254,64 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
     useEffect(() => {
         fetchApplicationId();
         checkAppId();
-
-        const fetchPhoneNumber = async () => {
-            try {
-                const jsonValues = await AsyncStorage.getItem("userData");
-                const parsedData = jsonValues ? JSON.parse(jsonValues) : null;
-                setPhoneNumber(parsedData);
-                console.log("Phone Number:", parsedData);
-
-                  const profileResponse = await axios.get(`${BASE_URL}/api/otp/get-profile?phoneNumber=${parsedData}`
-      );
-                setUserId(profileResponse.data.id);
-                
-            } catch (error) {
-                console.error('Error fetching phone number:', error);
-            }
-        };
-
-        fetchPhoneNumber();
+        fetchPhoneNumberAndUserId();
     }, []);
 
+
+    // ---------- Helpers ----------
+const parseStoredPhone = (raw: any) => {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed === "string") return parsed;
+    if (parsed?.phoneNumber) return parsed.phoneNumber;
+    if (parsed?.phone) return parsed.phone;
+    return null;
+  } catch {
+    return raw;
+  }
+};
+
+    const fetchPhoneNumberAndUserId = async () => {
+        try {
+            const storedPhone = await AsyncStorage.getItem("userData");
+           
+    const ph = parseStoredPhone(storedPhone);
+
+     setPhoneNumber(ph);
+
+      console.log("Parsed Phone:", ph);
+
+            const profileResponse = await axios.get(
+                `${API_BASE_URL}/otp/get-profile?phoneNumber=${ph}`
+            );
+            setUserId(profileResponse.data.id);
+        } catch (error) {
+            console.error('Error fetching phone number or user ID:', error);
+            Alert.alert("Error", "Failed to load user data.");
+        }
+    };
+
     const checkAppId = async () => {
-        const jsonValue = await AsyncStorage.getItem("appIdData");
-        const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
-        if (!parsedValue || parsedValue.trim() === "") {
+        const appId = await AsyncStorage.getItem("appIdData");
+        if (!appId || appId.trim() === "") {
             Alert.alert("Error", "Application ID is missing or invalid.");
             navigation.navigate("LoanOffer");
-            return;
         }
     };
 
     const fetchApplicationId = async () => {
         try {
-            const jsonValue = await AsyncStorage.getItem("appIdData");
-            const parsedValue = jsonValue ? JSON.parse(jsonValue) : null;
+            const appId = await AsyncStorage.getItem("appIdData");
 
-            console.log("Application ID:", parsedValue);
+            console.log("Application ID:", appId);
 
-            if (!parsedValue || parsedValue.trim() === "") {
+            if (!appId || appId.trim() === "") {
                 Alert.alert("Error", "Application ID is missing or invalid.");
                 return;
             }
 
-            setApplicationId(parsedValue);
+            setApplicationId(appId);
         } catch (error) {
             console.error("❌ Error fetching application ID:", error);
             Alert.alert("Error", "Failed to retrieve application ID.");
@@ -323,19 +337,19 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
         setIsLoading(true);
 
         try {
-            const jsonValue = await AsyncStorage.getItem("appIdData");
-
-
-            if (!jsonValue || jsonValue.trim() === "") {
+            const appId = await AsyncStorage.getItem("appIdData");
+            if (!appId || appId.trim() === "") {
                 Alert.alert("Error", "Application ID is missing or invalid.");
                 return;
             }
 
             const requestData = {
-                applicationId,
+                applicationId: appId,
                 loanPurpose: selectedLoanPurpose,
                 loanCompletion: true,
             };
+
+            console.log("🔍 Request Data:", requestData);
 
             // Step 1: Submit to your API
             const response = await axios.post(
@@ -347,18 +361,14 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
                 throw new Error(response.data.message || "Failed to save loan purpose.");
             }
 
-            
-
-               
             // Step 2: Prepare Cashe API request
             const cashePayload = {
                 userPhoneNumber: phoneNumber,
                 userId: userId,
-                loanId: applicationId,
+                loanId: appId,
             };
 
-            console.log("✅ Loan Purpose Submitted Successfully:", cashePayload);  
-
+            console.log("✅ Loan Purpose Submitted Successfully:", cashePayload);
 
             // Step 3: Send to Cashe API
             const casheResponse = await axios.post(
@@ -367,7 +377,7 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
             );
 
             console.log("🔍 CASHe Response:", casheResponse.data);
-            
+
             if (casheResponse.status === 200) {
                 navigation.navigate("LoanOffer", {
                     dayata: response.data,
@@ -402,8 +412,10 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
                     <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                         <View style={appStyle.HeadingTitle}>
-                            <ThemedHeadingText style={[styles.header]}>Loan Purpose: Reason to Apply for Loan</ThemedHeadingText>
-                            <ThemedView style={{ width: "20%", height: 2, backgroundColor: "#FF4800", marginTop: 4 }}></ThemedView>
+                            <ThemedHeadingText style={[styles.header]}>
+                                Loan Purpose: Reason to Apply for Loan
+                            </ThemedHeadingText>
+                            <ThemedView style={{ width: "20%", height: 2, backgroundColor: "#FF4800", marginTop: 4 }} />
                         </View>
 
                         <ThemedView>
@@ -420,7 +432,11 @@ const SalariedReasontoApplyforLoan = ({ navigation }) => {
 
                     <View style={styles.buttonContainer}>
                         <Pressable style={styles.button} onPress={handleSubmit} disabled={isLoading}>
-                            {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Check Eligibility</Text>}
+                            {isLoading ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={styles.buttonText}>Check Eligibility</Text>
+                            )}
                         </Pressable>
                     </View>
                 </KeyboardAvoidingView>

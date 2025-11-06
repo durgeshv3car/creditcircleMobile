@@ -76,15 +76,16 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdk 36
+
 
     namespace "com.credit.creditcircle"
     defaultConfig {
         applicationId "com.credit.creditcircle"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14
-        versionName "3.3.11"
+        minSdkVersion 24
+        targetSdkVersion 36
+        versionCode 27        
+        versionName "3.5.9"
     }
     signingConfigs {
         debug {
@@ -125,7 +126,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
   
     // Import the Firebase BoM
-  implementation platform('com.google.firebase:firebase-bom:33.11.0')
+  implementation platform('com.google.firebase:firebase-bom:34.2.0')
 
 
   // TODO: Add the dependencies for Firebase products you want to use
